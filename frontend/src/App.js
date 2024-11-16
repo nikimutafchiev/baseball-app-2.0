@@ -1,11 +1,17 @@
 import logo from './logo.svg';
 import './App.css';
-import InputFormPlayer from './components/InputFormPlayer';
+import NavBar from './components/NavBar';
+import HeroSection from './components/HeroSection';
+import Overview from './components/Overview';
+import DescriptionSection from './components/DescriptionSection';
 
 function App() {
   return (
-    <div className="mx-5">
-      <InputFormPlayer />
+    <div >
+      <NavBar />
+      <HeroSection />
+      <Overview />
+      <DescriptionSection />
     </div>
   );
 }

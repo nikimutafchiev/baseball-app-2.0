@@ -67,7 +67,7 @@ export default function InputFormPlayer() {
     }), [isSubmitted]);
 
     return (
-        <div className="justify-self-center w-1/2 p-2 px-4 text-white bg-slate-300 rounded border-black border-[1px] drop-shadow-xl my-2">
+        <div className="justify-self-center w-1/3 p-2 px-4 text-white bg-slate-300 rounded border-black border-[1px] drop-shadow-xl my-2">
 
             <div className="py-4 flex flex-col items-center gap-8">
                 <div className="w-full flex flex-col gap-8">
