@@ -1,11 +1,13 @@
 import { BiBaseball } from "react-icons/bi";
+import { Link } from "react-router-dom";
 export default function NavBar() {
     const pages = [
-        "Начало",
-        "Първенства",
-        "Отбори",
-        "Играчи",
-        "Моят профил"
+        { name: "Начало", path: "/" },
+        { name: "Първенства", path: "/tournaments" },
+        { name: "Отбори", path: "/teams" },
+        { name: "Играчи", path: "/players" },
+        { name: "Мачове", path: "/games" },
+        { name: "Моят профил", path: "/profile" }
     ]
     return (
         <header className="w-full sticky z-10 top-0  h-[10vh] bg-gradient-to-r from-primary_1 to-primary_3 drop-shadow-2xl">
@@ -19,7 +21,7 @@ export default function NavBar() {
                 </div>
                 <div className="flex flex-row gap-8">
                     {
-                        pages.map((page) => <div className="text-white text-xl rounded cursor-pointer p-4 hover:bg-white hover:text-primary_2 duration-200 ease-in-out font-semibold">{page}</div>)
+                        pages.map((page) => <Link className="text-white text-xl rounded cursor-pointer p-4 hover:bg-white hover:text-primary_2 duration-200 ease-in-out font-semibold" to={page.path}>{page.name}</Link>)
                     }
                 </div>
             </nav>

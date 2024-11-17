@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 
 export default function HeroSection() {
     return (
@@ -12,12 +13,12 @@ export default function HeroSection() {
                         fugiat veniam occaecat.
                     </p>
                     <div className="mt-20 ">
-                        <a
-                            href="#"
+                        <Link
+                            to={"/games"}
                             className="rounded-md bg-accent_1 px-5 py-2.5 font-semibold text-white text-lg shadow-sm hover:bg-accent_2 duration-150 ease-in-out"
                         >
                             Към игрите
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>
