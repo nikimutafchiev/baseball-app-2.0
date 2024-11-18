@@ -8,7 +8,7 @@ export default function PlayerList() {
             "height": "194",
             "weight": "106",
             "placeOfBirth": "Bulgaria",
-            "image": "https://placehold.co/200x260",
+            "image": "https://placehold.co/150x200",
             "quote": "You're only one step away from the win.",
             "stats": {
                 "AVG": "0.707",
@@ -23,10 +23,10 @@ export default function PlayerList() {
             "firstName": "Petar",
             "lastName": "Petrov",
             "dateOfBirth": "1995-03-15",
-            "height": "180",
+            "height": "200",
             "weight": "90",
             "placeOfBirth": "Bulgaria",
-            "image": "https://placehold.co/200x260",
+            "image": "https://placehold.co/150x200",
             "quote": "Hard work beats talent when talent doesn’t work hard.",
             "stats": {
                 "AVG": "0.693",
@@ -44,7 +44,7 @@ export default function PlayerList() {
             "height": "186",
             "weight": "85",
             "placeOfBirth": "Bulgaria",
-            "image": "https://placehold.co/200x260",
+            "image": "https://placehold.co/150x200",
             "quote": "Success is the sum of small efforts repeated daily.",
             "stats": {
                 "AVG": "0.714",
@@ -62,7 +62,7 @@ export default function PlayerList() {
             "height": "172",
             "weight": "63",
             "placeOfBirth": "Bulgaria",
-            "image": "https://placehold.co/200x260",
+            "image": "https://placehold.co/150x200",
             "quote": "Dream big and dare to fail.",
             "stats": {
                 "AVG": "0.725",
@@ -80,7 +80,7 @@ export default function PlayerList() {
             "height": "188",
             "weight": "92",
             "placeOfBirth": "Bulgaria",
-            "image": "https://placehold.co/200x260",
+            "image": "https://placehold.co/150x200",
             "quote": "Perseverance is the key to unlocking potential.",
             "stats": {
                 "AVG": "0.699",
@@ -98,7 +98,7 @@ export default function PlayerList() {
             "height": "170",
             "weight": "58",
             "placeOfBirth": "Bulgaria",
-            "image": "https://placehold.co/200x260",
+            "image": "https://placehold.co/150x200",
             "quote": "Your attitude determines your altitude.",
             "stats": {
                 "AVG": "0.713",
@@ -116,7 +116,7 @@ export default function PlayerList() {
             "height": "182",
             "weight": "88",
             "placeOfBirth": "Bulgaria",
-            "image": "https://placehold.co/200x260",
+            "image": "https://placehold.co/150x200",
             "quote": "Strive for progress, not perfection.",
             "stats": {
                 "AVG": "0.702",
@@ -134,7 +134,7 @@ export default function PlayerList() {
             "height": "168",
             "weight": "60",
             "placeOfBirth": "Bulgaria",
-            "image": "https://placehold.co/200x260",
+            "image": "https://placehold.co/150x200",
             "quote": "Nothing worth having comes easy.",
             "stats": {
                 "AVG": "0.718",
@@ -152,7 +152,7 @@ export default function PlayerList() {
             "height": "192",
             "weight": "98",
             "placeOfBirth": "Bulgaria",
-            "image": "https://placehold.co/200x260",
+            "image": "https://placehold.co/150x200",
             "quote": "Champions keep playing until they get it right.",
             "stats": {
                 "AVG": "0.692",
@@ -170,7 +170,7 @@ export default function PlayerList() {
             "height": "190",
             "weight": "94",
             "placeOfBirth": "Bulgaria",
-            "image": "https://placehold.co/200x260",
+            "image": "https://placehold.co/150x200",
             "quote": "Victory is in the effort, not just the result.",
             "stats": {
                 "AVG": "0.705",
@@ -184,7 +184,7 @@ export default function PlayerList() {
     ]
 
     return (
-        <div className="p-10 grid grid-cols-5 gap-12">
+        <div className="p-10 grid grid-cols-5 gap-8">
             {players.map((player) =>
                 <Player {...player} />)
             }

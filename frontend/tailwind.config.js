@@ -5,6 +5,11 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontSize: {
+        "2xs": "10px",
+        "3xs": "9px",
+        "4xs": "8px"
+      },
       colors:
       {
         "primary_1": "#386641",

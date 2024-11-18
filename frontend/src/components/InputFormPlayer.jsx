@@ -67,26 +67,29 @@ export default function InputFormPlayer(props) {
         }
     }), [isSubmitted]);
     return (
-        <div className="bottom-4 fixed self-center z-20 w-1/3 p-2 px-4 text-white bg-slate-300 rounded border-black border-[1px] drop-shadow-xl my-2">
+        <div className="bottom-1 fixed self-center z-20 w-2/5 p-2 px-4 bg-white rounded border-black border-[1px] drop-shadow-xl my-2">
             <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
-            <div className="py-4 flex flex-col items-center gap-4">
+            <div className="py-2 flex flex-col items-center gap-4">
                 <div className="w-full flex flex-col gap-4">
                     <div className='flex flex-col self-center gap-4'>
-                        <div className='size-[150px] bg-white rounded'></div>
-                        <button className='w-[150px] bg-blue-400 rounded p-4'>Качи снимка</button>
+                        <div className='size-[120px] bg-gray-300 rounded'></div>
+                        <button className='w-[120px] bg-blue-400 rounded p-3 text-white text-sm font-semibold'>Качи снимка</button>
                     </div>
-                    <TextField label="Име" variant="outlined" className="w-full" required onChange={(e) => { setFirstName(e.target.value) }} value={firstName}></TextField>
-                    <TextField label="Фамилия" variant="outlined" className="w-full" required onChange={(e) => { setLastName(e.target.value) }} value={lastName}></TextField>
-                    <div className=" w-3/5 flex flex-col gap-1 ">
+                    <div className="flex flex-row gap-2">
+                        <TextField label="Име" variant="outlined" className="w-1/2" required onChange={(e) => { setFirstName(e.target.value) }} value={firstName} size="small"></TextField>
+                        <TextField label="Фамилия" variant="outlined" className="w-1/2" required onChange={(e) => { setLastName(e.target.value) }} value={lastName} size="small"></TextField>
+                    </div>
+                    <div className=" w-4/5 flex flex-col gap-1 ">
                         <InputLabel> Дата на раждане</InputLabel>
-                        <div className="flex flex-row gap-2">
-                            <TextField label="Ден" variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, day: e.target.value }) }} value={dateOfBirth.day}></TextField>
-                            <TextField label="Месец" variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, month: e.target.value }) }} value={dateOfBirth.month}></TextField>
-                            <TextField label="Година" variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, year: e.target.value }) }} value={dateOfBirth.year}></TextField>
+                        <div className="grid grid-cols-3 gap-2">
+                            <TextField size="small" label="Ден" variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, day: e.target.value }) }} value={dateOfBirth.day}></TextField>
+                            <TextField size="small" label="Месец" variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, month: e.target.value }) }} value={dateOfBirth.month}></TextField>
+                            <TextField size="small" label="Година" variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, year: e.target.value }) }} value={dateOfBirth.year}></TextField>
                         </div>
                     </div>
                     <div className="gap-4 grid grid-cols-3">
                         <TextField
+                            size="small"
                             select
                             label="Пол"
                             onChange={(e) => { setGender(e.target.value) }}
@@ -99,6 +102,7 @@ export default function InputFormPlayer(props) {
                             ))}
                         </TextField>
                         <TextField
+                            size="small"
                             type="number"
                             label="Височина"
                             slotProps={{
@@ -110,6 +114,7 @@ export default function InputFormPlayer(props) {
                             value={height}
                         />
                         <TextField
+                            size="small"
                             type="number"
                             label="Тегло"
                             slotProps={{
@@ -125,6 +130,7 @@ export default function InputFormPlayer(props) {
                     </div>
                     <div className="w-full grid grid-cols-2 gap-4">
                         <TextField
+                            size="small"
                             select
                             label="Хвърляща ръка"
                             onChange={(e) => { setThrowingArm(e.target.value) }}
@@ -137,6 +143,7 @@ export default function InputFormPlayer(props) {
                             ))}
                         </TextField>
                         <TextField
+                            size="small"
                             select
                             label="Батираща страна"
                             onChange={(e) => { setBattingSide(e.target.value) }}
@@ -150,7 +157,7 @@ export default function InputFormPlayer(props) {
                         </TextField>
                     </div>
                 </div>
-                <Button onClick={() => setIsSubmitted(true)} disabled={disabled} sx={{ backgroundColor: "rgb(251,146,60)", fontSize: "16pt", color: "white" }} className="w-full p-4 bg-otext-3xl font-semibold self-end rounded hover:cursor-pointer" >Потвърди</Button>
+                <button className="bg-primary_2 px-2 py-1 w-1/2 text-white text-lg font-semibold rounded">Потвърди</button>
             </div>
         </div>);
 }

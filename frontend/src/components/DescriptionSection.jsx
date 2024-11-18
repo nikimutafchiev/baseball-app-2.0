@@ -3,24 +3,24 @@ const lorem = "Nunc laoreet, felis vitae iaculis elementum, mi magna elementum t
 export default function DescriptionSection() {
     return <div className="flex flex-col gap-16 my-8 mx-12">
         <div className='flex flex-row justify-around'>
-            <img src="https://placehold.co/400x400" className="rounded"></img>
-            <div class="w-1/2 flex flex-col gap-8">
-                <h1 class="text-6xl font-semibold">Lorem ipsum to us</h1>
-                <p className="text-gray-600 text-pretty text-2xl">{lorem}</p>
+            <img src="https://placehold.co/300x300" className="rounded"></img>
+            <div class="w-1/2 flex flex-col gap-4">
+                <h1 class="text-4xl font-semibold">Lorem ipsum to us</h1>
+                <p className="text-gray-600 text-pretty">{lorem}</p>
             </div>
         </div>
         <div className='flex flex-row justify-around'>
-            <div class="w-1/2 flex flex-col gap-8">
-                <h1 class="text-6xl font-semibold">Lorem ipsum to us</h1>
-                <p className="text-gray-600 text-pretty text-2xl">{lorem}</p>
+            <div class="w-1/2 flex flex-col gap-4">
+                <h1 class="text-4xl font-semibold">Lorem ipsum to us</h1>
+                <p className="text-gray-600 text-pretty">{lorem}</p>
             </div>
-            <img src="https://placehold.co/400x400" className="rounded"></img>
+            <img src="https://placehold.co/300x300" className="rounded"></img>
         </div>
         <div className='flex flex-row justify-around'>
-            <img src="https://placehold.co/400x400" className="rounded"></img>
-            <div class="w-1/2 flex flex-col gap-8">
-                <h1 class="text-6xl font-semibold">Lorem ipsum to us</h1>
-                <p className="text-gray-600 text-pretty text-2xl">{lorem}</p>
+            <img src="https://placehold.co/300x300" className="rounded"></img>
+            <div class="w-1/2 flex flex-col gap-4">
+                <h1 class="text-4xl font-semibold">Lorem ipsum to us</h1>
+                <p className="text-gray-600 text-pretty">{lorem}</p>
             </div>
         </div>
     </div>
