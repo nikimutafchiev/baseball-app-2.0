@@ -7,6 +7,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import GamesPage from './pages/GamesPage';
 import ErrorPage from './pages/ErrorPage';
+import PlayersPage from './pages/PlayersPage';
+import TeamsPage from './pages/TeamsPage';
 const rooter = createBrowserRouter([
   {
     path: "/",
@@ -20,6 +22,14 @@ const rooter = createBrowserRouter([
       {
         path: "games",
         element: <GamesPage />
+      },
+      {
+        path: "players",
+        element: <PlayersPage />
+      },
+      {
+        path: "teams",
+        element: <TeamsPage />
       }
     ]
   }

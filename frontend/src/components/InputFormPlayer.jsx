@@ -5,8 +5,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateField } from '@mui/x-date-pickers/DateField';
 import dayjs from "dayjs";
+import { RiCloseCircleLine } from "react-icons/ri";
 
-export default function InputFormPlayer() {
+export default function InputFormPlayer(props) {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [dateOfBirth, setDateOfBirth] = useState({ day: "", month: "", year: "" });
@@ -65,15 +66,14 @@ export default function InputFormPlayer() {
             setIsSubmitted(false);
         }
     }), [isSubmitted]);
-
     return (
-        <div className="justify-self-center w-1/3 p-2 px-4 text-white bg-slate-300 rounded border-black border-[1px] drop-shadow-xl my-2">
-
-            <div className="py-4 flex flex-col items-center gap-8">
-                <div className="w-full flex flex-col gap-8">
-                    <div className='flex flex-col self-center gap-8'>
-                        <div className='size-[200px] bg-white rounded'></div>
-                        <button className='w-[200px] bg-blue-400 rounded p-4'>Качи снимка</button>
+        <div className="bottom-4 fixed self-center z-20 w-1/3 p-2 px-4 text-white bg-slate-300 rounded border-black border-[1px] drop-shadow-xl my-2">
+            <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
+            <div className="py-4 flex flex-col items-center gap-4">
+                <div className="w-full flex flex-col gap-4">
+                    <div className='flex flex-col self-center gap-4'>
+                        <div className='size-[150px] bg-white rounded'></div>
+                        <button className='w-[150px] bg-blue-400 rounded p-4'>Качи снимка</button>
                     </div>
                     <TextField label="Име" variant="outlined" className="w-full" required onChange={(e) => { setFirstName(e.target.value) }} value={firstName}></TextField>
                     <TextField label="Фамилия" variant="outlined" className="w-full" required onChange={(e) => { setLastName(e.target.value) }} value={lastName}></TextField>

@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 export default function NavBar() {
     const pages = [
         { name: "Начало", path: "/" },
-        { name: "Първенства", path: "/tournaments" },
         { name: "Отбори", path: "/teams" },
         { name: "Играчи", path: "/players" },
         { name: "Мачове", path: "/games" },

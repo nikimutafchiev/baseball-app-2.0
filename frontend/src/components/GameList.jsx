@@ -1,30 +1,23 @@
-import { RiCalendarScheduleLine, RiCheckDoubleLine, RiLiveLine } from "react-icons/ri";
+import Game from "./Game";
 export default function GameList() {
     const games = [
-        { datetime: "2015-03-25T12:00:00Z", home: { teamName: "Levski FC", result: 0 }, away: { teamName: "CSKA Sofia", result: 0 }, status: "scheduled" },
-        { datetime: "2015-03-25T12:00:00Z", home: { teamName: "Levski FC", result: 0 }, away: { teamName: "CSKA Sofia", result: 0 }, status: "live" },
-        { datetime: "2015-03-25T12:00:00Z", home: { teamName: "Levski FC", result: 0 }, away: { teamName: "CSKA Sofia", result: 0 }, status: "scheduled" },
-        { datetime: "2015-03-25T12:00:00Z", home: { teamName: "Levski FC", result: 0 }, away: { teamName: "CSKA Sofia", result: 0 }, status: "ended" },
-        { datetime: "2015-03-25T12:00:00Z", home: { teamName: "Levski FC", result: 0 }, away: { teamName: "CSKA Sofia", result: 0 }, status: "live" }
+        { datetime: "2024-01-15T18:00:00Z", isAdmin: true, home: { logo: "https://placehold.co/60x60", teamName: "Levski FC", result: 2 }, away: { logo: "https://placehold.co/60x60", teamName: "CSKA Sofia", result: 1 }, status: "ended" },
+        { datetime: "2024-01-16T15:30:00Z", home: { logo: "https://placehold.co/60x60", teamName: "Ludogorets", result: 3 }, away: { logo: "https://placehold.co/60x60", teamName: "Beroe", result: 3 }, status: "live" },
+        { datetime: "2024-01-17T20:00:00Z", isAdmin: true, home: { logo: "https://placehold.co/60x60", teamName: "Cherno More", result: 0 }, away: { logo: "https://placehold.co/60x60", teamName: "Lokomotiv Plovdiv", result: 0 }, status: "scheduled" },
+        { datetime: "2024-01-18T12:00:00Z", home: { logo: "https://placehold.co/60x60", teamName: "Botev Plovdiv", result: 1 }, away: { logo: "https://placehold.co/60x60", teamName: "Arda Kardzhali", result: 2 }, status: "ended" },
+        { datetime: "2024-01-19T19:45:00Z", home: { logo: "https://placehold.co/60x60", teamName: "Slavia Sofia", result: 0 }, away: { logo: "https://placehold.co/60x60", teamName: "Etar Veliko Tarnovo", result: 1 }, status: "live" },
+        { datetime: "2024-01-20T14:00:00Z", isAdmin: true, home: { logo: "https://placehold.co/60x60", teamName: "CSKA 1948", result: 1 }, away: { logo: "https://placehold.co/60x60", teamName: "Levski FC", result: 1 }, status: "scheduled" },
+        { datetime: "2024-01-21T16:00:00Z", home: { logo: "https://placehold.co/60x60", teamName: "Montana", result: 2 }, away: { logo: "https://placehold.co/60x60", teamName: "Pirin Blagoevgrad", result: 3 }, status: "ended" },
+        { datetime: "2024-01-22T18:30:00Z", isAdmin: true, home: { logo: "https://placehold.co/60x60", teamName: "Septemvri Sofia", result: 0 }, away: { logo: "https://placehold.co/60x60", teamName: "Hebar Pazardzhik", result: 0 }, status: "scheduled" },
+        { datetime: "2024-01-23T20:00:00Z", home: { logo: "https://placehold.co/60x60", teamName: "Loko Sofia", result: 3 }, away: { logo: "https://placehold.co/60x60", teamName: "CSKA Sofia", result: 3 }, status: "live" },
+        { datetime: "2024-01-24T17:15:00Z", isAdmin: true, home: { logo: "https://placehold.co/60x60", teamName: "Ludogorets", result: 0 }, away: { logo: "https://placehold.co/60x60", teamName: "Levski FC", result: 1 }, status: "scheduled" }
     ];
-    const statusIcons = {
-        live: <RiLiveLine color="red" size={30} />,
-        scheduled: <RiCalendarScheduleLine size={30} />,
-        ended: <RiCheckDoubleLine size={30} />
-    };
+
     return (
-        <div className="my-20 mx-10 flex flex-col gap-8" >
+        <div className="flex flex-col gap-6" >
             {
                 games.map((game) =>
-                    <div className="w-full flex flex-row justify-evenly px-10 py-4 rounded items-center bg-primary_2 text-white font-semibold text-xl  drop-shadow-xl">
-                        <div className="w-[20%] flex flex-col gap-2 items-center"><div className="flex flex-row gap-2">{statusIcons[game.status]}{game.status}</div><div className=" font-semibold text-sm" >{new Date(game.datetime).toLocaleString()}</div></div>
-                        <div className="flex flex-row justify-around items-center w-3/5">
-                            <div>{game.home.teamName}</div>
-                            <div className="text-5xl font-bold">{game.home.result} - {game.away.result}</div>
-                            <div>{game.away.teamName}</div>
-                        </div>
-                        <button className="w-[15%] px-2 py-3 bg-accent_1 rounded text-white hover:bg-accent_2 ease-in-out duration-150">More info</button>
-                    </div>
+                    <Game {...game} />
                 )
             }
 
