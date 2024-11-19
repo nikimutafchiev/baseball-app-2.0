@@ -182,11 +182,18 @@ export default function PlayerList() {
             }
         },
     ]
-
+    const letters = [
+        "A", 'B', "C", "D", "E", "F", "G", "H", "I", "J", 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+    ]
     return (
-        <div className="p-10 grid grid-cols-5 gap-8">
-            {players.map((player) =>
-                <Player {...player} />)
-            }
+        <div className="w-full flex flex-row pt-10 gap-6">
+            <div className="w-10">
+                <div className="w-6 sticky top-[20vh] rounded-lg p-2 bg-white text-primary_2 text-4xs flex flex-col justify-around items-center font-semibold">{letters.map((letter) => <a className="px-[4px] text-center rounded-full hover:bg-primary_2 hover:text-white cursor-pointer">{letter}</a>)}</div>
+            </div>
+            <div className="flex-1 grid grid-cols-5 gap-8">
+                {players.map((player) =>
+                    <Player {...player} />)
+                }
+            </div>
         </div>)
 }

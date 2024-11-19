@@ -14,7 +14,7 @@ export default function HeroSection() {
                     </p>
                     <div className="mt-14 ">
                         <Link
-                            to={"/games"}
+                            to={"/schedule"}
                             className="rounded-md bg-accent_1 px-5 py-2.5 font-semibold text-white text-sm shadow-sm hover:bg-accent_2 duration-150 ease-in-out"
                         >
                             Към игрите
