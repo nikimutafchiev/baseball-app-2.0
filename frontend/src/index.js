@@ -9,6 +9,7 @@ import GamesPage from './pages/GamesPage';
 import ErrorPage from './pages/ErrorPage';
 import PlayersPage from './pages/PlayersPage';
 import TeamsPage from './pages/TeamsPage';
+import ProfilePage from './pages/ProfilePage';
 const rooter = createBrowserRouter([
   {
     path: "/",
@@ -20,7 +21,7 @@ const rooter = createBrowserRouter([
         element: <HomePage />
       },
       {
-        path: "games",
+        path: "schedule",
         element: <GamesPage />
       },
       {
@@ -30,6 +31,10 @@ const rooter = createBrowserRouter([
       {
         path: "teams",
         element: <TeamsPage />
+      },
+      {
+        path: "profile",
+        element: <ProfilePage />
       }
     ]
   }
