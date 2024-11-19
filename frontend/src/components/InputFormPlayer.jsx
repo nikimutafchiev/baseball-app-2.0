@@ -63,6 +63,7 @@ export default function InputFormPlayer(props) {
         }
     }), [isSubmitted]);
     const [errorWeight, setErrorWeigth] = useState(false);
+    const [errorHeight, setErrorHeigth] = useState(false);
     return (
         <div className="top-10 fixed self-center z-20 w-5/12 p-2 px-4 bg-white rounded border-black border-[1px] drop-shadow-xl">
             <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
@@ -104,11 +105,13 @@ export default function InputFormPlayer(props) {
                             label={<div className="text-sm">Височина</div>}
                             slotProps={{
                                 input: {
-                                    endAdornment: <InputAdornment >{<div className="text-sm">cm</div>}</InputAdornment>,
+                                    endAdornment: <InputAdornment >{<div className="text-sm ml-1">cm</div>}</InputAdornment>,
                                 },
                             }}
-                            onChange={(e) => { setHeight(e.target.value) }}
+                            onChange={(e) => { setHeight(e.target.value); setErrorHeigth(e.target.value != "" && (e.target.value < 60 || e.target.value > 250)) }}
                             value={height}
+                            error={errorHeight}
+                            helperText={errorHeight ? "60 ÷ 250 cm" : ""}
                         />
                         <TextField
                             size="small"
