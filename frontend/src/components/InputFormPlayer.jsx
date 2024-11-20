@@ -64,14 +64,15 @@ export default function InputFormPlayer(props) {
     }), [isSubmitted]);
     const [errorWeight, setErrorWeigth] = useState(false);
     const [errorHeight, setErrorHeigth] = useState(false);
+    const errorSubmit = errorHeight || errorWeight || firstName === "" || lastName === "";
     return (
         <div className="top-10 fixed self-center z-20 w-5/12 p-2 px-4 bg-white rounded border-black border-[1px] drop-shadow-xl">
             <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
             <div className="py-2 flex flex-col items-center gap-4">
                 <div className="w-full flex flex-col gap-4">
-                    <div className='flex flex-col self-center gap-4'>
-                        <div className='size-[120px] bg-gray-300 rounded'></div>
-                        <button className='w-[120px] bg-blue-400 rounded p-3 text-white text-sm font-semibold'>Качи снимка</button>
+                    <div className='flex flex-row self-center gap-4 items-center'>
+                        <div className='w-[150px] h-[200px] bg-gray-300 rounded'></div>
+                        <button className='w-[120px] h-fit bg-blue-400 rounded p-3 text-white text-sm font-semibold'>Качи снимка</button>
                     </div>
                     <div className="flex flex-row gap-2">
                         <TextField label={<div className="text-sm">Име *</div>} variant="outlined" className="w-1/2" onChange={(e) => { setFirstName(e.target.value) }} value={firstName} size="small"></TextField>
@@ -108,7 +109,7 @@ export default function InputFormPlayer(props) {
                                     endAdornment: <InputAdornment >{<div className="text-sm ml-1">cm</div>}</InputAdornment>,
                                 },
                             }}
-                            onChange={(e) => { setHeight(e.target.value); setErrorHeigth(e.target.value != "" && (e.target.value < 60 || e.target.value > 250)) }}
+                            onChange={(e) => { setHeight(e.target.value); setErrorHeigth(e.target.value !== "" && (e.target.value < 60 || e.target.value > 250)) }}
                             value={height}
                             error={errorHeight}
                             helperText={errorHeight ? "60 ÷ 250 cm" : ""}
@@ -122,7 +123,7 @@ export default function InputFormPlayer(props) {
                                     endAdornment: <InputAdornment >{<div className="text-sm ml-1">kg</div>}</InputAdornment>,
                                 },
                             }}
-                            onChange={(e) => { setWeigth(e.target.value); setErrorWeigth(e.target.value != "" && (e.target.value < 20 || e.target.value > 250)) }}
+                            onChange={(e) => { setWeigth(e.target.value); setErrorWeigth(e.target.value !== "" && (e.target.value < 20 || e.target.value > 250)) }}
                             value={weigth}
                             error={errorWeight}
                             helperText={errorWeight ? "20 ÷ 250 kg" : ""}
@@ -158,7 +159,7 @@ export default function InputFormPlayer(props) {
                         </TextField>
                     </div>
                 </div>
-                <button className="bg-primary_2 hover:bg-primary_3 px-2 py-1 w-1/2 text-white text-lg font-semibold rounded" >Потвърди</button>
+                <button className={`bg-primary_2  px-2 py-1 w-1/2  text-lg font-semibold rounded ${errorSubmit ? "cursor-not-allowed bg-primary_1 text-gray-400" : "hover:bg-primary_3 text-white"}`}>Потвърди</button>
             </div>
         </div>);
 }

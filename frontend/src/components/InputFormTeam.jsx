@@ -13,7 +13,9 @@ export default function InputFormTeam(props) {
         instagram: "",
         website: ""
     })
-    const [mediaOption, setMediaOption] = useState("Facebook");
+    const [mediaOption, setMediaOption] = useState("facebook");
+    const [name, setName] = useState("");
+    const errorSubmit = name === "";
     return (
         <div className="top-10 fixed self-center z-20 w-5/12 p-2 px-4 bg-white rounded border-black border-[1px] drop-shadow-xl">
             <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
@@ -23,7 +25,7 @@ export default function InputFormTeam(props) {
                         <div className='size-[120px] bg-gray-300 rounded'></div>
                         <button className='w-[120px] bg-blue-400 rounded p-3 text-white text-sm font-semibold'>Качи снимка</button>
                     </div>
-                    <TextField className="w-full" label={<div >Име *</div>} variant="outlined" />
+                    <TextField className="w-full" label={<div >Име *</div>} variant="outlined" value={name} onChange={(e) => setName(e.target.value)} />
                     <div className="grid grid-cols-2 gap-4">
                         <TextField label={<div >Address</div>} variant="outlined" />
                         <TextField label={<div >Contact</div>} variant="outlined" />
@@ -33,7 +35,7 @@ export default function InputFormTeam(props) {
                     </div>
                     <TextField label={<div>{mediaOption.charAt().toUpperCase() + mediaOption.slice(1)} link</div>} variant="outlined" value={links[mediaOption]} onChange={(e) => { setLinks({ ...links, [mediaOption]: e.target.value }) }} />
                 </div>
-                <button className="bg-primary_2 hover:bg-primary_3 px-2 py-1 w-1/2 text-white text-lg font-semibold rounded" >Потвърди</button>
+                <button className={`bg-primary_2  px-2 py-1 w-1/2  text-lg font-semibold rounded ${errorSubmit ? "cursor-not-allowed bg-primary_1 text-gray-400" : "hover:bg-primary_3 text-white"}`} > Потвърди</button>
             </div>
-        </div>);
+        </div >);
 }
