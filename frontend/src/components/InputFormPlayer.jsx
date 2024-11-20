@@ -32,7 +32,7 @@ export default function InputFormPlayer(props) {
         { value: "M", label: "Male" }, { value: "F", label: "Female" }
     ]
 
-    const disabled = firstName.length === 0 || lastName.length === 0;
+
     useEffect((() => {
         if (isSubmitted) {
             fetch("http://localhost:5000/add_player", {

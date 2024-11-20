@@ -2,6 +2,7 @@ import Player from "./Player"
 export default function PlayerList() {
     const players = [
         {
+            "id": "1",
             "firstName": "Ivan",
             "lastName": "Ivanov",
             "dateOfBirth": "2002-12-12",
@@ -9,6 +10,8 @@ export default function PlayerList() {
             "weight": "106",
             "placeOfBirth": "Bulgaria",
             "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
             "quote": "You're only one step away from the win.",
             "stats": {
                 "AVG": "0.707",
@@ -20,6 +23,7 @@ export default function PlayerList() {
             }
         },
         {
+            "id": "2",
             "firstName": "Petar",
             "lastName": "Petrov",
             "dateOfBirth": "1995-03-15",
@@ -27,6 +31,8 @@ export default function PlayerList() {
             "weight": "90",
             "placeOfBirth": "Bulgaria",
             "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
             "quote": "Hard work beats talent when talent doesn’t work hard.",
             "stats": {
                 "AVG": "0.693",
@@ -38,6 +44,7 @@ export default function PlayerList() {
             }
         },
         {
+            "id": "3",
             "firstName": "Georgi",
             "lastName": "Dimitrov",
             "dateOfBirth": "1988-07-22",
@@ -45,6 +52,8 @@ export default function PlayerList() {
             "weight": "85",
             "placeOfBirth": "Bulgaria",
             "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
             "quote": "Success is the sum of small efforts repeated daily.",
             "stats": {
                 "AVG": "0.714",
@@ -56,6 +65,7 @@ export default function PlayerList() {
             }
         },
         {
+            "id": "4",
             "firstName": "Maria",
             "lastName": "Nikolova",
             "dateOfBirth": "2001-09-30",
@@ -63,6 +73,8 @@ export default function PlayerList() {
             "weight": "63",
             "placeOfBirth": "Bulgaria",
             "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
             "quote": "Dream big and dare to fail.",
             "stats": {
                 "AVG": "0.725",
@@ -74,6 +86,7 @@ export default function PlayerList() {
             }
         },
         {
+            "id": "5",
             "firstName": "Dimitar",
             "lastName": "Popov",
             "dateOfBirth": "1990-06-10",
@@ -81,6 +94,8 @@ export default function PlayerList() {
             "weight": "92",
             "placeOfBirth": "Bulgaria",
             "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
             "quote": "Perseverance is the key to unlocking potential.",
             "stats": {
                 "AVG": "0.699",
@@ -92,6 +107,7 @@ export default function PlayerList() {
             }
         },
         {
+            "id": "6",
             "firstName": "Kalina",
             "lastName": "Vasileva",
             "dateOfBirth": "1998-01-18",
@@ -99,6 +115,8 @@ export default function PlayerList() {
             "weight": "58",
             "placeOfBirth": "Bulgaria",
             "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
             "quote": "Your attitude determines your altitude.",
             "stats": {
                 "AVG": "0.713",
@@ -110,6 +128,7 @@ export default function PlayerList() {
             }
         },
         {
+            "id": "7",
             "firstName": "Simeon",
             "lastName": "Yanev",
             "dateOfBirth": "1992-11-05",
@@ -117,6 +136,8 @@ export default function PlayerList() {
             "weight": "88",
             "placeOfBirth": "Bulgaria",
             "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
             "quote": "Strive for progress, not perfection.",
             "stats": {
                 "AVG": "0.702",
@@ -128,6 +149,7 @@ export default function PlayerList() {
             }
         },
         {
+            "id": "8",
             "firstName": "Ivana",
             "lastName": "Georgieva",
             "dateOfBirth": "2000-02-14",
@@ -135,6 +157,8 @@ export default function PlayerList() {
             "weight": "60",
             "placeOfBirth": "Bulgaria",
             "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
             "quote": "Nothing worth having comes easy.",
             "stats": {
                 "AVG": "0.718",
@@ -146,6 +170,7 @@ export default function PlayerList() {
             }
         },
         {
+            "id": "9",
             "firstName": "Todor",
             "lastName": "Iliev",
             "dateOfBirth": "1996-05-25",
@@ -153,6 +178,8 @@ export default function PlayerList() {
             "weight": "98",
             "placeOfBirth": "Bulgaria",
             "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
             "quote": "Champions keep playing until they get it right.",
             "stats": {
                 "AVG": "0.692",
@@ -164,6 +191,7 @@ export default function PlayerList() {
             }
         },
         {
+            "id": "10",
             "firstName": "Vasil",
             "lastName": "Todorov",
             "dateOfBirth": "1994-08-19",
@@ -171,6 +199,8 @@ export default function PlayerList() {
             "weight": "94",
             "placeOfBirth": "Bulgaria",
             "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
             "quote": "Victory is in the effort, not just the result.",
             "stats": {
                 "AVG": "0.705",
@@ -188,12 +218,20 @@ export default function PlayerList() {
     return (
         <div className="w-full flex flex-row pt-10 gap-6">
             <div className="w-10">
-                <div className="w-6 sticky top-[20vh] rounded-lg p-2 bg-white text-primary_2 text-4xs flex flex-col justify-around items-center font-semibold">{letters.map((letter) => <a className="px-[4px] text-center rounded-full hover:bg-primary_2 hover:text-white cursor-pointer">{letter}</a>)}</div>
+                <div className="w-6 sticky top-[20vh] rounded-lg p-2 bg-white text-primary_2 text-4xs flex flex-col justify-around items-center font-semibold">{letters.map((letter) => <a className="px-[4px] text-center rounded-full hover:bg-primary_2 hover:text-white cursor-pointer" href={`#section-${letter}`}>{letter}</a>)}</div>
             </div>
-            <div className="flex-1 grid grid-cols-5 gap-8">
-                {players.map((player) =>
-                    <Player {...player} />)
-                }
+            <div className="flex-1">
+                {letters.map((letter) => <section id={`section-${letter}`} className="w-full flex flex-col gap-8 scroll-mt-[10vh]">
+                    <div>
+                        <div className="text-3xl font-semibold">{letter}</div>
+                        <hr className="w-full mt-2 border-t-2 border-gray-800"></hr>
+                    </div>
+                    <div className="grid grid-cols-5 gap-8 py-2">
+                        {players.filter((player) => player.firstName.charAt(0) === letter).map((player) =>
+                            <Player {...player} />)
+                        }
+                    </div>
+                </section>)}
             </div>
         </div>)
 }

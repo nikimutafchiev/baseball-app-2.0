@@ -10,6 +10,7 @@ import ErrorPage from './pages/ErrorPage';
 import PlayersPage from './pages/PlayersPage';
 import TeamsPage from './pages/TeamsPage';
 import ProfilePage from './pages/ProfilePage';
+import PlayerInfoPage from './pages/PlayerInfoPage';
 const rooter = createBrowserRouter([
   {
     path: "/",
@@ -26,7 +27,12 @@ const rooter = createBrowserRouter([
       },
       {
         path: "players",
-        element: <PlayersPage />
+        element: <PlayersPage />,
+
+      },
+      {
+        path: "players/:id",
+        element: <PlayerInfoPage />
       },
       {
         path: "teams",
