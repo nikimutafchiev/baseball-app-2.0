@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { FaFacebook, FaInstagram, FaLink } from "react-icons/fa";
+import { RiStarLine, RiStarFill } from "react-icons/ri";
 
 export default function Team(props) {
     const icons = {
@@ -6,8 +8,10 @@ export default function Team(props) {
         instagram: <FaInstagram size={20} />,
         website: <FaLink size={20} />
     }
+    const [favorite, setFavorite] = useState(false);
     return (
         <div className="h-[300px] px-4 flex flex-col justify-around items-center bg-white drop-shadow-xl">
+            <button className='absolute top-1 left-1 text-yellow-500' onClick={() => setFavorite(!favorite)}>{!favorite && <RiStarLine size={25} />}{favorite && <RiStarFill size={25} />}</button>
             <div className="w-full flex flex-col items-center gap-4">
                 <img src={props.logo}></img>
                 <h3 className="text-xl font-semibold">{props.name}</h3>

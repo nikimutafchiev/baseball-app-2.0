@@ -8,7 +8,9 @@ module.exports = {
       fontSize: {
         "2xs": "10px",
         "3xs": "9px",
-        "4xs": "8px"
+        "4xs": "8px",
+        "5xs": "7px",
+        "6xs": "6px"
       },
       colors:
       {
@@ -20,7 +22,8 @@ module.exports = {
         "background": "#F2E8CF",
         "accent_1": "#BC4749",
         "accent_2": "#DB504A",
-        "accent_3": "#FF6F59"
+        "accent_3": "#FF6F59",
+        "line": "#111827"
       }
     },
   },
