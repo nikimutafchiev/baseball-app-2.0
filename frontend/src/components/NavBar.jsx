@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import { FiLogOut } from 'react-icons/fi';
 export default function NavBar() {
     const pages = [
-        { name: "Начало", path: "/" },
-        { name: "Отбори", path: "/teams" },
-        { name: "Играчи", path: "/players" },
-        { name: "Програма", path: "/schedule" },
-        { name: "Моят профил", path: "/profile" }
+        { name: "Home", path: "/" },
+        { name: "Schedule", path: "/schedule" },
+        { name: "Teams", path: "/teams" },
+        { name: "Players", path: "/players" },
+        { name: "Profile", path: "/profile" }
     ]
     return (
         <header className="w-full sticky z-10 top-0 h-[10vh] bg-gradient-to-r from-primary_1 to-primary_3 drop-shadow-2xl">

@@ -62,13 +62,19 @@ export default function InputFormPlayer(props) {
             setIsSubmitted(false);
         }
     }), [isSubmitted]);
-    const [errorWeight, setErrorWeigth] = useState(false);
+    const [errorWeigth, setErrorWeigth] = useState(false);
     const [errorHeight, setErrorHeigth] = useState(false);
     const [errorDay, setErrorDay] = useState(false);
     const [errorMonth, setErrorMonth] = useState(false);
     const [errorYear, setErrorYear] = useState(false);
-    const errorSubmit = errorHeight || errorWeight || errorDay || errorMonth || errorYear || firstName === "" || lastName === "";
-
+    const errorSubmit = errorHeight || errorWeigth || errorDay || errorMonth || errorYear || firstName === "" || lastName === "";
+    const maxDays = (month, year) => {
+        if (month == "" || errorMonth)
+            return 31;
+        if (year == "")
+            return months[month - 1];
+        return months[month - 1] + (month == 2 && year % 400 == 0 || (year % 100 != 0 && year % 4 == 0));
+    }
     const months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     return (
         <div className="top-10 fixed self-center z-20 w-5/12 p-2 px-4 bg-white rounded border-black border-[1px] drop-shadow-xl">
@@ -77,25 +83,25 @@ export default function InputFormPlayer(props) {
                 <div className="w-full flex flex-col gap-4">
                     <div className='flex flex-row self-center gap-4 items-center'>
                         <div className='w-[150px] h-[200px] bg-gray-300 rounded'></div>
-                        <button className='w-[120px] h-fit bg-blue-400 rounded p-3 text-white text-sm font-semibold'>Качи снимка</button>
+                        <button className='w-[120px] h-fit bg-blue-400 rounded p-3 text-white text-sm font-semibold'>Upload photo</button>
                     </div>
                     <div className="flex flex-row gap-2">
-                        <TextField label={<div className="text-sm">Име *</div>} variant="outlined" className="w-1/2" onChange={(e) => { setFirstName(e.target.value) }} value={firstName} size="small"></TextField>
-                        <TextField label={<div className="text-sm">Фамилия *</div>} variant="outlined" className="w-1/2" onChange={(e) => { setLastName(e.target.value) }} value={lastName} size="small"></TextField>
+                        <TextField label={<div className="text-sm">First name*</div>} variant="outlined" className="w-1/2" onChange={(e) => { setFirstName(e.target.value) }} value={firstName} size="small"></TextField>
+                        <TextField label={<div className="text-sm">Last name*</div>} variant="outlined" className="w-1/2" onChange={(e) => { setLastName(e.target.value) }} value={lastName} size="small"></TextField>
                     </div>
                     <div className=" w-4/5 flex flex-col gap-1 ">
-                        <InputLabel><div className="text-sm">Дата на раждане</div></InputLabel>
+                        <InputLabel><div className="text-sm">Date of birth</div></InputLabel>
                         <div className="grid grid-cols-3 gap-2">
-                            <TextField size="small" type="number" label={<div className="text-sm">Ден</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, day: e.target.value }); setErrorDay(e.target.value !== "" && (e.target.value < 1 || e.target.value > ((dateOfBirth.month === "" || errorMonth) ? 31 : months[dateOfBirth.month - 1]))) }} value={dateOfBirth.day} error={errorDay} helperText={errorDay ? <div className="w-fit text-nowrap text-5xs">Date must be in range (1-{(dateOfBirth.month === "" || errorMonth) ? 31 : months[dateOfBirth.month - 1]})</div> : ""}></TextField>
-                            <TextField size="small" type="number" label={<div className="text-sm">Месец</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, month: e.target.value }); setErrorMonth(e.target.value !== "" && (e.target.value < 1 || e.target.value > 12)) }} value={dateOfBirth.month} error={errorMonth} helperText={errorMonth ? <div className="w-fit text-nowrap text-5xs">Month must be in range (1-12)</div> : ""}></TextField>
-                            <TextField size="small" type="number" label={<div className="text-sm">Година</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, year: e.target.value }); setErrorYear(e.target.value !== "" && (e.target.value < 1900 || e.target.value > 2024)) }} value={dateOfBirth.year} error={errorYear} helperText={errorYear ? <div className="w-fit text-nowrap text-5xs">Date must be in range (1900-2024)</div> : ""}></TextField>
+                            <TextField size="small" type="number" label={<div className="text-sm">Day</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, day: e.target.value }); setErrorDay(e.target.value !== "" && (e.target.value < 1 || e.target.value > maxDays(dateOfBirth.month, dateOfBirth.year))) }} value={dateOfBirth.day} error={errorDay} helperText={errorDay ? <div className="w-fit text-nowrap text-5xs">Date must be in range (1-{maxDays(dateOfBirth.month, dateOfBirth.year)})</div> : ""}></TextField>
+                            <TextField size="small" type="number" label={<div className="text-sm">Month</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, month: e.target.value }); setErrorMonth(e.target.value !== "" && (e.target.value < 1 || e.target.value > 12)) }} value={dateOfBirth.month} error={errorMonth} helperText={errorMonth ? <div className="w-fit text-nowrap text-5xs">Month must be in range (1-12)</div> : ""}></TextField>
+                            <TextField size="small" type="number" label={<div className="text-sm">Year</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, year: e.target.value }); setErrorYear(e.target.value !== "" && (e.target.value < 1900 || e.target.value > 2024)) }} value={dateOfBirth.year} error={errorYear} helperText={errorYear ? <div className="w-fit text-nowrap text-5xs">Date must be in range (1900-2024)</div> : ""}></TextField>
                         </div>
                     </div>
                     <div className="gap-6 grid grid-cols-3">
                         <TextField
                             size="small"
                             select
-                            label={<div className="text-sm">Пол</div>}
+                            label={<div className="text-sm">Gender</div>}
                             onChange={(e) => { setGender(e.target.value) }}
                             value={gender}
                         >
@@ -108,7 +114,7 @@ export default function InputFormPlayer(props) {
                         <TextField
                             size="small"
                             type="number"
-                            label={<div className="text-sm">Височина</div>}
+                            label={<div className="text-sm">Height</div>}
                             slotProps={{
                                 input: {
                                     endAdornment: <InputAdornment >{<div className="text-sm ml-1">cm</div>}</InputAdornment>,
@@ -122,7 +128,7 @@ export default function InputFormPlayer(props) {
                         <TextField
                             size="small"
                             type="number"
-                            label={<div className="text-sm">Тегло</div>}
+                            label={<div className="text-sm">Weigth</div>}
                             slotProps={{
                                 input: {
                                     endAdornment: <InputAdornment >{<div className="text-sm ml-1">kg</div>}</InputAdornment>,
@@ -130,8 +136,8 @@ export default function InputFormPlayer(props) {
                             }}
                             onChange={(e) => { setWeigth(e.target.value); setErrorWeigth(e.target.value !== "" && (e.target.value < 20 || e.target.value > 250)) }}
                             value={weigth}
-                            error={errorWeight}
-                            helperText={errorWeight ? "20 ÷ 250 kg" : ""}
+                            error={errorWeigth}
+                            helperText={errorWeigth ? "20 ÷ 250 kg" : ""}
                         />
 
                     </div>
@@ -139,7 +145,7 @@ export default function InputFormPlayer(props) {
                         <TextField
                             size="small"
                             select
-                            label={<div className="text-sm">Хвърляща ръка</div>}
+                            label={<div className="text-sm">Throwing arm</div>}
                             onChange={(e) => { setThrowingArm(e.target.value) }}
                             value={throwingArm}
                         >
@@ -152,7 +158,7 @@ export default function InputFormPlayer(props) {
                         <TextField
                             size="small"
                             select
-                            label={<div className="text-sm">Батираща страна</div>}
+                            label={<div className="text-sm">Batting side</div>}
                             onChange={(e) => { setBattingSide(e.target.value) }}
                             value={battingSide}
                         >
@@ -164,7 +170,7 @@ export default function InputFormPlayer(props) {
                         </TextField>
                     </div>
                 </div>
-                <button className={`bg-primary_2  px-2 py-1 w-1/2  text-lg font-semibold rounded ${errorSubmit ? "cursor-not-allowed bg-primary_1 text-gray-400" : "hover:bg-primary_3 text-white"}`}>Потвърди</button>
+                <button className={`bg-primary_2  px-2 py-1 w-1/2  text-lg font-semibold rounded ${errorSubmit ? "cursor-not-allowed bg-primary_1 text-gray-400" : "hover:bg-primary_3 text-white"}`}>Submit</button>
             </div>
         </div>);
 }

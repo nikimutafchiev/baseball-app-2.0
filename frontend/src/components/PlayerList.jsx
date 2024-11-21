@@ -210,7 +210,167 @@ export default function PlayerList() {
                 "ERA": "1.45",
                 "H": "8082"
             }
-        },
+        }, {
+            "id": "5",
+            "firstName": "Dimitar",
+            "lastName": "Popov",
+            "dateOfBirth": "1990-06-10",
+            "height": "188",
+            "weight": "92",
+            "placeOfBirth": "Bulgaria",
+            "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
+            "quote": "Perseverance is the key to unlocking potential.",
+            "stats": {
+                "AVG": "0.699",
+                "OBP": "1.102",
+                "SO": "440",
+                "BB": "210",
+                "ERA": "1.54",
+                "H": "7987"
+            }
+        }, {
+            "id": "5",
+            "firstName": "Dimitar",
+            "lastName": "Popov",
+            "dateOfBirth": "1990-06-10",
+            "height": "188",
+            "weight": "92",
+            "placeOfBirth": "Bulgaria",
+            "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
+            "quote": "Perseverance is the key to unlocking potential.",
+            "stats": {
+                "AVG": "0.699",
+                "OBP": "1.102",
+                "SO": "440",
+                "BB": "210",
+                "ERA": "1.54",
+                "H": "7987"
+            }
+        }, {
+            "id": "5",
+            "firstName": "Dimitar",
+            "lastName": "Popov",
+            "dateOfBirth": "1990-06-10",
+            "height": "188",
+            "weight": "92",
+            "placeOfBirth": "Bulgaria",
+            "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
+            "quote": "Perseverance is the key to unlocking potential.",
+            "stats": {
+                "AVG": "0.699",
+                "OBP": "1.102",
+                "SO": "440",
+                "BB": "210",
+                "ERA": "1.54",
+                "H": "7987"
+            }
+        }, {
+            "id": "5",
+            "firstName": "Dimitar",
+            "lastName": "Popov",
+            "dateOfBirth": "1990-06-10",
+            "height": "188",
+            "weight": "92",
+            "placeOfBirth": "Bulgaria",
+            "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
+            "quote": "Perseverance is the key to unlocking potential.",
+            "stats": {
+                "AVG": "0.699",
+                "OBP": "1.102",
+                "SO": "440",
+                "BB": "210",
+                "ERA": "1.54",
+                "H": "7987"
+            }
+        }, {
+            "id": "5",
+            "firstName": "Dimitar",
+            "lastName": "Popov",
+            "dateOfBirth": "1990-06-10",
+            "height": "188",
+            "weight": "92",
+            "placeOfBirth": "Bulgaria",
+            "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
+            "quote": "Perseverance is the key to unlocking potential.",
+            "stats": {
+                "AVG": "0.699",
+                "OBP": "1.102",
+                "SO": "440",
+                "BB": "210",
+                "ERA": "1.54",
+                "H": "7987"
+            }
+        }, {
+            "id": "5",
+            "firstName": "Dimitar",
+            "lastName": "Popov",
+            "dateOfBirth": "1990-06-10",
+            "height": "188",
+            "weight": "92",
+            "placeOfBirth": "Bulgaria",
+            "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
+            "quote": "Perseverance is the key to unlocking potential.",
+            "stats": {
+                "AVG": "0.699",
+                "OBP": "1.102",
+                "SO": "440",
+                "BB": "210",
+                "ERA": "1.54",
+                "H": "7987"
+            }
+        }, {
+            "id": "5",
+            "firstName": "Dimitar",
+            "lastName": "Popov",
+            "dateOfBirth": "1990-06-10",
+            "height": "188",
+            "weight": "92",
+            "placeOfBirth": "Bulgaria",
+            "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
+            "quote": "Perseverance is the key to unlocking potential.",
+            "stats": {
+                "AVG": "0.699",
+                "OBP": "1.102",
+                "SO": "440",
+                "BB": "210",
+                "ERA": "1.54",
+                "H": "7987"
+            }
+        }, {
+            "id": "5",
+            "firstName": "Dimitar",
+            "lastName": "Popov",
+            "dateOfBirth": "1990-06-10",
+            "height": "188",
+            "weight": "92",
+            "placeOfBirth": "Bulgaria",
+            "image": "https://placehold.co/150x200",
+            "battingSide": "L",
+            "throwingArm": "R",
+            "quote": "Perseverance is the key to unlocking potential.",
+            "stats": {
+                "AVG": "0.699",
+                "OBP": "1.102",
+                "SO": "440",
+                "BB": "210",
+                "ERA": "1.54",
+                "H": "7987"
+            }
+        }
     ]
     const letters = [
         "A", 'B', "C", "D", "E", "F", "G", "H", "I", "J", 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'

@@ -34,7 +34,7 @@ export default function PlayerInfo() {
                                 disableCloseOnSelect
                                 getOptionLabel={(option) => option}
                                 renderInput={(params) => (
-                                    <TextField label="Година" className="bg-white rounded"{...params} />
+                                    <TextField label="Year" className="bg-white rounded"{...params} />
                                 )}
                             />
                         </div>
@@ -48,7 +48,7 @@ export default function PlayerInfo() {
                                 disableCloseOnSelect
                                 getOptionLabel={(option) => option}
                                 renderInput={(params) => (
-                                    <TextField label="Отбор" className="bg-white rounded h-fit"{...params} />
+                                    <TextField label="Team" className="bg-white rounded h-fit"{...params} />
                                 )}
                             />
                         </div>
@@ -62,7 +62,7 @@ export default function PlayerInfo() {
                                 disableCloseOnSelect
                                 getOptionLabel={(option) => option}
                                 renderInput={(params) => (
-                                    <TextField label="Турнир" className="bg-white rounded"{...params} />
+                                    <TextField label="Tournament" className="bg-white rounded"{...params} />
                                 )}
                             />
                         </div>
@@ -102,7 +102,7 @@ export default function PlayerInfo() {
                                 disableCloseOnSelect
                                 getOptionLabel={(option) => option}
                                 renderInput={(params) => (
-                                    <TextField label="Година" className="bg-white rounded"{...params} />
+                                    <TextField label="Year" className="bg-white rounded"{...params} />
                                 )}
                             />
                         </div>
@@ -116,7 +116,7 @@ export default function PlayerInfo() {
                                 disableCloseOnSelect
                                 getOptionLabel={(option) => option}
                                 renderInput={(params) => (
-                                    <TextField label="Отбор" className="bg-white rounded h-fit"{...params} />
+                                    <TextField label="Team" className="bg-white rounded h-fit"{...params} />
                                 )}
                             />
                         </div>
@@ -130,7 +130,7 @@ export default function PlayerInfo() {
                                 disableCloseOnSelect
                                 getOptionLabel={(option) => option}
                                 renderInput={(params) => (
-                                    <TextField label="Турнир" className="bg-white rounded"{...params} />
+                                    <TextField label="Tournament" className="bg-white rounded"{...params} />
                                 )}
                             />
                         </div>

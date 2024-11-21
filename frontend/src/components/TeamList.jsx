@@ -10,6 +10,7 @@ export default function TeamList() {
             "socialMedia": {
                 "facebook": "https://google.com",
                 "instagram": "https://google.com",
+                "youtube": "https://google.com"
             }
         },
         {
@@ -61,7 +62,8 @@ export default function TeamList() {
             "socialMedia": {
                 "facebook": "https://google.com",
                 "instagram": "https://google.com",
-                "website": "https://google.com"
+                "website": "https://google.com",
+                "youtube": "https://google.com"
             }
         },
         {

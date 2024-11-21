@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { FaFacebook, FaInstagram, FaLink } from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaLink, FaYoutube } from "react-icons/fa";
 import { RiStarLine, RiStarFill } from "react-icons/ri";
 
 export default function Team(props) {
     const icons = {
         facebook: <FaFacebook size={20} />,
         instagram: <FaInstagram size={20} />,
-        website: <FaLink size={20} />
+        website: <FaLink size={20} />,
+        youtube: <FaYoutube size={20} />
     }
     const [favorite, setFavorite] = useState(false);
     return (
@@ -21,7 +22,7 @@ export default function Team(props) {
                 <div>{props.homeStadium}</div>
                 <div>{props.contacts}</div>
 
-                <div className="w-1/2 flex flex-row justify-around mt-2">
+                <div className="w-3/5 flex flex-row justify-around mt-2">
                     {Object.entries(props.socialMedia).map(([media, page]) => <a href={page} target="_blank">{icons[media]}</a>)}
                 </div>
             </div>
