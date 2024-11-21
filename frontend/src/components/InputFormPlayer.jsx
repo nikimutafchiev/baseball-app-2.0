@@ -64,7 +64,12 @@ export default function InputFormPlayer(props) {
     }), [isSubmitted]);
     const [errorWeight, setErrorWeigth] = useState(false);
     const [errorHeight, setErrorHeigth] = useState(false);
-    const errorSubmit = errorHeight || errorWeight || firstName === "" || lastName === "";
+    const [errorDay, setErrorDay] = useState(false);
+    const [errorMonth, setErrorMonth] = useState(false);
+    const [errorYear, setErrorYear] = useState(false);
+    const errorSubmit = errorHeight || errorWeight || errorDay || errorMonth || errorYear || firstName === "" || lastName === "";
+
+    const months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     return (
         <div className="top-10 fixed self-center z-20 w-5/12 p-2 px-4 bg-white rounded border-black border-[1px] drop-shadow-xl">
             <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
@@ -81,9 +86,9 @@ export default function InputFormPlayer(props) {
                     <div className=" w-4/5 flex flex-col gap-1 ">
                         <InputLabel><div className="text-sm">Дата на раждане</div></InputLabel>
                         <div className="grid grid-cols-3 gap-2">
-                            <TextField size="small" label={<div className="text-sm">Ден</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, day: e.target.value }) }} value={dateOfBirth.day}></TextField>
-                            <TextField size="small" label={<div className="text-sm">Месец</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, month: e.target.value }) }} value={dateOfBirth.month}></TextField>
-                            <TextField size="small" label={<div className="text-sm">Година</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, year: e.target.value }) }} value={dateOfBirth.year}></TextField>
+                            <TextField size="small" type="number" label={<div className="text-sm">Ден</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, day: e.target.value }); setErrorDay(e.target.value !== "" && (e.target.value < 1 || e.target.value > ((dateOfBirth.month === "" || errorMonth) ? 31 : months[dateOfBirth.month - 1]))) }} value={dateOfBirth.day} error={errorDay} helperText={errorDay ? <div className="w-fit text-nowrap text-5xs">Date must be in range (1-{(dateOfBirth.month === "" || errorMonth) ? 31 : months[dateOfBirth.month - 1]})</div> : ""}></TextField>
+                            <TextField size="small" type="number" label={<div className="text-sm">Месец</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, month: e.target.value }); setErrorMonth(e.target.value !== "" && (e.target.value < 1 || e.target.value > 12)) }} value={dateOfBirth.month} error={errorMonth} helperText={errorMonth ? <div className="w-fit text-nowrap text-5xs">Month must be in range (1-12)</div> : ""}></TextField>
+                            <TextField size="small" type="number" label={<div className="text-sm">Година</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, year: e.target.value }); setErrorYear(e.target.value !== "" && (e.target.value < 1900 || e.target.value > 2024)) }} value={dateOfBirth.year} error={errorYear} helperText={errorYear ? <div className="w-fit text-nowrap text-5xs">Date must be in range (1900-2024)</div> : ""}></TextField>
                         </div>
                     </div>
                     <div className="gap-6 grid grid-cols-3">

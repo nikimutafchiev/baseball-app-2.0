@@ -14,7 +14,7 @@ export default function Player(props) {
                     <h3 className="text-xl font-semibold">
                         {props.firstName} {props.lastName}
                     </h3>
-                    <div className="w-full py-2 grid grid-cols-2  font-semibold text-3xs place-items-center">
+                    <div className="w-full py-2 grid grid-cols-2 font-semibold text-3xs place-items-center">
                         <div >Height: {props.height}cm</div>
                         <div >Weigth: {props.weight}kg</div>
                         <div >Birthday: {props.dateOfBirth}</div>
