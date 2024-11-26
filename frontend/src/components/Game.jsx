@@ -17,7 +17,7 @@ export default function Game(props) {
                 <div className="text-xl font-bold w-[10%]">{props.home.result} - {props.away.result}</div>
                 <div className='w-[20%] text-xs flex flex-row gap-4 items-center'><img src={props.away.logo}></img><div className='w-1/2 text-center text-xs'>{props.away.teamName}</div></div>
             </div>
-            <Link className="w-[10%] py-2 bg-accent_2 rounded hover:bg-accent_3 text-white text-xs ease-in-out text-center duration-150" to={`/games/${props.id}`}>More Info</Link>
+            <Link className="w-[10%] py-2 rounded bg-blue-500 hover:bg-blue-400 text-white text-xs ease-in-out text-center duration-150" to={`/games/${props.id}`}>More Info</Link>
             <button className={`w-[10%] px-1 py-2 bg-orange-400 rounded text-white text-xs hover:bg-orange-300 flex flex-row items-center gap-1 justify-center ${props.isAdmin ? "invisible" : ""}`}><div>Score game</div><RiArrowRightCircleLine size={15} /></button>
         </div>
     )

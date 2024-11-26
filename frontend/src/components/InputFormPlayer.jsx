@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import MenuItem from '@mui/material/MenuItem';
-import { TextField, InputAdornment, Button, InputLabel } from "@mui/material";
+import { TextField, InputAdornment, Button, InputLabel, Autocomplete } from "@mui/material";
 import { RiCloseCircleLine } from "react-icons/ri";
 
 export default function InputFormPlayer(props) {
@@ -12,30 +12,74 @@ export default function InputFormPlayer(props) {
     const [throwingArm, setThrowingArm] = useState("");
     const [battingSide, setBattingSide] = useState("");
     const [gender, setGender] = useState("");
+    const [country, setCountry] = useState("");
     const [isSubmitted, setIsSubmitted] = useState(false);
 
     const arms = [{
-        value: "L",
+        value: "LEFTY",
         label: "Left"
     },
     {
-        value: "R",
+        value: "RIGHTY",
         label: "Right"
     },
     {
-        value: "S",
+        value: "AMBIDEXTROUS",
         label: "Both"
     }
     ];
 
     const genders = [
-        { value: "M", label: "Male" }, { value: "F", label: "Female" }
+        { value: "MALE", label: "Male" }, { value: "FEMALE", label: "Female" }
     ]
-
-
+    const country_list = [
+        "Afghanistan", "Albania", "Algeria", "Andorra", "Angola",
+        "Antigua and Barbuda", "Argentina", "Armenia", "Australia",
+        "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh",
+        "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan",
+        "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil",
+        "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Côte d'Ivoire",
+        "Cabo Verde", "Cambodia", "Cameroon", "Canada",
+        "Central African Republic", "Chad", "Chile", "China",
+        "Colombia", "Comoros", "Congo", "Costa Rica",
+        "Croatia", "Cuba", "Cyprus", "Czechia",
+        "Democratic Republic of the Congo", "Denmark", "Djibouti",
+        "Dominica", "Dominican Republic", "Ecuador", "Egypt",
+        "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia",
+        "Eswatini", "Ethiopia", "Fiji", "Finland",
+        "France", "Gabon", "Gambia", "Georgia", "Germany",
+        "Ghana", "Greece", "Grenada", "Guatemala", "Guinea",
+        "Guinea-Bissau", "Guyana", "Haiti", "Holy See", "Honduras",
+        "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq",
+        "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan",
+        "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan",
+        "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya",
+        "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar",
+        "Malawi", "Malaysia", "Maldives", "Mali", "Malta",
+        "Marshall Islands", "Mauritania", "Mauritius", "Mexico",
+        "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro",
+        "Morocco", "Mozambique", "Myanmar", "Namibia",
+        "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua",
+        "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway",
+        "Oman", "Pakistan", "Palau", "Palestine State", "Panama",
+        "Papua New Guinea", "Paraguay", "Peru", "Philippines",
+        "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda",
+        "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines",
+        "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia",
+        "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore",
+        "Slovakia", "Slovenia", "Solomon Islands", "Somalia",
+        "South Africa", "South Korea", "South Sudan", "Spain",
+        "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland",
+        "Syria", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste",
+        "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey",
+        "Turkmenistan", "Tuvalu", "Uganda", "Ukraine",
+        "United Arab Emirates", "United Kingdom", "United States of America",
+        "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela", "Vietnam",
+        "Yemen", "Zambia", "Zimbabwe"
+    ];
     useEffect((() => {
         if (isSubmitted) {
-            fetch("http://localhost:5000/add_player", {
+            fetch("http://localhost:6363/player", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -48,7 +92,8 @@ export default function InputFormPlayer(props) {
                     weigth: weigth,
                     throwingArm: throwingArm,
                     battingSide: battingSide,
-                    gender: gender
+                    gender: gender,
+                    country: country
                 }),
             });
             setFirstName("");
@@ -59,6 +104,7 @@ export default function InputFormPlayer(props) {
             setThrowingArm("");
             setBattingSide("");
             setGender("");
+            setCountry("");
             setIsSubmitted(false);
         }
     }), [isSubmitted]);
@@ -77,7 +123,7 @@ export default function InputFormPlayer(props) {
     }
     const months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     return (
-        <div className="top-10 fixed self-center z-20 w-5/12 p-2 px-4 bg-white rounded border-black border-[1px] drop-shadow-xl">
+        <div className="top-0 fixed self-center z-20 w-5/12 p-1 px-4 bg-white rounded border-black border-[1px] drop-shadow-xl">
             <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
             <div className="py-2 flex flex-col items-center gap-4">
                 <div className="w-full flex flex-col gap-4">
@@ -97,7 +143,19 @@ export default function InputFormPlayer(props) {
                             <TextField size="small" type="number" label={<div className="text-sm">Year</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, year: e.target.value }); setErrorYear(e.target.value !== "" && (e.target.value < 1900 || e.target.value > 2024)) }} value={dateOfBirth.year} error={errorYear} helperText={errorYear ? <div className="w-fit text-nowrap text-5xs">Date must be in range (1900-2024)</div> : ""}></TextField>
                         </div>
                     </div>
+                    <Autocomplete
+                        size="small"
+                        className="w-3/5"
+                        value={country}
+                        onChange={(e, newValue) => {
+                            setCountry(newValue);
+                        }}
+                        options={country_list}
+                        renderInput={(params) => <TextField {...params} label={<div className="text-sm">Country</div>} />}
+                    >
+                    </Autocomplete>
                     <div className="gap-6 grid grid-cols-3">
+
                         <TextField
                             size="small"
                             select
@@ -123,7 +181,7 @@ export default function InputFormPlayer(props) {
                             onChange={(e) => { setHeight(e.target.value); setErrorHeigth(e.target.value !== "" && (e.target.value < 60 || e.target.value > 250)) }}
                             value={height}
                             error={errorHeight}
-                            helperText={errorHeight ? "60 ÷ 250 cm" : ""}
+                            helperText={errorHeight ? <div className="text-5xs text-nowrap w-fit">Height must be between 60 and 250 cm</div> : ""}
                         />
                         <TextField
                             size="small"
@@ -137,7 +195,7 @@ export default function InputFormPlayer(props) {
                             onChange={(e) => { setWeigth(e.target.value); setErrorWeigth(e.target.value !== "" && (e.target.value < 20 || e.target.value > 250)) }}
                             value={weigth}
                             error={errorWeigth}
-                            helperText={errorWeigth ? "20 ÷ 250 kg" : ""}
+                            helperText={errorWeigth ? <div className="text-5xs text-nowrap w-fit">Weigth must be between 20 and 250 kg</div> : ""}
                         />
 
                     </div>
@@ -170,7 +228,10 @@ export default function InputFormPlayer(props) {
                         </TextField>
                     </div>
                 </div>
-                <button className={`bg-primary_2  px-2 py-1 w-1/2  text-lg font-semibold rounded ${errorSubmit ? "cursor-not-allowed bg-primary_1 text-gray-400" : "hover:bg-primary_3 text-white"}`}>Submit</button>
+                <button className={`bg-primary_2  px-2 py-1 w-1/2  text-lg font-semibold rounded ${errorSubmit ? "cursor-not-allowed bg-primary_1 text-gray-400" : "hover:bg-primary_3 text-white"}`} onClick={() => {
+                    if (!errorSubmit)
+                        setIsSubmitted(true);
+                }}>Submit</button>
             </div>
         </div>);
 }

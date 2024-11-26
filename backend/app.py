@@ -11,14 +11,46 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 CORS(app)
 db =  SQLAlchemy(app)
 
-@app.route("/add_player",methods=['POST'])
+@app.route("/player",methods=['POST'])
 def add_player():
     data = request.json
-    new_player = Player(first_name=data['firstName'],last_name=data['lastName'])
+    new_player = Player(firstName=data['firstName'],lastName=data['lastName'],dateOfBirth= date(int(data['dateOfBirth']["year"]),int(data['dateOfBirth']["month"]),int(data['dateOfBirth']["day"])), height=data['height'],weigth = data['weigth'], throwingArm = data['throwingArm'], battingSide=data["battingSide"], gender=data['gender'],country=data['country'])
     db.session.add(new_player)
     db.session.commit()
-    print([player.first_name+""+player.last_name for player in Player.query.all()])
-    return ""
+    return "Successfully added player",200
+
+@app.route("/players",methods=['GET'])
+def get_players():
+    players = Player.query.all()
+    res = [{
+        'id':player.id,
+        'firstName': player.firstName,
+        'lastName': player.lastName,
+        'dateOfBirth': player.dateOfBirth,
+        'height': player.height,
+        'weigth': player.weigth,
+        'throwingArm':player.throwingArm.value,
+        'battingSide':player.battingSide.value,
+        "gender":player.gender.value,
+        "country":player.country
+    } for player in players]
+    return res,200
+
+@app.route("/player/<int:player_id>",methods=['GET'])
+def get_player_by_id(player_id):
+    player = Player.query.get(player_id)
+    return {
+        'id':player.id,
+        'firstName': player.firstName,
+        'lastName': player.lastName,
+        'dateOfBirth': player.dateOfBirth,
+        'height': player.height,
+        'weigth': player.weigth,
+        'throwingArm':player.throwingArm.value,
+        'battingSide':player.battingSide.value,
+        "gender":player.gender.value,
+        "country":player.country
+    }
 
 class Handedness(enum.Enum):
     LEFTY = "L"
@@ -31,13 +63,14 @@ class Genders(enum.Enum):
 
 class Player(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    first_name: Mapped[str] = mapped_column(String(30),nullable=False)
-    last_name: Mapped[str] = mapped_column(String(30),nullable=False)
-    date_of_birth: Mapped[Optional[date]] = mapped_column(Date)
+    firstName: Mapped[str] = mapped_column(String(30),nullable=False)
+    lastName: Mapped[str] = mapped_column(String(30),nullable=False)
+    dateOfBirth: Mapped[Optional[date]] = mapped_column(Date)
+    country: Mapped[Optional[str]]
     height: Mapped[Optional[int]]
     weigth: Mapped[Optional[int]]
-    throwing_arm: Mapped[Optional[Handedness]] = mapped_column(Enum(Handedness))
-    batting_side: Mapped[Optional[Handedness]] = mapped_column(Enum(Handedness))
+    throwingArm: Mapped[Optional[Handedness]] = mapped_column(Enum(Handedness))
+    battingSide: Mapped[Optional[Handedness]] = mapped_column(Enum(Handedness))
     gender: Mapped[Optional[Genders]] = mapped_column(Enum(Genders))
 
 
@@ -51,12 +84,12 @@ class Tournament(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(60), nullable=False)
     venue: Mapped[str] = mapped_column(String(100))
-    start_date: Mapped[date] = mapped_column(Date)
-    end_date: Mapped[date] = mapped_column(Date)
+    startDate: Mapped[date] = mapped_column(Date)
+    endDate: Mapped[date] = mapped_column(Date)
 
 
 with app.app_context():
     db.create_all()
 
 if __name__ == "__main__":
-    app.run(host="localhost")
+    app.run(host="localhost",port=6363,debug=True)
