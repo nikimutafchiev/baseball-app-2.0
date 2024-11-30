@@ -123,115 +123,121 @@ export default function InputFormPlayer(props) {
     }
     const months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     return (
-        <div className="top-0 fixed self-center z-20 w-5/12 p-1 px-4 bg-white rounded border-black border-[1px] drop-shadow-xl">
+        <div className="top-6 fixed self-center z-20 w-8/12  bg-white rounded border-black border-[1px] drop-shadow-xl">
             <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
-            <div className="py-2 flex flex-col items-center gap-4">
-                <div className="w-full flex flex-col gap-4">
-                    <div className='flex flex-row self-center gap-4 items-center'>
+            <div className="w-full flex flex-col py-10 px-4">
+                <div className="w-full flex flex-row gap-20 py-10 px-4">
+                    <div className='flex flex-col self-center gap-4 items-center'>
                         <div className='w-[150px] h-[200px] bg-gray-300 rounded'></div>
                         <button className='w-[120px] h-fit bg-blue-400 rounded p-3 text-white text-sm font-semibold'>Upload photo</button>
                     </div>
-                    <div className="flex flex-row gap-2">
-                        <TextField label={<div className="text-sm">First name*</div>} variant="outlined" className="w-1/2" onChange={(e) => { setFirstName(e.target.value) }} value={firstName} size="small"></TextField>
-                        <TextField label={<div className="text-sm">Last name*</div>} variant="outlined" className="w-1/2" onChange={(e) => { setLastName(e.target.value) }} value={lastName} size="small"></TextField>
-                    </div>
-                    <div className=" w-4/5 flex flex-col gap-1 ">
-                        <InputLabel><div className="text-sm">Date of birth</div></InputLabel>
-                        <div className="grid grid-cols-3 gap-2">
-                            <TextField size="small" type="number" label={<div className="text-sm">Day</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, day: e.target.value }); setErrorDay(e.target.value !== "" && (e.target.value < 1 || e.target.value > maxDays(dateOfBirth.month, dateOfBirth.year))) }} value={dateOfBirth.day} error={errorDay} helperText={errorDay ? <div className="w-fit text-nowrap text-5xs">Date must be in range (1-{maxDays(dateOfBirth.month, dateOfBirth.year)})</div> : ""}></TextField>
-                            <TextField size="small" type="number" label={<div className="text-sm">Month</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, month: e.target.value }); setErrorMonth(e.target.value !== "" && (e.target.value < 1 || e.target.value > 12)) }} value={dateOfBirth.month} error={errorMonth} helperText={errorMonth ? <div className="w-fit text-nowrap text-5xs">Month must be in range (1-12)</div> : ""}></TextField>
-                            <TextField size="small" type="number" label={<div className="text-sm">Year</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, year: e.target.value }); setErrorYear(e.target.value !== "" && (e.target.value < 1900 || e.target.value > 2024)) }} value={dateOfBirth.year} error={errorYear} helperText={errorYear ? <div className="w-fit text-nowrap text-5xs">Date must be in range (1900-2024)</div> : ""}></TextField>
+                    <div className="py-2 flex flex-col  gap-4">
+                        <div className="flex flex-row gap-2">
+                            <TextField label={<div className="text-sm">First name*</div>} variant="outlined" className="w-1/2" onChange={(e) => { setFirstName(e.target.value) }} value={firstName} size="small"></TextField>
+                            <TextField label={<div className="text-sm">Last name*</div>} variant="outlined" className="w-1/2" onChange={(e) => { setLastName(e.target.value) }} value={lastName} size="small"></TextField>
+                        </div>
+
+
+                        <div className=" w-4/5 flex flex-col gap-1 ">
+                            <InputLabel><div className="text-sm">Date of birth</div></InputLabel>
+                            <div className="grid grid-cols-3 gap-2">
+                                <TextField size="small" type="number" label={<div className="text-sm">Day</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, day: e.target.value }); setErrorDay(e.target.value !== "" && (e.target.value < 1 || e.target.value > maxDays(dateOfBirth.month, dateOfBirth.year))) }} value={dateOfBirth.day} error={errorDay} helperText={errorDay ? <div className="w-fit text-nowrap text-5xs">Date must be in range (1-{maxDays(dateOfBirth.month, dateOfBirth.year)})</div> : ""}></TextField>
+                                <TextField size="small" type="number" label={<div className="text-sm">Month</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, month: e.target.value }); setErrorMonth(e.target.value !== "" && (e.target.value < 1 || e.target.value > 12)) }} value={dateOfBirth.month} error={errorMonth} helperText={errorMonth ? <div className="w-fit text-nowrap text-5xs">Month must be in range (1-12)</div> : ""}></TextField>
+                                <TextField size="small" type="number" label={<div className="text-sm">Year</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, year: e.target.value }); setErrorYear(e.target.value !== "" && (e.target.value < 1900 || e.target.value > 2024)) }} value={dateOfBirth.year} error={errorYear} helperText={errorYear ? <div className="w-fit text-nowrap text-5xs">Date must be in range (1900-2024)</div> : ""}></TextField>
+                            </div>
+                        </div>
+                        <Autocomplete
+                            size="small"
+                            className="w-3/5"
+                            value={country}
+                            onChange={(e, newValue) => {
+                                setCountry(newValue);
+                            }}
+                            options={country_list}
+                            renderInput={(params) => <TextField {...params} label={<div className="text-sm">Country</div>} />}
+                        >
+                        </Autocomplete>
+                        <div className="gap-6 grid grid-cols-3">
+
+                            <TextField
+                                size="small"
+                                select
+                                label={<div className="text-sm">Gender</div>}
+                                onChange={(e) => { setGender(e.target.value) }}
+                                value={gender}
+                            >
+                                {genders.map((option) => (
+                                    <MenuItem key={option.value} value={option.value} >
+                                        {<div className="text-sm">{option.label}</div>}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                            <TextField
+                                size="small"
+                                type="number"
+                                label={<div className="text-sm">Height</div>}
+                                slotProps={{
+                                    input: {
+                                        endAdornment: <InputAdornment >{<div className="text-sm ml-1">cm</div>}</InputAdornment>,
+                                    },
+                                }}
+                                onChange={(e) => { setHeight(e.target.value); setErrorHeigth(e.target.value !== "" && (e.target.value < 60 || e.target.value > 250)) }}
+                                value={height}
+                                error={errorHeight}
+                                helperText={errorHeight ? <div className="text-5xs text-nowrap w-fit">Height must be between 60 and 250 cm</div> : ""}
+                            />
+                            <TextField
+                                size="small"
+                                type="number"
+                                label={<div className="text-sm">Weigth</div>}
+                                slotProps={{
+                                    input: {
+                                        endAdornment: <InputAdornment >{<div className="text-sm ml-1">kg</div>}</InputAdornment>,
+                                    },
+                                }}
+                                onChange={(e) => { setWeigth(e.target.value); setErrorWeigth(e.target.value !== "" && (e.target.value < 20 || e.target.value > 250)) }}
+                                value={weigth}
+                                error={errorWeigth}
+                                helperText={errorWeigth ? <div className="text-5xs text-nowrap w-fit">Weigth must be between 20 and 250 kg</div> : ""}
+                            />
+
+                        </div>
+                        <div className="w-full grid grid-cols-2 gap-4">
+                            <TextField
+                                size="small"
+                                select
+                                label={<div className="text-sm">Throwing arm</div>}
+                                onChange={(e) => { setThrowingArm(e.target.value) }}
+                                value={throwingArm}
+                            >
+                                {arms.map((option) => (
+                                    <MenuItem key={option.value} value={option.value}>
+                                        {<div className="text-sm">{option.label}</div>}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                            <TextField
+                                size="small"
+                                select
+                                label={<div className="text-sm">Batting side</div>}
+                                onChange={(e) => { setBattingSide(e.target.value) }}
+                                value={battingSide}
+                            >
+                                {arms.map((option) => (
+                                    <MenuItem key={option.value} value={option.value}>
+                                        {<div className="text-sm">{option.label}</div>}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
                         </div>
                     </div>
-                    <Autocomplete
-                        size="small"
-                        className="w-3/5"
-                        value={country}
-                        onChange={(e, newValue) => {
-                            setCountry(newValue);
-                        }}
-                        options={country_list}
-                        renderInput={(params) => <TextField {...params} label={<div className="text-sm">Country</div>} />}
-                    >
-                    </Autocomplete>
-                    <div className="gap-6 grid grid-cols-3">
-
-                        <TextField
-                            size="small"
-                            select
-                            label={<div className="text-sm">Gender</div>}
-                            onChange={(e) => { setGender(e.target.value) }}
-                            value={gender}
-                        >
-                            {genders.map((option) => (
-                                <MenuItem key={option.value} value={option.value} >
-                                    {<div className="text-sm">{option.label}</div>}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                        <TextField
-                            size="small"
-                            type="number"
-                            label={<div className="text-sm">Height</div>}
-                            slotProps={{
-                                input: {
-                                    endAdornment: <InputAdornment >{<div className="text-sm ml-1">cm</div>}</InputAdornment>,
-                                },
-                            }}
-                            onChange={(e) => { setHeight(e.target.value); setErrorHeigth(e.target.value !== "" && (e.target.value < 60 || e.target.value > 250)) }}
-                            value={height}
-                            error={errorHeight}
-                            helperText={errorHeight ? <div className="text-5xs text-nowrap w-fit">Height must be between 60 and 250 cm</div> : ""}
-                        />
-                        <TextField
-                            size="small"
-                            type="number"
-                            label={<div className="text-sm">Weigth</div>}
-                            slotProps={{
-                                input: {
-                                    endAdornment: <InputAdornment >{<div className="text-sm ml-1">kg</div>}</InputAdornment>,
-                                },
-                            }}
-                            onChange={(e) => { setWeigth(e.target.value); setErrorWeigth(e.target.value !== "" && (e.target.value < 20 || e.target.value > 250)) }}
-                            value={weigth}
-                            error={errorWeigth}
-                            helperText={errorWeigth ? <div className="text-5xs text-nowrap w-fit">Weigth must be between 20 and 250 kg</div> : ""}
-                        />
-
-                    </div>
-                    <div className="w-full grid grid-cols-2 gap-4">
-                        <TextField
-                            size="small"
-                            select
-                            label={<div className="text-sm">Throwing arm</div>}
-                            onChange={(e) => { setThrowingArm(e.target.value) }}
-                            value={throwingArm}
-                        >
-                            {arms.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {<div className="text-sm">{option.label}</div>}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                        <TextField
-                            size="small"
-                            select
-                            label={<div className="text-sm">Batting side</div>}
-                            onChange={(e) => { setBattingSide(e.target.value) }}
-                            value={battingSide}
-                        >
-                            {arms.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {<div className="text-sm">{option.label}</div>}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </div>
                 </div>
-                <button className={`bg-primary_2  px-2 py-1 w-1/2  text-lg font-semibold rounded ${errorSubmit ? "cursor-not-allowed bg-primary_1 text-gray-400" : "hover:bg-primary_3 text-white"}`} onClick={() => {
+                <button className={`bg-primary_2 w-1/2 self-center px-2 py-1 align-middle  text-lg font-semibold rounded ${errorSubmit ? "cursor-not-allowed bg-primary_1 text-gray-400" : "hover:bg-primary_3 text-white"}`} onClick={() => {
                     if (!errorSubmit)
                         setIsSubmitted(true);
                 }}>Submit</button>
             </div>
+
+
         </div>);
 }

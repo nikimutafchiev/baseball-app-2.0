@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FaFacebook, FaInstagram, FaLink, FaYoutube } from "react-icons/fa";
 import { RiStarLine, RiStarFill } from "react-icons/ri";
-
+import { Link } from "react-router-dom";
 export default function Team(props) {
     const icons = {
         facebook: <FaFacebook size={20} />,
@@ -26,7 +26,7 @@ export default function Team(props) {
                     {Object.entries(props.socialMedia).map(([media, page]) => <a href={page} target="_blank">{icons[media]}</a>)}
                 </div>
             </div>
-            <button className="p-2 bg-accent_2 hover:bg-accent_3 rounded text-white font-semibold text-xs">Team Stats</button>
+            <Link className="p-2 bg-accent_2 hover:bg-accent_3 rounded text-white font-semibold text-xs" to={`${props.id}`}>More Info</Link>
 
         </div>)
 }

@@ -10,7 +10,7 @@ export default function PlayerInfo() {
     return (
         <>
             {data && <div className="flex flex-row w-full p-10 gap-8 text-white text-sm ">
-                <div className="flex flex-col w-1/4 bg-gradient-to-br px-8 h-full py-4 gap-4 items-center from-accent_3 via-accent_2 to-accent_1 rounded ">
+                <div className="flex flex-col w-1/4 bg-gradient-to-br px-4 h-full py-4 gap-4 items-center from-accent_3 via-accent_2 to-accent_1 rounded ">
                     <h3 className="text-2xl font-semibold">
                         {data.firstName} {data.lastName}
                     </h3>
@@ -19,7 +19,7 @@ export default function PlayerInfo() {
                         <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Height:</div> <div>{data.height} cm</div></div>
                         <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Weigth:</div> <div>{data.weigth} kg</div></div>
                         <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Birthday:</div> <div>{new Date(data.dateOfBirth).toLocaleDateString()}</div></div>
-                        <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Birthplace:</div> <div>{data.country}</div></div>
+                        <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50 text-nowrap"><div>Birthplace:</div> <div>{data.country}</div></div>
                         <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Batting/Throwing:</div><div>{data.battingSide}/{data.throwingArm}</div> </div>
                     </div>
                 </div>
