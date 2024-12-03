@@ -193,9 +193,9 @@ export default function TeamInfo() {
                                         { "team1": "0.637", "type": "OBP", "team2": "0.125" },
                                         { "team1": "0.327", "type": "AVG", "team2": "0.789" }
                                     ].map((stat) => <>
-                                        <div className="text-left border-r-2">{stat.team1}</div>
+                                        <div className={`text-left border-r-2 ${stat.team1 > stat.team2 ? "bg-green-100" : ""}`}>{stat.team1}</div>
                                         <div className="text-center">{stat.type}</div>
-                                        <div className="text-right border-l-2">{stat.team2}</div>
+                                        <div className={`text-right border-l-2 ${stat.team1 < stat.team2 ? "bg-green-100" : ""}`}>{stat.team2}</div>
                                     </>)
                                 }
                             </div>
