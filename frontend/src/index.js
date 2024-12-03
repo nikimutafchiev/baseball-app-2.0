@@ -13,6 +13,11 @@ import ProfilePage from './pages/ProfilePage';
 import PlayerInfoPage from './pages/PlayerInfoPage';
 import GameInfoPage from './pages/GameInfoPage';
 import TeamInfoPage from './pages/TeamInfoPage';
+import TournamentInfoPage from './pages/TournamentInfoPage';
+import TournamentInfoGames from './components/TournamentInfoGames';
+import TournamentInfoTeams from './components/TournamentInfoTeams';
+import TournamentInfoPlayerLeaderboard from './components/TournamentInfoPlayerLeaderboard';
+import TournamentInfoRanking from './components/TournamentInfoRanking';
 const rooter = createBrowserRouter([
   {
     path: "/",
@@ -43,6 +48,28 @@ const rooter = createBrowserRouter([
       {
         path: "teams/:id",
         element: <TeamInfoPage />
+      },
+      {
+        path: "tournaments/:id",
+        element: <TournamentInfoPage />,
+        children: [
+          {
+            path: "games",
+            element: <TournamentInfoGames />
+          },
+          {
+            path: "teams",
+            element: <TournamentInfoTeams />
+          },
+          {
+            path: "leaderboard",
+            element: <TournamentInfoPlayerLeaderboard />
+          },
+          {
+            path: "ranking",
+            element: <TournamentInfoRanking />
+          }
+        ]
       },
       {
         path: "teams",
