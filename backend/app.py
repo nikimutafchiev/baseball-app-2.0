@@ -1,7 +1,7 @@
 from flask import Flask, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Enum, Date
+from sqlalchemy import String, Enum, Date, JSON
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import date
 from typing import Optional
@@ -18,6 +18,7 @@ def add_player():
     db.session.add(new_player)
     db.session.commit()
     return "Successfully added player",200
+
 
 @app.route("/players",methods=['GET'])
 def get_players():
@@ -52,6 +53,26 @@ def get_player_by_id(player_id):
         "country":player.country
     }
 
+@app.route("/team",methods=['POST'])
+def add_team():
+    data = request.json
+    new_team = Team(name=data['name'],address=data['address'],contact=data['contact'],socialMedia=data['socialMedia'])
+    db.session.add(new_team)
+    db.session.commit()
+    return "Successfully added team",200
+
+@app.route("/teams",methods=['GET'])
+def get_teams():
+    teams = Team.query.all()
+    res = [{
+        'id':team.id,
+        'name': team.name,
+        'logo': team.logo,
+        'address':team.address,
+        "contact":team.contact,
+        "socialMedia": team.socialMedia
+    } for team in teams]
+    return res,200
 class Handedness(enum.Enum):
     LEFTY = "L"
     RIGHTY = "R"
@@ -77,7 +98,11 @@ class Player(db.Model):
 class Team(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
-    logo: Mapped[str] = mapped_column(String(100), nullable= False)
+    logo: Mapped[Optional[str]] = mapped_column(String(100))
+    socialMedia: Mapped[Optional[JSON]] = mapped_column(JSON)
+    address: Mapped[Optional[str]] = mapped_column(String(200))
+    contact: Mapped[Optional[str]] = mapped_column(String(20))
+
 
 
 class Tournament(db.Model):
@@ -86,6 +111,7 @@ class Tournament(db.Model):
     venue: Mapped[str] = mapped_column(String(100))
     startDate: Mapped[date] = mapped_column(Date)
     endDate: Mapped[date] = mapped_column(Date)
+
 
 
 with app.app_context():

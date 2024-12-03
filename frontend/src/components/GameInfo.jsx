@@ -6,7 +6,6 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 
 
 export default function GameInfo() {
@@ -187,13 +186,13 @@ export default function GameInfo() {
                     size="small"
                     className="w-full"
                 >
-                    <ToggleButton className="w-1/2">Akademiks</ToggleButton>
-                    <ToggleButton className="w-1/2">Blues</ToggleButton>
+                    <ToggleButton className="w-1/2">Home</ToggleButton>
+                    <ToggleButton className="w-1/2">Away</ToggleButton>
                 </ToggleButtonGroup>
             </div>
             <div>
-                <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 650 }} aria-label="a dense table">
+                <TableContainer>
+                    <Table sx={{ minWidth: 650 }}>
                         <TableHead>
                             <TableRow>
                                 <TableCell>#</TableCell>

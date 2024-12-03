@@ -1,5 +1,5 @@
 import Game from "./Game";
-export default function GameList() {
+export default function GameList(props) {
     const games = [
         { id: 1, datetime: "2024-01-15T18:00:00Z", isAdmin: true, home: { logo: "https://placehold.co/40x40", teamName: "Levski FC", result: 2 }, away: { logo: "https://placehold.co/40x40", teamName: "CSKA Sofia", result: 1 }, status: "ended" },
         { id: 2, datetime: "2024-01-16T15:30:00Z", home: { logo: "https://placehold.co/40x40", teamName: "Ludogorets", result: 3 }, away: { logo: "https://placehold.co/40x40", teamName: "Beroe", result: 3 }, status: "live" },
@@ -9,10 +9,10 @@ export default function GameList() {
     ];
 
     return (
-        <div className="flex flex-col gap-6" >
+        <div className="w-full flex flex-col gap-6" >
             {
                 games.map((game) =>
-                    <Game {...game} />
+                    <Game {...game} size={props.size} />
                 )
             }
 
