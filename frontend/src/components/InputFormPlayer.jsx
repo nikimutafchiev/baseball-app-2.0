@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import MenuItem from '@mui/material/MenuItem';
-import { TextField, InputAdornment, Button, InputLabel, Autocomplete } from "@mui/material";
+import { TextField, InputAdornment, InputLabel, Autocomplete } from "@mui/material";
 import { RiCloseCircleLine } from "react-icons/ri";
 
 export default function InputFormPlayer(props) {

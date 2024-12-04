@@ -20,6 +20,7 @@ import TournamentInfoPlayerLeaderboard from './components/TournamentInfoPlayerLe
 import TournamentInfoRanking from './components/TournamentInfoRanking';
 import GameScorerPage from './pages/GameScorerPage';
 import RosterPage from './pages/RosterPage';
+import TournamentsPage from './pages/TournamentsPage';
 const rooter = createBrowserRouter([
   {
     path: "/",
@@ -50,6 +51,10 @@ const rooter = createBrowserRouter([
       {
         path: "teams/:id",
         element: <TeamInfoPage />
+      },
+      {
+        path: "tournaments",
+        element: <TournamentsPage />
       },
       {
         path: "tournaments/:id",
