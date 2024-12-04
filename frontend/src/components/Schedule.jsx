@@ -1,6 +1,6 @@
 import GameList from "./GameList";
 import { Link } from "react-router-dom";
-export default function TournamentGamesList() {
+export default function Schedule() {
     const tournaments = [
         {
             "id": 1,

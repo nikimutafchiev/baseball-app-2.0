@@ -18,6 +18,8 @@ import TournamentInfoGames from './components/TournamentInfoGames';
 import TournamentInfoTeams from './components/TournamentInfoTeams';
 import TournamentInfoPlayerLeaderboard from './components/TournamentInfoPlayerLeaderboard';
 import TournamentInfoRanking from './components/TournamentInfoRanking';
+import GameScorerPage from './pages/GameScorerPage';
+import RosterPage from './pages/RosterPage';
 const rooter = createBrowserRouter([
   {
     path: "/",
@@ -78,6 +80,15 @@ const rooter = createBrowserRouter([
       {
         path: "profile",
         element: <ProfilePage />
+      },
+      {
+        path: "score/:id",
+        element: <GameScorerPage />,
+
+      },
+      {
+        path: "score/:id/roster",
+        element: <RosterPage />
       }
     ]
   }

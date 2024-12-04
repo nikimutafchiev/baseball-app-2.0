@@ -9,7 +9,7 @@ import useSWR from "swr";
 export default function TeamsPage() {
     const [addClicked, setAddClicked] = useState(false);
     const teams = useSWR("http://localhost:6363/teams", (url) => fetch(url).then((res) => res.json()));
-    return (<div className="flex flex-col p-10 gap-10">
+    return (<div className="flex flex-col px-10 py-4 gap-10">
         <div className="flex flex-row  justify-between">
             <button className="w-fit flex flex-row items-center gap-2 px-4 py-2 rounded-lg text-white bg-primary_2 hover:bg-primary_3 font-semibold text-2xl" onClick={() => setAddClicked(true)}>
                 {<RiAddCircleLine />} CREATE TEAM

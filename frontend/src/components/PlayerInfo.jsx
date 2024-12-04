@@ -3,24 +3,26 @@ import { useParams } from "react-router-dom";
 import useSWR from "swr";
 export default function PlayerInfo() {
     const { id } = useParams();
-    const { data, error, isLoading } = useSWR(`http://localhost:6363/player/${id}`, (url) => fetch(url).then((res) => res.json()));
+    const player = useSWR(`http://localhost:6363/player/${id}`, (url) => fetch(url).then((res) => res.json()));
     const years = ["2021", '2022', '2023', "2024"];
     const teams = ["Lions", "Blues", "Akademik", "Coyotes", "Buffaloes", "Yunak"];
     const tournaments = ["Bulgarian Cup", "Champions League", "World cup"];
     return (
         <>
-            {data && <div className="flex flex-row w-full p-10 gap-8 text-white text-sm ">
-                <div className="flex flex-col w-1/4 bg-gradient-to-br px-4 h-full py-4 gap-4 items-center from-accent_3 via-accent_2 to-accent_1 rounded ">
-                    <h3 className="text-2xl font-semibold">
-                        {data.firstName} {data.lastName}
-                    </h3>
-                    <img src="https://placehold.co/150x200" />
-                    <div className="flex flex-col gap-0.5 items-center w-full">
-                        <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Height:</div> <div>{data.height} cm</div></div>
-                        <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Weigth:</div> <div>{data.weigth} kg</div></div>
-                        <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Birthday:</div> <div>{new Date(data.dateOfBirth).toLocaleDateString()}</div></div>
-                        <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50 text-nowrap"><div>Birthplace:</div> <div>{data.country}</div></div>
-                        <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Batting/Throwing:</div><div>{data.battingSide}/{data.throwingArm}</div> </div>
+            {player.data && <div className="flex flex-row w-full gap-8 text-white text-sm ">
+                <div className="w-1/4">
+                    <div className="fixed flex flex-col w-1/4 h-fit bg-gradient-to-br p-4 gap-4 items-center from-accent_3 via-accent_2 to-accent_1 rounded ">
+                        <h3 className="text-2xl font-semibold">
+                            {player.data.firstName} {player.data.lastName}
+                        </h3>
+                        <img src="https://placehold.co/150x200" />
+                        <div className="flex flex-col gap-0.5 items-center w-full">
+                            <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Height:</div> <div>{player.data.height} cm</div></div>
+                            <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Weigth:</div> <div>{player.data.weigth} kg</div></div>
+                            <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Birthday:</div> <div>{new Date(player.data.dateOfBirth).toLocaleDateString()}</div></div>
+                            <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50 text-nowrap"><div>Birthplace:</div> <div>{player.data.country}</div></div>
+                            <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Batting/Throwing:</div><div>{player.data.battingSide}/{player.data.throwingArm}</div> </div>
+                        </div>
                     </div>
                 </div>
                 <div className="flex flex-row flex-1 gap-8">

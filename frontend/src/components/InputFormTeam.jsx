@@ -19,10 +19,13 @@ export default function InputFormTeam(props) {
     })
     const [mediaOption, setMediaOption] = useState("facebook");
     const [name, setName] = useState("");
+    const [shortName, setShortName] = useState("");
     const [address, setAddress] = useState("");
     const [contact, setContact] = useState("");
+    const [manager, setManager] = useState("");
+    const [headCoach, setHeadCoach] = useState("");
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const errorSubmit = name === "";
+    const errorSubmit = name === "" || shortName === "";
     useEffect((() => {
         if (isSubmitted) {
             fetch("http://localhost:6363/team", {
@@ -32,14 +35,20 @@ export default function InputFormTeam(props) {
                 },
                 body: JSON.stringify({
                     name: name,
+                    shortName: shortName,
                     address: address,
                     contact: contact,
-                    socialMedia: links
+                    socialMedia: links,
+                    manager: manager,
+                    headCoach: headCoach
                 }),
             });
             setName("");
+            setShortName("");
             setAddress("");
             setContact("");
+            setManager("");
+            setHeadCoach("");
             setLinks({
                 facebook: "",
                 instagram: "",
@@ -59,10 +68,17 @@ export default function InputFormTeam(props) {
                         <button className='w-[200px] bg-blue-400 rounded p-3 text-white text-sm font-semibold'>Upload photo</button>
                     </div>
                     <div className="w-full flex flex-col gap-4">
-                        <TextField className="w-full" label={<div >Name*</div>} variant="outlined" value={name} onChange={(e) => setName(e.target.value)} />
+                        <div className="flex flex-row gap-4">
+                            <TextField className="w-3/5" label={<div >Name*</div>} variant="outlined" value={name} onChange={(e) => setName(e.target.value)} />
+                            <TextField className="w-2/5" label={<div >Short name*</div>} variant="outlined" helperText={"Example: BUL"} value={shortName} onChange={(e) => setShortName(e.target.value)} />
+                        </div>
                         <div className="grid grid-cols-2 gap-4">
                             <TextField label={<div >Address</div>} onChange={(e) => { setAddress(e.target.value) }} value={address} variant="outlined" />
                             <TextField label={<div >Contact</div>} onChange={(e) => { setContact(e.target.value) }} value={contact} variant="outlined" />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <TextField label={<div >Manager</div>} onChange={(e) => { setManager(e.target.value) }} value={manager} variant="outlined" />
+                            <TextField label={<div >Head Coach</div>} onChange={(e) => { setHeadCoach(e.target.value) }} value={headCoach} variant="outlined" />
                         </div>
                         <div className="flex flex-row gap-8 self-center text-gray-700">
                             {Object.entries(icons).map(([media, icon]) => <div className="cursor-pointer" onClick={() => setMediaOption(media)}>{icon}</div>)}

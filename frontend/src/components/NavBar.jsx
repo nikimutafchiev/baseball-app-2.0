@@ -1,12 +1,14 @@
 import { BiBaseball } from "react-icons/bi";
 import { Link } from "react-router-dom";
 import { FiLogOut } from 'react-icons/fi';
+import { IoNotificationsOutline } from "react-icons/io5";
 export default function NavBar() {
     const pages = [
         { name: "Home", path: "/" },
         { name: "Schedule", path: "/schedule" },
         { name: "Teams", path: "/teams" },
         { name: "Players", path: "/players" },
+        { name: "Tournaments", path: "tournaments" },
         { name: "Profile", path: "/profile" }
     ]
     return (
@@ -18,10 +20,13 @@ export default function NavBar() {
                         Baseball App
                     </div>
                 </Link>
-                <div className="flex flex-row gap-8 text-white ">
+                <div className="flex flex-row gap-5 text-white ">
                     {
-                        pages.map((page) => <Link className=" rounded cursor-pointer p-4 hover:bg-white hover:text-primary_2 duration-200 ease-in-out font-semibold" to={page.path}>{page.name}</Link>)
+                        pages.map((page) => <Link className=" rounded cursor-pointer content-center px-4 hover:bg-white hover:text-primary_2 duration-200 ease-in-out font-semibold" to={page.path}>{page.name}</Link>)
                     }
+                    <button className="hover:bg-white hover:text-primary_2 px-2 rounded  duration-200 ease-in-out">
+                        <IoNotificationsOutline size={27} />
+                    </button>
                     <button className="hover:bg-white hover:text-primary_2 p-2 rounded  duration-200 ease-in-out">
                         <FiLogOut size={27} />
                     </button>

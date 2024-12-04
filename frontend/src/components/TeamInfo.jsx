@@ -1,41 +1,41 @@
 import { FaFacebook, FaInstagram, FaLink, FaYoutube } from "react-icons/fa"
 import { Autocomplete, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material"
-import { Link } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
+import useSWR from "swr"
 export default function TeamInfo() {
+    const { id } = useParams();
     const icons = {
         facebook: <FaFacebook size={30} />,
         instagram: <FaInstagram size={30} />,
         website: <FaLink size={30} />,
         youtube: <FaYoutube size={30} />
     }
-    const socialMedia = {
-        "facebook": "https://google.com",
-        "instagram": "https://google.com",
-        "website": "https://google.com",
-        "youtube": "https://google.com"
-    }
+    const team = useSWR(`http://localhost:6363/team/${id}`, (url) => fetch(url).then((res) => res.json()));
+
     const years = ["2021", '2022', '2023', "2024"];
     const teams = ["Lions", "Blues", "Akademik", "Coyotes", "Buffaloes", "Yunak"];
     const tournaments = ["Bulgarian Cup", "Champions League", "World cup"];
-    return (
-        <div className="w-full h-full flex flex-row gap-4 p-10">
-            <div className="w-1/5 items-center flex flex-col gap-4 bg-white drop-shadow-lg p-2 h-fit">
-                <div className="w-full flex flex-col items-center gap-4">
-                    <img src="https://placehold.co/150x150"></img>
-                    <h3 className="text-xl font-semibold">Akademiks Sofia</h3>
-                </div>
-                <hr className="border-t-2 w-full"></hr>
-                <div className="w-full flex flex-col text-gray-500 items-center gap-2 text-xs">
-                    <div>Home stadium: Oktomvri Stadium</div>
-                    <div>Contacts: +0888 123 456</div>
-                </div>
-                <hr className="border-t-2 w-full"></hr>
-                <div className="w-full flex flex-col text-gray-500 items-center gap-2 text-xs">
-                    <div>Manager: Youri Alkalay</div>
-                    <div>Head Coach: Yavor Andreev</div>
-                </div>
-                <div className="w-10/12  flex flex-row justify-around mt-2">
-                    {Object.entries(socialMedia).map(([media, page]) => <a href={page} target="_blank">{icons[media]}</a>)}
+    return (<>{
+        team.data && <div className="w-full h-full flex flex-row gap-4">
+            <div className="w-1/5 h-fit ">
+                <div className="fixed w-1/5 items-center flex flex-col gap-4 bg-white drop-shadow-lg p-2">
+                    <div className="w-full flex flex-col items-center gap-4">
+                        <img src="https://placehold.co/150x150"></img>
+                        <h3 className="text-xl font-semibold">{team.data.name}</h3>
+                    </div>
+                    <hr className="border-t-2 w-full"></hr>
+                    <div className="w-full flex flex-col text-gray-500 items-center gap-2 text-xs">
+                        <div>Address: {team.data.address}</div>
+                        <div>Contact: {team.data.contact}</div>
+                    </div>
+                    <hr className="border-t-2 w-full"></hr>
+                    <div className="w-full flex flex-col text-gray-500 items-center gap-2 text-xs">
+                        <div>Manager: {team.data.manager}</div>
+                        <div>Head Coach: {team.data.headCoach}</div>
+                    </div>
+                    <div className="w-10/12  flex flex-row justify-around mt-2">
+                        {Object.entries(team.data.socialMedia).map(([media, page]) => <a href={page} target="_blank">{icons[media]}</a>)}
+                    </div>
                 </div>
             </div>
 
@@ -226,5 +226,7 @@ export default function TeamInfo() {
             </div>
 
         </div >
+    }
+    </>
     )
 }

@@ -1,7 +1,7 @@
 from flask import Flask, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Enum, Date, JSON
+from sqlalchemy import String, Enum, Date, JSON,text
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import date
 from typing import Optional
@@ -56,7 +56,7 @@ def get_player_by_id(player_id):
 @app.route("/team",methods=['POST'])
 def add_team():
     data = request.json
-    new_team = Team(name=data['name'],address=data['address'],contact=data['contact'],socialMedia=data['socialMedia'])
+    new_team = Team(name=data['name'],shortName=data['shortName'],address=data['address'],contact=data['contact'],socialMedia=data['socialMedia'],manager=data['manager'],headCoach=data['headCoach'])
     db.session.add(new_team)
     db.session.commit()
     return "Successfully added team",200
@@ -67,12 +67,32 @@ def get_teams():
     res = [{
         'id':team.id,
         'name': team.name,
+        "shortName":team.shortName,
         'logo': team.logo,
         'address':team.address,
         "contact":team.contact,
-        "socialMedia": team.socialMedia
+        "socialMedia": team.socialMedia,
+        "manager":team.manager,
+        "headCoach":team.headCoach
     } for team in teams]
     return res,200
+
+
+@app.route("/team/<int:team_id>",methods=['GET'])
+def get_team_by_id(team_id):
+    team = Team.query.get(team_id)
+    return {
+        'id':team.id,
+        'name': team.name,
+        "shortName":team.shortName,
+        'logo': team.logo,
+        'address':team.address,
+        "contact":team.contact,
+        "socialMedia": team.socialMedia,
+        "manager":team.manager,
+        "headCoach":team.headCoach
+    }
+
 class Handedness(enum.Enum):
     LEFTY = "L"
     RIGHTY = "R"
@@ -98,10 +118,13 @@ class Player(db.Model):
 class Team(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
+    shortName: Mapped[str] = mapped_column(String(3), nullable=False)
     logo: Mapped[Optional[str]] = mapped_column(String(100))
     socialMedia: Mapped[Optional[JSON]] = mapped_column(JSON)
     address: Mapped[Optional[str]] = mapped_column(String(200))
     contact: Mapped[Optional[str]] = mapped_column(String(20))
+    manager: Mapped[Optional[str]] = mapped_column(String(100))
+    headCoach: Mapped[Optional[str]] = mapped_column(String(100))
 
 
 
@@ -115,6 +138,8 @@ class Tournament(db.Model):
 
 
 with app.app_context():
+    db.session.execute(text("DROP TABLE Team"));
+    db.session.commit()
     db.create_all()
 
 if __name__ == "__main__":

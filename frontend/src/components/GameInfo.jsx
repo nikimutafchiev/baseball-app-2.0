@@ -120,7 +120,7 @@ export default function GameInfo() {
         }
     ];
     return (<div className="flex flex-row gap-8">
-        <div className="flex flex-col bg-white rounded-2xl drop-shadow-lg h-[80vh] w-1/3 p-10 items-center justify-around">
+        <div className="flex flex-col bg-white rounded-2xl drop-shadow-lg h-[80vh] w-1/3 p-10 items-center justify-between">
             <div className="flex flex-col text-gray-500 text-xs font-semibold ">
                 <div className="text-center">
                     Porter Park field, Blagoevgrad
@@ -159,19 +159,19 @@ export default function GameInfo() {
                     L - Evgenii Chernozemsky
                 </div>
             </div>
-            <div className="place-items-center bg-gray-200 px-2 py-1 rounded">
-                <table className="table-auto  text-xs">
-                    <thead className="border-b-[1px] border-gray-500">
+            <div className="place-items-center  px-2 py-1 rounded">
+                <table className="table-auto">
+                    <thead className="border-b-[1px] border-gray-500 ">
                         <tr>
                             {["Team", 1, 2, 3, 4, 5, 6, 7, 8, 9, "R", "H", "E"].map((value) => <th className="p-1 font-bold">{value}</th>)}
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            {["Akademik", 0, 1, 3, 0, 1, 2, 0, 1, 2, 11, 13, 2].map((value) => <td className="text-center font-semibold text-2xs">{value}</td>)}
+                            {["Akademik", 0, 1, 3, 0, 1, 2, 0, 1, 2, 11, 13, 2].map((value) => <td className="text-center font-semibold text-sm p-1">{value}</td>)}
                         </tr>
                         <tr>
-                            {["Blues", 0, 1, 3, 0, 1, 2, 0, 1, 2, 11, 13, 2].map((value) => <td className="text-center font-semibold text-2xs">{value}</td>)}
+                            {["Blues", 0, 1, 3, 0, 1, 2, 0, 1, 2, 11, 13, 2].map((value) => <td className="text-center font-semibold text-sm p-1">{value}</td>)}
                         </tr>
                     </tbody>
                 </table>
@@ -179,15 +179,15 @@ export default function GameInfo() {
         </div>
         <div className="flex flex-col p-2 flex-1 bg-white rounded-2xl drop-shadow-lg min-h-[80vh]">
 
-            <div className="bg-gray-200 rounded my-2">
+            <div className="w-1/2 self-center">
                 <ToggleButtonGroup
                     color="primary"
                     exclusive
                     size="small"
                     className="w-full"
                 >
-                    <ToggleButton className="w-1/2">Home</ToggleButton>
-                    <ToggleButton className="w-1/2">Away</ToggleButton>
+                    <ToggleButton className="w-1/2" sx={{ borderColor: "black", borderWidth: "1px" }}><div>Home</div></ToggleButton>
+                    <ToggleButton className="w-1/2" sx={{ borderColor: "black", borderWidth: "1px" }}>Away</ToggleButton>
                 </ToggleButtonGroup>
             </div>
             <div>
