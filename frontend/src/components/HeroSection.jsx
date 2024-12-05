@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function HeroSection() {
     return (
-        <div className="w-full min-h-[90vh] py-10" style={{ "background-image": "url('baseball_hero.jpg')" }}>
+        <div className="w-full min-h-[90vh] py-10 bg-no-repeat bg-cover" style={{ "background-image": "url('baseball_hero.jpg')" }}>
             <div className="mx-auto max-w-2xl py-24 bg-opacity-60 rounded-xl bg-zinc-400 backdrop-blur-sm px-4">
                 <div className="text-center">
                     <h1 className="text-balance text-5xl font-semibold tracking-tight text-black ">

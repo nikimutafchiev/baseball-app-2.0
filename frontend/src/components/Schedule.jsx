@@ -1,5 +1,8 @@
 import GameList from "./GameList";
 import { Link } from "react-router-dom";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 export default function Schedule() {
     const tournaments = [
         {
@@ -42,6 +45,11 @@ export default function Schedule() {
 
     return (
         <div className="flex flex-col">
+            <div className="w-full flex flex-row justify-end px-4">
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker disablePast format="DD/MM/YYYY" label="Pick date" className="bg-white rounded" />
+                </LocalizationProvider>
+            </div>
             {tournaments.map((tournament) =>
                 <div className="flex flex-col gap-6">
                     <h1 className="text-3xl font-semibold">{tournament.name}</h1>
