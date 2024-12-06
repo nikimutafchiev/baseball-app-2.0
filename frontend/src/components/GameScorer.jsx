@@ -4,8 +4,13 @@ import GameScorerHitOptions from "./GameScorerHitOptions";
 import { useState } from "react";
 import GameScorerQuickOptions from "./GameScorerQuickOptions";
 import GameScorerStrikeoutOptions from "./GameScorerStrikeoutOptions";
-import GameScorerGroundoutOptions from "./GameScorerGroundoutOptions";
+import GameScorerOutOptions from "./GameScorerOutOptions";
 import GameScorerFlyoutOptions from "./GameScorerFlyoutOptions";
+import GameScorerWalkOptions from "./GameScorerWalkOptions";
+import GameScorerErrorOptions from "./GameScorerErrorOptions";
+import GameScorerDroppedStrikeoutOptions from "./GameScorerDroppedStrikeoutOptions";
+import GameScorerMoreOptions from "./GameScorerMoreOptions";
+import { Tooltip, Zoom } from "@mui/material";
 export default function GameScorer() {
 
 
@@ -15,8 +20,16 @@ export default function GameScorer() {
         "Hit": <GameScorerHitOptions close={clearOption} />,
         "Quick": <GameScorerQuickOptions close={clearOption} />,
         "Strikeout": <GameScorerStrikeoutOptions close={clearOption} />,
-        "Groundout": <GameScorerGroundoutOptions close={clearOption} />,
-        "Flyout": <GameScorerFlyoutOptions close={clearOption} />
+        "Groundout": <GameScorerOutOptions close={clearOption} />,
+        "Flyout": <GameScorerFlyoutOptions close={clearOption} type="F" />,
+        "Sac flyout": <GameScorerFlyoutOptions close={clearOption} type="SF" />,
+        "Linedrive": <GameScorerFlyoutOptions close={clearOption} type="L" />,
+        "Walk": <GameScorerWalkOptions close={clearOption} />,
+        "Dropped 3rd": <GameScorerDroppedStrikeoutOptions close={clearOption} />,
+        "Fielder's choice": <GameScorerOutOptions close={clearOption} />,
+        "GDP": <GameScorerOutOptions close={clearOption} />,
+        "Error": <GameScorerErrorOptions close={clearOption} />,
+        "More": <GameScorerMoreOptions close={clearOption} />
     }
     return (
         <>
@@ -25,20 +38,20 @@ export default function GameScorer() {
                     <div className="h-fit w-full flex flex-row p-2 shadow-md">
                         <div className="w-1/5 flex flex-col bg-gray-100">
                             <div className="h-1/2 flex flex-row items-center justify-between p-2">
-                                <div className="flex flex-row items-center font-semibold text-sm gap-2">
+                                <div className="flex flex-row items-center font-semibold  gap-2">
                                     <img src="https://placehold.co/25x25">
                                     </img>
-                                    <div>Team 1</div>
+                                    <div>AKA</div>
                                 </div>
                                 <div className="font-semibold text-lg">
                                     0
                                 </div>
                             </div>
                             <div className="h-1/2 flex flex-row items-center justify-between p-2">
-                                <div className="flex flex-row items-center font-semibold text-sm gap-2">
+                                <div className="flex flex-row items-center font-semibold gap-2">
                                     <img src="https://placehold.co/25x25">
                                     </img>
-                                    <div>Team 2</div>
+                                    <div>BLU</div>
                                 </div>
                                 <div className="font-semibold text-lg">
                                     0
@@ -103,37 +116,94 @@ export default function GameScorer() {
                     <div className="flex-1 flex flex-row  items-center justify-center bg-primary_3">
                         <div className="w-[71%]  bg-clip-padding mask-mas grid grid-cols-[repeat(30,minmax(0,1fr))] text-white font-semibold">
                             <div style={{ gridColumn: "span 14/ span 14" }}></div>
-                            <div className="bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md">34</div>
+                            <div className="bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md">
+                                <Tooltip
+                                    title="Nikolay Mutafchiev"
+                                    arrow
+                                >
+                                    31
+                                </Tooltip>
+                            </div>
                             <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
                             <div style={{ gridColumn: "span 2/ span 2" }}></div>
-                            <div className="bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md">17</div>
+                            <div className="bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md"><Tooltip
+                                title="Nikolay Mutafchiev"
+                                arrow
+                            >
+                                31
+                            </Tooltip></div>
                             <div style={{ gridColumn: "span 22/ span 2" }}></div>
-                            <div className="bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md">21</div>
+                            <div className="bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md"><Tooltip
+                                title="Nikolay Mutafchiev"
+                                arrow
+                            >
+                                31
+                            </Tooltip></div>
                             <div style={{ gridColumn: "span 2/ span 2" }}></div>
 
                             <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
                             <div style={{ gridColumn: "span 10/ span 10" }}></div>
-                            <div className="bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md">21</div>
+                            <div className="bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md"><Tooltip
+                                title="Nikolay Mutafchiev"
+                                arrow
+                            >
+                                31
+                            </Tooltip></div>
                             <div style={{ gridColumn: "span 2/ span 2" }}></div>
-                            <div className="bg-accent_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md">21</div>
+                            <div className="bg-accent_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md"><Tooltip
+                                title="Nikolay Mutafchiev"
+                                arrow
+                            >
+                                31
+                            </Tooltip></div>
                             <div style={{ gridColumn: "span 2/ span 2" }}></div>
-                            <div className="bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md">21</div>
+                            <div className="bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md"><Tooltip
+                                title="Nikolay Mutafchiev"
+                                arrow
+                            >
+                                31
+                            </Tooltip></div>
                             <div style={{ gridColumn: "span 10/ span 10" }}></div>
 
                             <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
                             <div style={{ gridColumn: "span 7/ span 7" }}></div>
-                            <div className="bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md">21</div>
+                            <div className="bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md"><Tooltip
+                                title="Nikolay Mutafchiev"
+                                arrow
+                            >
+                                31
+                            </Tooltip></div>
                             <div style={{ gridColumn: "span 12/ span 12" }}></div>
-                            <div className="bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md">21</div>
+                            <div className="bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md"><Tooltip
+                                title="Nikolay Mutafchiev"
+                                arrow
+                            >
+                                31
+                            </Tooltip></div>
                             <div style={{ gridColumn: "span 7/ span 7" }}></div>
 
                             <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
                             <div style={{ gridColumn: "span 6/ span 6" }}></div>
-                            <div className="bg-accent_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md">21</div>
+                            <div className="bg-accent_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md"><Tooltip
+                                title="Nikolay Mutafchiev"
+                                arrow
+                            >
+                                31
+                            </Tooltip></div>
                             <div style={{ gridColumn: "span 6/ span 6" }}></div>
-                            <div className="bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md">21</div>
+                            <div className="bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md"><Tooltip
+                                title="Nikolay Mutafchiev"
+                                arrow
+                            >
+                                31
+                            </Tooltip></div>
                             <div style={{ gridColumn: "span 6/ span 6" }}></div>
-                            <div className="bg-accent_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md">21</div>
+                            <div className="bg-accent_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md"><Tooltip
+                                title="Nikolay Mutafchiev"
+                                arrow
+                            >
+                                31
+                            </Tooltip></div>
                             <div style={{ gridColumn: "span 6/ span 6" }}></div>
 
                             <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
@@ -142,11 +212,26 @@ export default function GameScorer() {
                             <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
 
                             <div style={{ gridColumn: "span 11/ span 11" }}></div>
-                            <div className="bg-accent_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md">21</div>
+                            <div className="bg-accent_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md"><Tooltip
+                                title="Nikolay Mutafchiev"
+                                arrow
+                            >
+                                31
+                            </Tooltip></div>
                             <div style={{ gridColumn: "span 1/ span 1" }}></div>
-                            <div className="mt-4 bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md">21</div>
+                            <div className="mt-4 bg-primary_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md"><Tooltip
+                                title="Nikolay Mutafchiev"
+                                arrow
+                            >
+                                31
+                            </Tooltip></div>
                             <div style={{ gridColumn: "span 1/ span 1" }}></div>
-                            <div className="bg-accent_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md">21</div>
+                            <div className="bg-accent_1 col-span-2 size-10 content-center text-center rounded drop-shadow-md"><Tooltip
+                                title="Nikolay Mutafchiev"
+                                arrow
+                            >
+                                31
+                            </Tooltip></div>
                             <div style={{ gridColumn: "span 11/ span 11" }}></div>
 
                         </div>
@@ -164,19 +249,28 @@ export default function GameScorer() {
                             ROSTERS
                         </Link>
                         <button className="bg-blue-500 hover:bg-blue-400 text-center place-content-center rounded col-span-2" onClick={() => setSituationOption("Quick")}>Quick</button>
-                        <button className="bg-green-500 hover:bg-green-400 text-center place-content-center rounded" onClick={() => setSituationOption("Hit")}>Hit</button>
-                        <button className="bg-red-500 hover:bg-red-400 text-center place-content-center rounded" onClick={() => setSituationOption("Groundout")}>Groundout</button>
-                        <button className="bg-green-500 hover:bg-green-400 text-center place-content-center rounded">Walk</button>
-                        <button className="bg-red-500 hover:bg-red-400 text-center place-content-center rounded" onClick={() => setSituationOption("Flyout")}>Flyout</button>
-                        <button className="bg-green-500 hover:bg-green-400 text-center place-content-center rounded">Intentional walk</button>
-                        <button className="bg-red-500 hover:bg-red-400 text-center place-content-center rounded" onClick={() => setSituationOption("Strikeout")}>Strikeout</button>
-                        <button className="bg-green-500 hover:bg-green-400 text-center place-content-center rounded">Hit by pitch</button>
-                        <button className="bg-red-500 hover:bg-red-400 text-center place-content-center rounded">Sacrifice fly</button>
-                        <button className="bg-green-500 hover:bg-green-400 text-center place-content-center rounded">Dropped 3rd strike</button>
-                        <button className="bg-red-500 hover:bg-red-400 text-center place-content-center rounded">GDP</button>
-                        <button className="bg-yellow-500 hover:bg-yellow-400 text-center place-content-center rounded">Fielder's choice</button>
-                        <button className="bg-yellow-500 hover:bg-yellow-400 text-center place-content-center rounded">Error</button>
-                        <button className="col-span-2 bg-slate-600 hover:bg-slate-500 text-center place-content-center rounded">More...</button>
+                        <button className="bg-primary_2 hover:bg-primary_2_hover flex flex-row px-2 justify-between items-center rounded" onClick={() => setSituationOption("Hit")}><div>H</div><div>Hit</div></button>
+                        <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center rounded" onClick={() => setSituationOption("Groundout")}><div></div><div>Groundout</div></button>
+                        <button className="bg-primary_2 hover:bg-primary_2_hover  flex flex-row px-2 justify-between items-center rounded" onClick={() => setSituationOption("Walk")}><div>BB</div><div>Walk</div></button>
+                        <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center rounded" onClick={() => setSituationOption("Flyout")}><div>F</div><div>Flyout</div></button>
+                        <button className="bg-primary_2 hover:bg-primary_2_hover  flex flex-row px-2 justify-between items-center rounded"><div>HBP</div><div>Hit by pitch</div></button>
+                        <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center rounded" onClick={() => setSituationOption("Strikeout")}><div>K</div><div>Strikeout</div></button>
+                        <button className="bg-primary_2 hover:bg-primary_2_hover  flex flex-row px-2 justify-between items-center rounded" onClick={() => setSituationOption("Dropped 3rd")}><div></div><div>Dropped 3rd strike</div></button>
+                        <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center rounded" onClick={() => setSituationOption("Sac flyout")}><div>SF</div><div>Sacrifice fly</div></button>
+                        <button className="bg-yellow-500 hover:bg-yellow-400 flex flex-row px-2 justify-between items-center rounded" onClick={() => setSituationOption("Fielder's choice")}><div>FC</div><div>Fielder's choice</div></button>
+                        <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center rounded" onClick={() => setSituationOption("Linedrive")}><div>L</div><div>Linedrive</div></button>
+                        <button className="bg-yellow-500 hover:bg-yellow-400 flex flex-row px-2 justify-between items-center rounded " onClick={() => setSituationOption("Error")}><div>E</div><div>Error</div></button>
+                        <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center rounded" onClick={() => setSituationOption("GDP")}><div></div><div>GDP</div></button>
+
+                        <button className="col-span-2 bg-slate-600 hover:bg-slate-500 text-center place-content-center rounded" onClick={() => setSituationOption("More")}>More...</button>
+                        <div className="grid grid-cols-2 gap-x-1">
+                            <button className="bg-primary_2 hover:bg-primary_2_hover  py-1 text-center place-content-center rounded text-base">Ball</button>
+                            <button className="bg-yellow-500 hover:bg-yellow-400 py-1 text-center place-content-center rounded text-base">Foulball</button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-x-1">
+                            <button className="bg-red-500 hover:bg-red-400 py-1 text-center place-content-center rounded text-base">Called strike</button>
+                            <button className="bg-red-500 hover:bg-red-400 py-1 text-center place-content-center rounded text-base">Swinging strike</button>
+                        </div>
                     </div>
                 </div>
             </div >

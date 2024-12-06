@@ -21,6 +21,10 @@ import TournamentInfoRanking from './components/TournamentInfoRanking';
 import GameScorerPage from './pages/GameScorerPage';
 import RosterPage from './pages/RosterPage';
 import TournamentsPage from './pages/TournamentsPage';
+import ProfileFavoriteGames from './components/ProfileFavoriteGames';
+import ProfileAccountInfo from './components/ProfileAccountInfo';
+import ProfileGameAssignments from './components/ProfileGameAssignments';
+import ProfileToDoGames from './components/ProfileToDoGames';
 const rooter = createBrowserRouter([
   {
     path: "/",
@@ -84,7 +88,25 @@ const rooter = createBrowserRouter([
       },
       {
         path: "profile",
-        element: <ProfilePage />
+        element: <ProfilePage />,
+        children: [
+          {
+            path: "info",
+            element: <ProfileAccountInfo />
+          },
+          {
+            path: "favorite_games",
+            element: <ProfileFavoriteGames />
+          },
+          {
+            path: "assignments",
+            element: <ProfileGameAssignments />
+          },
+          {
+            path: "to_do",
+            element: <ProfileToDoGames />
+          }
+        ]
       },
       {
         path: "score/:id",

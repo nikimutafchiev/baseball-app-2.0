@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { RiCloseCircleLine } from "react-icons/ri";
-export default function GameScorerGroundoutOptions(props) {
+export default function GameScorerOutOptions(props) {
     const [positions, setPositions] = useState([]);
     const maxAssists = 12;
     return (<div className="fixed inset-0 z-10 bg-black bg-opacity-50">
@@ -31,11 +31,11 @@ export default function GameScorerGroundoutOptions(props) {
                 <div className="col-span-1"></div>
                 <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists) setPositions([...positions, "3"]); }}>1B</button>
                 <div className="col-span-1"></div>
-                <button className="bg-accent_2 hover:bg-accent_3 rounded text-center p-2 content-center col-span-2 text-xl" onClick={() => { positions.pop(); setPositions([...positions]) }}>Undo</button>
+                <button className="mt-4 bg-accent_2 hover:bg-accent_3 rounded text-center p-2 content-center col-span-2 text-xl" onClick={() => { positions.pop(); setPositions([...positions]) }}>Undo</button>
                 <div className="col-span-2"></div>
                 <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists) setPositions([...positions, "2"]); }}>C</button>
                 <div className="col-span-2"></div>
-                <button className="bg-blue-500 hover:bg-blue-400 rounded text-center  p-2 content-center col-span-2 text-lg" onClick={() => { props.close() }}>Confirm</button>
+                <button className="mt-4 bg-blue-500 hover:bg-blue-400 rounded text-center  p-2 content-center col-span-2 text-lg" onClick={() => { props.close() }}>Confirm</button>
             </div>
         </div >
     </div >)

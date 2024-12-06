@@ -9,7 +9,7 @@ export default function NavBar() {
         { name: "Teams", path: "/teams" },
         { name: "Players", path: "/players" },
         { name: "Tournaments", path: "tournaments" },
-        { name: "Profile", path: "/profile" }
+        { name: "Profile", path: "/profile/info" }
     ]
     return (
         <header className="w-full sticky z-10 top-0 h-[10vh] bg-gradient-to-r from-primary_1 to-primary_3 drop-shadow-2xl">

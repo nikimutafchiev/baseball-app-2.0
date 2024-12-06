@@ -18,7 +18,10 @@ export default function RosterPlayerPicker(props) {
                 { id: 129, uniformNumber: 88, firstName: "Sofia", lastName: "Mladenova" },
                 { id: 130, uniformNumber: 99, firstName: "Dimitar", lastName: "Kolev" }
                 ]
-                    .map((player) =>
+                    .sort((player) => {
+                        if (!props.takenPlayers.includes(player.id)) return -1
+                        else return 0
+                    }).map((player) =>
                         <button className={`${props.takenPlayers.includes(player.id) ? "bg-primary_1 text-gray-400 pointer-events-none" : "bg-primary_2 hover:bg-primary_2_hover"} flex flex-row py-2 px-4 my-2 rounded items-center gap-6 `}
                             onClick={() => { props.nextPage(); props.setter({ id: player.id, uniformNumber: player.uniformNumber, firstName: player.firstName, lastName: player.lastName }); }}>
                             <img src="https://placehold.co/100x100" />
