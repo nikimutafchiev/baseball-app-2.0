@@ -22,7 +22,6 @@ export default function Team(props) {
             <div className="w-full flex flex-col text-gray-500 items-center gap-2 text-xs">
                 <div>Address: {props.address}</div>
                 <div>Contact: {props.contact}</div>
-
                 <div className="w-3/5 flex flex-row justify-around mt-2">
                     {Object.entries(props.socialMedia).filter(([media, page]) => page !== "").map(([media, page]) => <a href={page} target="_blank">{icons[media]}</a>)}
                 </div>

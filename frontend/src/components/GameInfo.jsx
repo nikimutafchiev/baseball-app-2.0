@@ -210,13 +210,15 @@ export default function GameInfo() {
                         <TableBody>
                             {stats.map((row) => (
                                 <TableRow
+
                                     key={row.Order}
+
                                 >
 
                                     <TableCell component="th" scope="row">
                                         {row.Order}
                                     </TableCell>
-                                    <TableCell>{row.Name}</TableCell>
+                                    <TableCell ><div className={row.Order == 8 ? "ml-8" : ""}>{row.Name}</div></TableCell>
                                     <TableCell>{row.AB}</TableCell>
                                     <TableCell>{row.R}</TableCell>
                                     <TableCell>{row.H}</TableCell>

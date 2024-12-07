@@ -2,6 +2,9 @@ import { FaFacebook, FaInstagram, FaLink, FaYoutube } from "react-icons/fa"
 import { Autocomplete, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material"
 import { Link, useParams } from "react-router-dom"
 import useSWR from "swr"
+import { useState } from "react";
+import { BiEdit } from "react-icons/bi";
+import { RiSaveLine } from "react-icons/ri";
 export default function TeamInfo() {
     const { id } = useParams();
     const icons = {
@@ -10,6 +13,7 @@ export default function TeamInfo() {
         website: <FaLink size={30} />,
         youtube: <FaYoutube size={30} />
     }
+    const [isEdit, setIsEdit] = useState(false);
     const team = useSWR(`http://localhost:6363/team/${id}`, (url) => fetch(url).then((res) => res.json()));
 
     const years = ["2021", '2022', '2023', "2024"];
@@ -18,7 +22,7 @@ export default function TeamInfo() {
     return (<>{
         team.data && <div className="w-full h-full flex flex-row gap-4">
             <div className="w-1/5 h-fit ">
-                <div className="fixed w-1/5 items-center flex flex-col gap-4 bg-white drop-shadow-lg p-2">
+                <div className="items-center flex flex-col gap-4 bg-white drop-shadow-lg p-2">
                     <div className="w-full flex flex-col items-center gap-4">
                         <img src="https://placehold.co/150x150"></img>
                         <h3 className="text-xl font-semibold">{team.data.name}</h3>
@@ -36,6 +40,23 @@ export default function TeamInfo() {
                     <div className="w-10/12  flex flex-row justify-around mt-2">
                         {Object.entries(team.data.socialMedia).map(([media, page]) => <a href={page} target="_blank">{icons[media]}</a>)}
                     </div>
+                    <button className={`flex items-center gap-2 px-4 py-2 text-sm bg-white font-medium rounded border-2 transition ${isEdit
+                        ? "border-green-500 text-green-600 hover:bg-green-50"
+                        : "border-gray-500 text-gray-600 hover:bg-gray-50"
+                        }`}
+                        onClick={() => setIsEdit(!isEdit)}>
+                        {isEdit ? (
+                            <>
+                                <RiSaveLine size={20} />
+                                Save
+                            </>
+                        ) : (
+                            <>
+                                <BiEdit size={20} />
+                                Edit
+                            </>
+                        )}
+                    </button>
                 </div>
             </div>
 

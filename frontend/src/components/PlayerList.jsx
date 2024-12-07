@@ -1,6 +1,7 @@
 import Player from "./Player"
 import useSWR from 'swr';
 import CircularProgress from "@mui/material/CircularProgress";
+import { Alert } from "@mui/material";
 
 export default function PlayerList() {
     const players = useSWR("http://localhost:6363/players", (url) => fetch(url).then((res) => res.json()));
@@ -9,8 +10,8 @@ export default function PlayerList() {
     ]
     const filteredLetters = players.data ? letters.map((letter) => { return { label: letter, value: players.data.filter((player) => player.firstName.charAt(0) === letter) } }).filter((letter) => letter.value.length > 0) : [];
     return (<>
-        {players.isLoading && <div className="pt-10 flex flex-row justify-center w-full"><CircularProgress size={60} /></div>}
-        {players.error && <div className="text-3xl pt-10 text-accent_2">Error occured, while fetching players!</div>}
+        {players.isLoading && <div className="mt-10 flex flex-row justify-center w-full"><CircularProgress size={60} /></div>}
+        {(players.error && !players.isLoading) && <Alert className="mt-10 flex flex-row justify-center w-1/2 mx-auto" severity="error">Error occured, while fetching players!</Alert>}
         {players.data && players.data.length != 0 &&
             <div className="w-full flex flex-row pt-10 gap-6">
                 <div className="w-10">

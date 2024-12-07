@@ -12,7 +12,7 @@ export default function Roster(props) {
         { id: 127, battingOrder: 1, uniformNumber: 3, firstName: "Elena", lastName: "Todorova", position: "LF" },
         { id: 128, battingOrder: 8, uniformNumber: 45, firstName: "Viktor", lastName: "Georgiev", position: "C" },
         { id: 129, battingOrder: 9, uniformNumber: 88, firstName: "Sofia", lastName: "Mladenova", position: "DH" },
-        { id: 130, battingOrder: "P", uniformNumber: 99, firstName: "Dimitar", lastName: "Kolev", position: "P" },
+        { id: 130, battingOrder: "Flex", uniformNumber: 99, firstName: "Dimitar", lastName: "Kolev", position: "P" },
     ]);
     const [takenPositions, setTakenPositions] = useState(roster.map((player) => player.position));
     const [takenPlayers, setTakenPlayers] = useState(roster.map((player) => player.id));
@@ -24,7 +24,7 @@ export default function Roster(props) {
                 {String(props.team).toUpperCase()}
             </div>
             {
-                roster.filter((player) => player.battingOrder !== "P").sort((a, b) => a.battingOrder - b.battingOrder).map((player, index) => <div className="flex flex-row items-center bg-primary_2 hover:bg-primary_2_hover cursor-pointer overflow-hidden text-white rounded-lg  shadow-md">
+                roster.filter((player) => player.battingOrder !== "Flex").sort((a, b) => a.battingOrder - b.battingOrder).map((player, index) => <div className="flex flex-row items-center bg-primary_2 hover:bg-primary_2_hover cursor-pointer overflow-hidden text-white rounded-lg  shadow-md">
                     <div className="w-1/12 text-center font-semibold bg-primary_1 p-1">
                         {index + 1}
                     </div>

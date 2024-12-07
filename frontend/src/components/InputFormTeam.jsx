@@ -19,13 +19,13 @@ export default function InputFormTeam(props) {
     })
     const [mediaOption, setMediaOption] = useState("facebook");
     const [name, setName] = useState("");
-    const [shortName, setShortName] = useState("");
+    const [tlc, setTLC] = useState("");
     const [address, setAddress] = useState("");
     const [contact, setContact] = useState("");
     const [manager, setManager] = useState("");
     const [headCoach, setHeadCoach] = useState("");
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const errorSubmit = name === "" || shortName === "";
+    const errorSubmit = name === "" || tlc.length != 3;
     useEffect((() => {
         if (isSubmitted) {
             fetch("http://localhost:6363/team", {
@@ -35,7 +35,7 @@ export default function InputFormTeam(props) {
                 },
                 body: JSON.stringify({
                     name: name,
-                    shortName: shortName,
+                    tlc: tlc,
                     address: address,
                     contact: contact,
                     socialMedia: links,
@@ -44,7 +44,7 @@ export default function InputFormTeam(props) {
                 }),
             });
             setName("");
-            setShortName("");
+            setTLC("");
             setAddress("");
             setContact("");
             setManager("");
@@ -70,7 +70,13 @@ export default function InputFormTeam(props) {
                     <div className="w-full flex flex-col gap-4">
                         <div className="flex flex-row gap-4">
                             <TextField className="w-3/5" label={<div >Name*</div>} variant="outlined" value={name} onChange={(e) => setName(e.target.value)} />
-                            <TextField className="w-2/5" label={<div >Short name*</div>} variant="outlined" helperText={"Example: BUL"} value={shortName} onChange={(e) => setShortName(e.target.value)} />
+                            <TextField className="w-2/5" label={<div >Three letter code*</div>} variant="outlined" helperText={"Example: BUL"} value={tlc} onChange={(e) => { const newValue = e.target.value; if (/^[a-zA-Z]*$/.test(newValue.charAt(newValue.length - 1))) setTLC(newValue.toUpperCase()) }} slotProps={{
+                                input: {
+                                    inputProps: {
+                                        maxLength: 3
+                                    }
+                                }
+                            }} />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <TextField label={<div >Address</div>} onChange={(e) => { setAddress(e.target.value) }} value={address} variant="outlined" />

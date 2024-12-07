@@ -115,7 +115,7 @@ export default function TournamentInfoPlayerLeaderboard() {
                                         </div>
                                     </div>
                                     <div className="text-lg font-bold text-gray-800">
-                                        {player.statValue}
+                                        {player.statValue.toFixed(3)}
                                     </div>
                                 </div>
                             ))}

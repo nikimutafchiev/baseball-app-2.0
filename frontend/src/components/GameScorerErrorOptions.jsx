@@ -16,34 +16,33 @@ export default function GameScorerErrorOptions(props) {
             </div>
             <div className="grid grid-cols-10 gap-y-4 px-6">
                 <div className="col-span-4"></div>
-                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists) setPositions([...positions, "8"]); }}>CF</button>
+                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists && positions[positions.length - 1] != "8") setPositions([...positions, "8"]); }}>CF</button>
                 <div className="col-span-4"></div>
-                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists) setPositions([...positions, "7"]); }}>LF</button>
+                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists && positions[positions.length - 1] != "7") setPositions([...positions, "7"]); }}>LF</button>
                 <div className="col-span-6"></div>
-                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists) setPositions([...positions, "9"]); }}>RF</button>
+                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists && positions[positions.length - 1] != "9") setPositions([...positions, "9"]); }}>RF</button>
                 <div className="col-span-2"></div>
-                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists) setPositions([...positions, "6"]); }}>SS</button>
+                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists && positions[positions.length - 1] != "6") setPositions([...positions, "6"]); }}>SS</button>
 
                 <div className="col-span-2"></div>
-                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists) setPositions([...positions, "4"]); }} >2B</button>
+                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists && positions[positions.length - 1] != "4") setPositions([...positions, "4"]); }} >2B</button>
                 <div className="col-span-2"></div>
                 <div className="col-span-1"></div>
-                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists) setPositions([...positions, "5"]); }}>3B</button>
+                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists && positions[positions.length - 1] != "5") setPositions([...positions, "5"]); }}>3B</button>
                 <div className="col-span-1"></div>
-                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists) setPositions([...positions, "1"]); }}>P</button>
+                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists && positions[positions.length - 1] != "1") setPositions([...positions, "1"]); }}>P</button>
                 <div className="col-span-1"></div>
-                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists) setPositions([...positions, "3"]); }}>1B</button>
+                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists && positions[positions.length - 1] != "3") setPositions([...positions, "3"]); }}>1B</button>
                 <div className="col-span-1"></div>
                 <button className="mt-4 bg-accent_2 hover:bg-accent_3 rounded text-center p-2 content-center col-span-2 text-xl" onClick={() => { positions.pop(); setPositions([...positions]) }}>Undo</button>
                 <div className="col-span-2"></div>
-                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists) setPositions([...positions, "2"]); }}>C</button>
+                <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists && positions[positions.length - 1] != "2") setPositions([...positions, "2"]); }}>C</button>
                 <div className="col-span-2"></div>
                 <button className="mt-4 bg-blue-500 hover:bg-blue-400 rounded text-center  p-2 content-center col-span-2 text-lg" onClick={() => { props.close() }}>Confirm</button>
             </div>
-            <div className="bg-white rounded self-center drop-shadow-lg mb-2 ">
+            <div className="bg-white rounded self-center drop-shadow-lg h-fit ">
                 <ToggleButtonGroup
                     exclusive
-                    size="small"
                     value={errorType}
                     onChange={(e, newValue) => { setErrorType(newValue); if (newValue === "Throwing" && positions.length == maxAssists) { positions.pop(); setPositions([...positions]) } }}
                 >

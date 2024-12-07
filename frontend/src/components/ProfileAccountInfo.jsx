@@ -7,12 +7,12 @@ export default function ProfileAccountInfo() {
     const [data, setData] = useState({
         firstName: "Petar",
         lastName: "Petrov",
-        username: "Peshkata36",
+
         email: "ppetrov@abc.bg",
         password: "*********"
     })
     return (
-        <div className="w-full p-6 flex flex-col h-fit bg-white rounded-lg shadow-md">
+        <div className="w-full p-6 flex flex-col  bg-white rounded-lg shadow-md h-1/2">
             <div className="flex flex-row justify-between items-center mb-6 ">
                 <h2 className="text-2xl font-bold text-gray-800">Account Info</h2>
                 <button
@@ -35,7 +35,7 @@ export default function ProfileAccountInfo() {
                     )}
                 </button>
             </div>
-            <div className="space-y-4">
+            <div className="flex flex-1 flex-col justify-around">
                 <div className="flex items-center gap-4">
                     <label className="w-1/4 text-lg font-medium text-gray-700">Email:</label>
                     {!isEdit ? (

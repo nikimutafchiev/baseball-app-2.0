@@ -1,7 +1,11 @@
 import { Autocomplete, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material"
 import { useParams } from "react-router-dom";
+import { useState } from "react";
+import { BiEdit } from "react-icons/bi";
+import { RiSaveLine } from "react-icons/ri";
 import useSWR from "swr";
 export default function PlayerInfo() {
+    const [isEdit, setIsEdit] = useState(false);
     const { id } = useParams();
     const player = useSWR(`http://localhost:6363/player/${id}`, (url) => fetch(url).then((res) => res.json()));
     const years = ["2021", '2022', '2023', "2024"];
@@ -10,19 +14,36 @@ export default function PlayerInfo() {
     return (
         <>
             {player.data && <div className="flex flex-row w-full gap-8 text-white text-sm ">
-                <div className="w-1/4">
-                    <div className="fixed flex flex-col w-1/4 h-fit bg-gradient-to-br p-4 gap-4 items-center from-accent_3 via-accent_2 to-accent_1 rounded ">
+                <div className="relative w-1/4">
+                    <div className="flex flex-col h-fit bg-gradient-to-br p-4 gap-4 items-center from-accent_3 via-accent_2 to-accent_1 rounded ">
                         <h3 className="text-2xl font-semibold">
                             {player.data.firstName} {player.data.lastName}
                         </h3>
                         <img src="https://placehold.co/150x200" />
                         <div className="flex flex-col gap-0.5 items-center w-full">
-                            <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Height:</div> <div>{player.data.height} cm</div></div>
+                            <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50" ><div>Height:</div> <div className="w-fit flex flex-row gap-1"><div>{player.data.height}</div><div> cm</div></div></div>
                             <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Weigth:</div> <div>{player.data.weigth} kg</div></div>
                             <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Birthday:</div> <div>{new Date(player.data.dateOfBirth).toLocaleDateString()}</div></div>
                             <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50 text-nowrap"><div>Birthplace:</div> <div>{player.data.country}</div></div>
                             <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Batting/Throwing:</div><div>{player.data.battingSide}/{player.data.throwingArm}</div> </div>
                         </div>
+                        <button className={`flex items-center gap-2 px-4 py-2 text-sm bg-white font-medium rounded border-2 transition ${isEdit
+                            ? "border-green-500 text-green-600 hover:bg-green-50"
+                            : "border-gray-500 text-gray-600 hover:bg-gray-50"
+                            }`}
+                            onClick={() => setIsEdit(!isEdit)}>
+                            {isEdit ? (
+                                <>
+                                    <RiSaveLine size={20} />
+                                    Save
+                                </>
+                            ) : (
+                                <>
+                                    <BiEdit size={20} />
+                                    Edit
+                                </>
+                            )}
+                        </button>
                     </div>
                 </div>
                 <div className="flex flex-row flex-1 gap-8">

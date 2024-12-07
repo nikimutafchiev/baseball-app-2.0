@@ -4,12 +4,13 @@ export default function GameScorerFlyoutOptions(props) {
     const [position, setPosition] = useState("");
 
     return (<div className="fixed inset-0 z-10 bg-black bg-opacity-50">
-        <div className="fixed z-20 inset-0 flex flex-col gap-4 text-white font-semibold text-4xl bg-white w-1/2 h-4/5 self-center justify-self-center rounded">
+        <div className="fixed z-20 inset-0 flex flex-col gap-4 py-2 text-white font-semibold text-4xl bg-white w-1/2 h-4/5 self-center justify-self-center rounded">
             <div className="h-[2%]">
                 <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
             </div>
-            <div className="text-black text-center h-[10%] ">
-                {position !== "" && `${props.type}${position}`}
+            <div className="text-black flex flex-row justify-center w-full h-[10%] ">
+                {position !== "" && <div>{props.situationCode}{position}</div>}
+                {position === "" && <div className="text-lg text-gray-700">{props.situation}</div>}
             </div>
             <div className="grid grid-cols-10 gap-y-4 px-6">
                 <div className="col-span-4"></div>
