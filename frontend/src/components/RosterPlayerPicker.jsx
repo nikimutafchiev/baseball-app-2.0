@@ -3,9 +3,19 @@ export default function RosterPlayerPicker(props) {
 
     return (<div className="fixed inset-0 z-10 bg-black bg-opacity-50">
         <div className="fixed z-20 inset-0 px-6 flex flex-col text-white font-semibold cursor-default bg-white w-1/2 h-4/5  self-center justify-self-center rounded">
-            <div className="h-[10%]">
-                <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
+            <div className="h-[12%] flex flex-row items-center justify-between">
+                <div>
+                    <button className="bg-red-500 hover:bg-red-400 rounded p-2"
+                        onClick={() => { props.clear(); props.close() }}>Clear</button>
+                </div>
+                <div className="font-semibold text-center text-lg text-black">
+                    {props.helperText}
+                </div>
+                <div>
+                    <button onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
+                </div>
             </div>
+
             <div className="flex flex-col flex-1 overflow-y-auto px-2">
                 {[{ id: 121, uniformNumber: 55, firstName: "Nikolay", lastName: "Mutafchiev" },
                 { id: 122, uniformNumber: 12, firstName: "Ivan", lastName: "Petrov" },

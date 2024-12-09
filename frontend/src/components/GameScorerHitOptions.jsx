@@ -7,12 +7,12 @@ export default function GameScorerHitOptions(props) {
                     <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
                 </div>
                 <div className="flex-1 grid grid-cols-2 gap-y-4 gap-x-2 text-white text-2xl font-semibold py-8">
-                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>1B</div><div>Single</div></div>
-                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>2B</div><div>Double</div></div>
-                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>3B</div><div>Triple</div></div>
-                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>HR</div><div>Homerun</div></div>
-                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer text-lg"><div>IHR</div><div>Inside the park homerun</div></div>
-                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>B</div><div>Bunt</div></div>
+                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(1); props.close() }}><div>1B</div><div>Single</div></div>
+                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(2); props.close() }}><div>2B</div><div>Double</div></div>
+                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(3); props.close() }}><div>3B</div><div>Triple</div></div>
+                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(4); props.close() }}><div>HR</div><div>Homerun</div></div>
+                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer text-lg" onClick={() => { props.situationFunction(4); props.close() }}><div>IHR</div><div>Inside the park homerun</div></div>
+                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(1); props.close() }}><div>B</div><div>Bunt</div></div>
                 </div>
             </div>
         </div>)

@@ -7,8 +7,8 @@ export default function GameScorerDroppedStrikeoutOptions(props) {
                     <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
                 </div>
                 <div className="h-3/5 grid grid-cols-2 gap-x-8 gap-y-4 text-white text-xl font-semibold mt-10 py-4 px-1">
-                    <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>KWP</div><div>Strikeout wild pitch</div></div>
-                    <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>KPB</div><div>Strikeout pass ball</div></div>
+                    <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(); props.close() }}><div>KWP</div><div>Strikeout wild pitch</div></div>
+                    <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(); props.close() }}><div>KPB</div><div>Strikeout pass ball</div></div>
                 </div>
             </div>
         </div>);

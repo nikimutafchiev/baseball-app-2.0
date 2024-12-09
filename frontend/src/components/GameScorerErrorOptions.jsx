@@ -42,9 +42,15 @@ export default function GameScorerErrorOptions(props) {
             </div>
             <div className="bg-white rounded self-center drop-shadow-lg h-fit ">
                 <ToggleButtonGroup
+                    r
                     exclusive
                     value={errorType}
-                    onChange={(e, newValue) => { setErrorType(newValue); if (newValue === "Throwing" && positions.length == maxAssists) { positions.pop(); setPositions([...positions]) } }}
+                    onChange={(e, newValue) => {
+                        if (newValue) {
+                            setErrorType(newValue);
+                            if (newValue === "Throwing" && positions.length == maxAssists) { positions.pop(); setPositions([...positions]) }
+                        }
+                    }}
                 >
                     <ToggleButton value="Fielding">Fielding</ToggleButton>
                     <ToggleButton value="Throwing">Throwing</ToggleButton>

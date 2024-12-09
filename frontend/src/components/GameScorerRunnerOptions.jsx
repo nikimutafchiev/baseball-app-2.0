@@ -25,6 +25,9 @@ export default function GameScorerRunnerOptions(props) {
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer text-lg"><div>INT</div><div>Runner interference</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>OB</div><div>Obstruction</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>OBR</div><div>Out by rule</div></div>
+
+                    <div className="bg-slate-500 hover:bg-slate-400 p-2 px-4 rounded flex flex-row justify-center items-center cursor-pointer col-span-2"><div>Pinch runner</div></div>
+
                 </div>
             </div>
         </div>
