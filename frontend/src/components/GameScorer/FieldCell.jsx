@@ -1,6 +1,6 @@
 import { Tooltip, Zoom } from "@mui/material"
 import { useEffect, useState } from "react";
-import RosterPlayerPicker from "./RosterPlayerPicker";
+import RosterPlayerPicker from "../Roster/RosterPlayerPicker";
 
 export default function FieldCell(props) {
     const [pickPlayer, setPickPlayer] = useState(false);

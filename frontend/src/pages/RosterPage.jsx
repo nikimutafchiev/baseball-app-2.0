@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import Roster from "../components/Roster";
+import Roster from "../components/Roster/Roster";
 
 export default function RosterPage() {
     return (<div className="bg-gray-200 min-h-[90vh] flex flex-row justify-around p-2 ">

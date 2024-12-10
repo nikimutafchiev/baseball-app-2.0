@@ -1,9 +1,9 @@
-import TeamList from "../components/TeamList";
+import TeamList from "../components/Teams/TeamList";
 import { RiAddCircleLine } from "react-icons/ri";
 import { TextField } from "@mui/material";
 import { FiSearch } from "react-icons/fi";
 import { useState } from "react";
-import InputFormTeam from "../components/InputFormTeam";
+import InputFormTeam from "../components/InputForms/InputFormTeam";
 import useSWR from "swr";
 
 export default function TeamsPage() {

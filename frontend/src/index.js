@@ -14,17 +14,17 @@ import PlayerInfoPage from './pages/PlayerInfoPage';
 import GameInfoPage from './pages/GameInfoPage';
 import TeamInfoPage from './pages/TeamInfoPage';
 import TournamentInfoPage from './pages/TournamentInfoPage';
-import TournamentInfoGames from './components/TournamentInfoGames';
-import TournamentInfoTeams from './components/TournamentInfoTeams';
-import TournamentInfoPlayerLeaderboard from './components/TournamentInfoPlayerLeaderboard';
-import TournamentInfoRanking from './components/TournamentInfoRanking';
+import TournamentInfoGames from './components/Tournaments/TournamentInfoGames';
+import TournamentInfoTeams from './components/Tournaments/TournamentInfoTeams';
+import TournamentInfoPlayerLeaderboard from './components/Tournaments/TournamentInfoPlayerLeaderboard';
+import TournamentInfoRanking from './components/Tournaments/TournamentInfoRanking';
 import GameScorerPage from './pages/GameScorerPage';
 import RosterPage from './pages/RosterPage';
 import TournamentsPage from './pages/TournamentsPage';
-import ProfileFavoriteGames from './components/ProfileFavoriteGames';
-import ProfileAccountInfo from './components/ProfileAccountInfo';
-import ProfileGameAssignments from './components/ProfileGameAssignments';
-import ProfileToDoGames from './components/ProfileToDoGames';
+import ProfileFavoriteGames from './components/Profile/ProfileFavoriteGames';
+import ProfileAccountInfo from './components/Profile/ProfileAccountInfo';
+import ProfileGameAssignments from './components/Profile/ProfileGameAssignments';
+import ProfileToDoGames from './components/Profile/ProfileToDoGames';
 const rooter = createBrowserRouter([
   {
     path: "/",

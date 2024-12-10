@@ -16,7 +16,6 @@ import { FiSettings } from "react-icons/fi";
 import FieldCell from "./FieldCell";
 import { GoDotFill } from "react-icons/go";
 export default function GameScorer() {
-    //TODO bug with batting order
     const [situationOption, setSituationOption] = useState("");
     const clearOption = () => setSituationOption("");
     const [roster, setRoster] = useState([
@@ -37,6 +36,8 @@ export default function GameScorer() {
     const [awayPoints, setAwayPoints] = useState(0);
     const [batterTurn, setBatterTurn] = useState(1);
     const [outs, setOuts] = useState(0);
+    const [lastSituation, setLastSituation] = useState("");
+    const [situation, setSituations] = useState([]);
     const nextBatter = () => { setBatterTurn(batterTurn >= 9 ? 1 : batterTurn + 1) };
     const positionAbbrevations = {
         pitcher: "P",
@@ -92,6 +93,16 @@ export default function GameScorer() {
     const clearCount = () => {
         setStrikeCount(0);
         setBallCount(0);
+    }
+    const incrementOuts = () => {
+        if (outs + 1 == 3) {
+            setOuts(0);
+            if (inningHalf == "DOWN")
+                setInning(inning + 1);
+            setInningHalf(inningHalf == "UP" ? "DOWN" : "UP");
+        }
+        else
+            setOuts(outs + 1);
     }
     const moveRunners = (bases) => {
         inningHalf == "UP" ? setAwayPoints(awayPoints + getSituationPoints(bases)) : setHomePoints(homePoints + getSituationPoints(bases));
@@ -161,34 +172,33 @@ export default function GameScorer() {
     }
     useEffect((() => switchTeams()), [inningHalf]);
     const situationComponents = {
-        "Hit": <GameScorerHitOptions close={clearOption} situationFunction={(bases) => {
+        "Hit": <GameScorerHitOptions close={clearOption} situationFunction={(bases, hitType) => {
+            setLastSituation({ batter: offense.batter, type: hitType });
             moveRunners(bases);
         }} />,
         "Quick": <GameScorerQuickOptions close={clearOption} />,
         "Strikeout": <GameScorerStrikeoutOptions close={clearOption}
-            situationFunction={() => {
+            situationFunction={(strikeoutType) => {
+                setLastSituation({ batter: offense.batter, type: strikeoutType });
                 moveRunners(0)
-                if (outs + 1 == 3) {
-                    setOuts(0);
-                    if (inningHalf == "DOWN")
-                        setInning(inning + 1);
-                    setInningHalf(inningHalf == "UP" ? "DOWN" : "UP");
-                }
-                else
-                    setOuts(outs + 1);
+                incrementOuts();
             }}
         />,
         "Groundout": <GameScorerOutOptions close={clearOption} />,
-        "Flyout": <GameScorerFlyoutOptions close={clearOption} situation="Flyout" situationCode="F" />,
+        "Flyout": <GameScorerFlyoutOptions close={clearOption} situation="Flyout" situationCode="F" situationFunction={() => {
+            moveRunners(0);
+        }} />,
         "Sac flyout": <GameScorerFlyoutOptions close={clearOption} situation="Sacrifice fly" situationCode="SF" />,
         "Linedrive": <GameScorerFlyoutOptions close={clearOption} situation="Linedrive" situationCode="L" />,
         "Foul fly": <GameScorerFlyoutOptions close={clearOption} situation="Foul fly" situationCode="FF" />,
         "Pop fly": <GameScorerFlyoutOptions close={clearOption} situation="Pop fly" situationCode="P" />,
         "Infield fly": <GameScorerFlyoutOptions close={clearOption} situation="Infield fly" situationCode="IF" />,
-        "Walk": <GameScorerWalkOptions close={clearOption} situationFunction={() => {
+        "Walk": <GameScorerWalkOptions close={clearOption} situationFunction={(walkType) => {
+            setLastSituation({ batter: offense.batter, type: walkType });
             moveRunners(1);
         }} />,
         "Dropped 3rd": <GameScorerDroppedStrikeoutOptions close={clearOption} situationFunction={() => {
+            setLastSituation({ batter: offense.batter, type: "Dropped third strike" });
             moveRunners(1);
         }} />,
         "Fielder's choice": <GameScorerOutOptions close={clearOption} />,
@@ -507,8 +517,24 @@ export default function GameScorer() {
                             <FiSettings size={20} />
                         </button>
                     </div>
-                    <div className="flex flex-row border-y-2 h-[60px] border-gray-500 px-2 text-sm font-semibold text-pretty">
-                        Last situation: Walk, #5 Stoyanov on second, #23 Petrov on third, #34 Mutafchiev scored
+                    <div className="flex flex-row border-y-2 h-[60px] justify-between items-center border-gray-500 px-2 text-2xs font-semibold text-pretty">
+                        <div className="flex flex-col">
+                            <div className="flex flex-row gap-6 ">
+                                <div>
+                                    Last situation: {lastSituation.type}
+                                </div>
+                                {lastSituation.batter && <div>
+                                    Batter: #{lastSituation.batter.uniformNumber} {lastSituation.batter.lastName}
+                                </div>
+                                }
+                            </div>
+                            <div>
+                                #21 Zhelev advances to third
+                            </div>
+                        </div>
+                        <div className="flex flex-col">
+                            Runs: 1
+                        </div>
                     </div>
                     <div className="w-full h-full grid grid-cols-2 grid-rows-8 px-2 py-4 gap-x-1 gap-y-3 text-xl font-semibold text-white">
                         <button className="bg-primary_2 hover:bg-primary_2_hover flex flex-row px-2 justify-between items-center rounded" onClick={() => setSituationOption("Hit")}><div>H</div><div>Hit</div></button>
@@ -520,6 +546,7 @@ export default function GameScorer() {
                         ><div>BB</div><div>Walk</div></button>
                         <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center rounded" onClick={() => setSituationOption("Flyout")}><div>F</div><div>Flyout</div></button>
                         <button className="bg-primary_2 hover:bg-primary_2_hover  flex flex-row px-2 justify-between items-center rounded" onClick={() => {
+                            setLastSituation({ batter: offense.batter, type: "Hit by pitch" });
                             moveRunners(1);
                         }}><div>HBP</div><div>Hit by pitch</div></button>
                         <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center rounded" onClick={() => setSituationOption("Strikeout")}><div>K</div><div>Strikeout</div></button>
@@ -534,38 +561,36 @@ export default function GameScorer() {
                         <button className="bg-slate-500 hover:bg-slate-400 text-center place-content-center rounded" onClick={() => setSituationOption("More")}>More...</button>
                         <div className="grid grid-cols-2 gap-x-1">
                             <button className="bg-primary_2 hover:bg-primary_2_hover  py-1 text-center place-content-center rounded text-base" onClick={() => {
-                                if (ballCount == 3)
+                                if (ballCount == 3) {
+                                    setLastSituation({ batter: offense.batter, type: "Walk" });
+                                    clearCount();
                                     moveRunners(1);
-                                setBallCount((ballCount + 1) % 4)
+                                }
+                                else
+                                    setBallCount(ballCount + 1)
                             }}>Ball</button>
                             <button className="bg-yellow-500 hover:bg-yellow-400 py-1 text-center place-content-center rounded text-base" onClick={() => { if (strikeCount < 2) setStrikeCount(strikeCount + 1) }}>Foulball</button>
                         </div>
                         <div className="grid grid-cols-2 gap-x-1">
                             <button className="bg-red-500 hover:bg-red-400 py-1 text-center place-content-center rounded text-base" onClick={() => {
                                 if (strikeCount == 2) {
+                                    setLastSituation({ batter: offense.batter, type: "Strikeout looking" });
+                                    clearCount();
                                     moveRunners(0);
-                                    if (outs + 1 == 3) {
-                                        setOuts(0);
-                                        if (inningHalf == "DOWN")
-                                            setInning(inning + 1);
-                                        setInningHalf(inningHalf == "UP" ? "DOWN" : "UP");
-                                    }
-                                    else
-                                        setOuts(outs + 1);
-                                } setStrikeCount((strikeCount + 1) % 3)
+                                    incrementOuts();
+                                }
+                                else
+                                    setStrikeCount(strikeCount + 1)
                             }}>Called strike</button>
                             <button className="bg-red-500 hover:bg-red-400 py-1 text-center place-content-center rounded text-base" onClick={() => {
                                 if (strikeCount == 2) {
+                                    setLastSituation({ batter: offense.batter, type: "Strikeout swinging" });
+                                    clearCount();
                                     moveRunners(0);
-                                    if (outs + 1 == 3) {
-                                        setOuts(0);
-                                        if (inningHalf == "DOWN")
-                                            setInning(inning + 1);
-                                        setInningHalf(inningHalf == "UP" ? "DOWN" : "UP");
-                                    }
-                                    else
-                                        setOuts(outs + 1);
-                                } setStrikeCount((strikeCount + 1) % 3)
+                                    incrementOuts();
+                                }
+                                else
+                                    setStrikeCount(strikeCount + 1)
                             }}>Swinging strike</button>
                         </div>
                     </div>

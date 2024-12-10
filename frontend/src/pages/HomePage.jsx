@@ -1,6 +1,6 @@
-import HeroSection from "../components/HeroSection";
-import Overview from "../components/Overview";
-import DescriptionSection from "../components/DescriptionSection";
+import HeroSection from "../components/HomePage/HeroSection";
+import Overview from "../components/HomePage/Overview";
+import DescriptionSection from "../components/HomePage/DescriptionSection";
 
 export default function HomePage() {
     return (<>

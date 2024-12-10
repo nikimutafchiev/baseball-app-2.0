@@ -1,4 +1,4 @@
-import GameList from "./GameList";
+import GameList from "../Games/GameList";
 
 export default function TournamentInfoGames() {
     return (<>

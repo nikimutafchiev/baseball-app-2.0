@@ -1,7 +1,7 @@
-import PlayerList from "../components/PlayerList";
+import PlayerList from "../components/Players/PlayerList";
 import { RiAddCircleLine } from "react-icons/ri";
 import { useState } from "react";
-import InputFormPlayer from "../components/InputFormPlayer";
+import InputFormPlayer from "../components/InputForms/InputFormPlayer";
 import { TextField } from "@mui/material";
 import { FiSearch } from "react-icons/fi";
 export default function PlayersPage() {

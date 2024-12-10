@@ -1,10 +1,22 @@
 import { RiCloseCircleLine } from "react-icons/ri"
+import { ToggleButton, ToggleButtonGroup } from "@mui/material"
 export default function GameScorerRunnerOptions(props) {
     return (
         <div className="fixed inset-0 z-10 bg-black bg-opacity-50">
             <div className="fixed z-20 flex flex-col  inset-0 px-6 py-2 overflow-y-hidden text-white font-semibold bg-white w-3/4 h-4/5 self-center justify-self-center rounded">
                 <div className="h-[10%] ">
                     <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
+                    <div className="justify-self-center">
+                        <ToggleButtonGroup
+                            exclusive
+                            value={"Third"}
+                        >
+                            <ToggleButton value="First" disabled>First</ToggleButton>
+                            <ToggleButton value="Second" disabled>Second</ToggleButton>
+                            <ToggleButton value="Third">Third</ToggleButton>
+                            <ToggleButton value="Home">Home</ToggleButton>
+                        </ToggleButtonGroup>
+                    </div>
                 </div>
                 <div className="flex-1 grid grid-cols-3 overflow-y-auto gap-y-4 gap-x-2 text-white text-2xl font-semibold py-4 px-1">
                     <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div></div><div>Advanced by batter</div></div>

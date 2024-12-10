@@ -1,9 +1,9 @@
-import TournamentList from "../components/TournamentList";
+import TournamentList from "../components/Tournaments/TournamentList";
 import { RiAddCircleLine } from "react-icons/ri";
 import { TextField } from "@mui/material";
 import { FiSearch } from "react-icons/fi";
 import { useState } from "react";
-import InputFormTournament from "../components/InputFormTournament";
+import InputFormTournament from "../components/InputForms/InputFormTournament";
 
 export default function TournamentsPage() {
     const [addClicked, setAddClicked] = useState(false);

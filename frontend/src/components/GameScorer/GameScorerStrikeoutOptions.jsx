@@ -7,10 +7,10 @@ export default function GameScorerStrikeoutOptions(props) {
                     <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
                 </div>
                 <div className="flex-1 grid grid-cols-2 gap-x-8 gap-y-4 text-white text-xl font-semibold  py-4 px-1">
-                    <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(); props.close() }}><div>KS</div><div>Strikeout swinging</div></div>
-                    <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(); props.close() }}><div>KL</div><div>Strikeout looking</div></div>
+                    <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction("Strikeout swinging"); props.close() }}><div>KS</div><div>Strikeout swinging</div></div>
+                    <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction("Strikeout looking"); props.close() }}><div>KL</div><div>Strikeout looking</div></div>
                     <div className="col-span-2 flex flex-row justify-center items-center">
-                        <div className="w-1/2 h-full bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>K</div><div>Dropped 3rd strike</div></div>
+                        <div className="w-1/2 h-full bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction("Dropped 3rd strike"); props.close() }}><div>K</div><div>Dropped 3rd strike</div></div>
                     </div>
                 </div>
             </div>

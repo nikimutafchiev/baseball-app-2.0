@@ -7,8 +7,8 @@ export default function GameScorerWalkOptions(props) {
                     <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
                 </div>
                 <div className="h-1/2 grid grid-cols-2 gap-x-8  text-white text-xl font-semibold mt-10 py-4 px-1">
-                    <div className="bg-slate-500 hover:bg-slate-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(); props.close() }}><div>BB</div><div>Walk</div></div>
-                    <div className="bg-slate-500 hover:bg-slate-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(); props.close() }}><div>IBB</div><div>Intentional walk</div></div>
+                    <div className="bg-slate-500 hover:bg-slate-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction("Walk"); props.close() }}><div>BB</div><div>Walk</div></div>
+                    <div className="bg-slate-500 hover:bg-slate-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction("Intentional walk"); props.close() }}><div>IBB</div><div>Intentional walk</div></div>
                 </div>
             </div>
         </div>);
