@@ -36,7 +36,7 @@ export default function GameScorerFlyoutOptions(props) {
                 <div className="col-span-2"></div>
                 <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { setPosition("2"); }}>C</button>
                 <div className="col-span-2"></div>
-                <button className="mt-4 bg-blue-500 hover:bg-blue-400 rounded text-center  p-2 content-center col-span-2 text-lg" onClick={() => { props.close() }}>Confirm</button>
+                <button className={`${position === "" ? "bg-blue-700 text-gray-400 pointer-events-none" : "bg-blue-500 hover:bg-blue-400"} rounded text-center mt-4 p-2 content-center col-span-2 text-lg`} onClick={() => { if (position !== "") { props.situationFunction(position); } }}>Confirm</button>
             </div>
         </div >
     </div >)

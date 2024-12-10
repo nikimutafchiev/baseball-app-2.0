@@ -14,12 +14,13 @@ export default function GameScorerMoreOptions(props) {
                     <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>WP</div><div>Wild pitch</div></div>
                     <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>PB</div><div>Passed ball</div></div>
                     <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>BK</div><div>Balk</div></div>
-                    <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer text-lg"><div>OBR</div><div>Out by rule</div></div>
+
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => props.changeOption("Sac bunt")}><div>SAC</div><div>Sacrifice bunt</div></div>
-                    <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>GTP</div><div>Triple play</div></div>
+                    <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => props.changeOption("Infield fly")}><div>IF</div><div>Infield fly</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => props.changeOption("Foul fly")}><div>FF</div><div>Foul flyout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => props.changeOption("Pop fly")}><div>P</div><div>Pop-up</div></div>
-                    <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => props.changeOption("Infield fly")}><div>IF</div><div>Infield fly</div></div>
+                    <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>GTP</div><div>Triple play</div></div>
+                    <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer text-lg"><div>OBR</div><div>Out by rule</div></div>
 
 
                 </div>
