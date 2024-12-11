@@ -35,7 +35,11 @@ export default function GameScorerOutOptions(props) {
                 <div className="col-span-2"></div>
                 <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists && positions[positions.length - 1] != "2") setPositions([...positions, "2"]); }}>C</button>
                 <div className="col-span-2"></div>
-                <button className={`${positions.length === 0 ? "bg-blue-700 text-gray-400 pointer-events-none" : "bg-blue-500 hover:bg-blue-400"} rounded text-center mt-4 p-2 content-center col-span-2 text-lg`} onClick={() => { if (positions.length !== 0) { props.situationFunction(positions.join("-")); } }}>Confirm</button>
+                <button className={`${positions.length === 0 ? "bg-blue-700 text-gray-400 pointer-events-none" : "bg-blue-500 hover:bg-blue-400"} rounded text-center mt-4 p-2 content-center col-span-2 text-lg`} onClick={() => {
+                    if (positions.length !== 0) {
+                        props.situationFunction(positions.join("-"));
+                    }
+                }}>Confirm</button>
             </div>
         </div >
     </div >)
