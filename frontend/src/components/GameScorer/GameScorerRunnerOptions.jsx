@@ -8,7 +8,6 @@ export default function GameScorerRunnerOptions(props) {
         <div className="fixed inset-0 z-10 bg-black bg-opacity-50">
             <div className="fixed z-20 flex flex-col  inset-0 px-6 py-2 overflow-y-hidden text-white font-semibold bg-white w-3/4 h-4/5 self-center justify-self-center rounded">
                 <div className="h-[15%]">
-                    <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
                     {props.runner && <>
                         {
                             props.runner.player && <div className="text-black text-center">
@@ -42,10 +41,10 @@ export default function GameScorerRunnerOptions(props) {
 
                     <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "PB", props.runner.oldBasePosition, basePosition); props.close() }}><div>PB</div><div>Passed ball</div></div>
                     <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "WP", props.runner.oldBasePosition, basePosition); props.close() }}><div>WP</div><div>Wild pitch</div></div>
-                    <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>E</div><div>Error</div></div>
+                    <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" ><div>E</div><div>Error</div></div>
                     <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div></div><div>Extra base error</div></div>
 
-                    <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer text-lg"><div>O/2</div><div>Defensive indifference</div></div>
+                    <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer text-lg" onClick={() => { props.situationFunction(props.runner.player, "Defensive indifference", props.runner.oldBasePosition, basePosition); props.close() }} ><div>O/2</div><div>Defensive indifference</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div></div><div>Tagged out</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div></div><div>Force out</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>CS</div><div>Caught stealing</div></div>

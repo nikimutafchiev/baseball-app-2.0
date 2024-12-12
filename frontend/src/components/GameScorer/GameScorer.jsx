@@ -17,6 +17,7 @@ import FieldCell from "./FieldCell";
 import { GoDotFill } from "react-icons/go";
 import GameScorerPlayByPlay from "./GameScorerPlayByPlay";
 import GameScorerSettings from "./GameScorerSettings";
+import GameScorerOutByRuleOptions from "./GameScorerOutByRuleOptions";
 
 export default function GameScorer() {
     const [situationOption, setSituationOption] = useState("");
@@ -24,32 +25,53 @@ export default function GameScorer() {
         home: Array(9).fill("X"), away: Array(9).fill("X")
     });
     const [menuOption, setMenuOption] = useState(0);
-    const clearOption = () => { setSituationOption(""); };
-    const [roster, setRoster] = useState([
+    const clearOption = () => {
+        if (runnerWindowCount > 1)
+            setRunnerWindowCount(runnerWindowCount - 1);
+        else {
+            setSituationOption("");
+            setIsSituationReady(true);
+        }
+    };
+    const [battingTurn, setBattingTurn] = useState(1);
+    const [oldBattingTurn, setOldBattingTurn] = useState(1);
+    const [roster, setRoster] = useState([]);
+    const [homeRoster, setHomeRoster] = useState([
         { id: 121, battingOrder: 5, uniformNumber: 55, firstName: "Nikolay", lastName: "Mutafchiev", position: "CF" },
         { id: 122, battingOrder: 2, uniformNumber: 12, firstName: "Ivan", lastName: "Petrov", position: "1B" },
-        { id: 123, battingOrder: 3, uniformNumber: 34, firstName: "Maria", lastName: "Ivanova", position: "SS" },
+        { id: 123, battingOrder: 3, uniformNumber: 34, firstName: "Mario", lastName: "Ivanov", position: "SS" },
         { id: 124, battingOrder: 4, uniformNumber: 7, firstName: "Georgi", lastName: "Dimitrov", position: "RF" },
-        { id: 125, battingOrder: 7, uniformNumber: 22, firstName: "Anna", lastName: "Kirilova", position: "2B" },
+        { id: 125, battingOrder: 7, uniformNumber: 22, firstName: "Yao", lastName: "Kirilov", position: "2B" },
         { id: 126, battingOrder: 6, uniformNumber: 10, firstName: "Peter", lastName: "Stoyanov", position: "3B" },
-        { id: 127, battingOrder: 1, uniformNumber: 3, firstName: "Elena", lastName: "Todorova", position: "LF" },
+        { id: 127, battingOrder: 1, uniformNumber: 3, firstName: "Georgi", lastName: "Todorov", position: "LF" },
         { id: 128, battingOrder: 8, uniformNumber: 45, firstName: "Viktor", lastName: "Georgiev", position: "C" },
-        { id: 129, battingOrder: 9, uniformNumber: 88, firstName: "Sofia", lastName: "Mladenova", position: "DH" },
+        { id: 129, battingOrder: 9, uniformNumber: 88, firstName: "Ivan", lastName: "Mladenov", position: "DH" },
+        { id: 130, battingOrder: "Flex", uniformNumber: 99, firstName: "Dimitar", lastName: "Kolev", position: "P" },
+    ]);
+    const [awayRoster, setAwayRoster] = useState([
+        { id: 121, battingOrder: 5, uniformNumber: 55, firstName: "Kostadin", lastName: "Mutafchiev", position: "CF" },
+        { id: 122, battingOrder: 2, uniformNumber: 12, firstName: "Ivan", lastName: "Yordanov", position: "1B" },
+        { id: 123, battingOrder: 3, uniformNumber: 34, firstName: "Mario", lastName: "Ivanov", position: "SS" },
+        { id: 124, battingOrder: 4, uniformNumber: 71, firstName: "Georgi", lastName: "Vladimirov", position: "RF" },
+        { id: 125, battingOrder: 7, uniformNumber: 22, firstName: "Anton", lastName: "Kirilov", position: "2B" },
+        { id: 126, battingOrder: 6, uniformNumber: 10, firstName: "Peter", lastName: "Stoyanov", position: "3B" },
+        { id: 127, battingOrder: 1, uniformNumber: 3, firstName: "Ivan", lastName: "Todorov", position: "LF" },
+        { id: 128, battingOrder: 8, uniformNumber: 45, firstName: "Viktor", lastName: "Georgiev", position: "C" },
+        { id: 129, battingOrder: 9, uniformNumber: 88, firstName: "Petar", lastName: "Mladenov", position: "DH" },
         { id: 130, battingOrder: "Flex", uniformNumber: 99, firstName: "Dimitar", lastName: "Kolev", position: "P" },
     ]);
     const [ballCount, setBallCount] = useState(0);
     const [strikeCount, setStrikeCount] = useState(0);
     const [homePoints, setHomePoints] = useState(0);
     const [awayPoints, setAwayPoints] = useState(0);
-    const [batterTurn, setBatterTurn] = useState(1);
     const [outs, setOuts] = useState(0);
     const [situations, setSituations] = useState([]);
     const [runnersSituations, setRunnersSituations] = useState([]);
     const [currentSituation, setCurrentSituation] = useState({});
     const [isSituationReady, setIsSituationReady] = useState(null);
     const nextBatter = () => {
-        const newBatterTurn = batterTurn >= 9 ? 1 : batterTurn + 1
-        setBatterTurn(newBatterTurn);
+        const newBatterTurn = battingTurn >= 9 ? 1 : battingTurn + 1;
+        setBattingTurn(newBatterTurn);
         setOffense({ batter: roster.filter((player) => player.battingOrder == newBatterTurn)[0], firstBaseRunner: offense.firstBaseRunner, secondBaseRunner: offense.secondBaseRunner, thirdBaseRunner: offense.thirdBaseRunner })
     };
 
@@ -126,7 +148,7 @@ export default function GameScorer() {
             }
         }
     )
-    const [takenPlayers, setTakenPlayers] = useState(roster.map((player) => player.id));
+    const [takenPlayers, setTakenPlayers] = useState(homeRoster.map((player) => player.id));
 
     const clearCount = () => {
         setStrikeCount(0);
@@ -155,6 +177,7 @@ export default function GameScorer() {
     }), [isSituationReady, currentSituation]);
     //TODO Empty runnerSituationList
     const addSituation = (outs, type) => {
+        console.log({ batter: offense.batter, inning: inning, inningHalf: inningHalf, outs: outs, situation: type, runners: runnersSituations });
         setCurrentSituation({ batter: offense.batter, inning: inning, inningHalf: inningHalf, outs: outs, situation: type, runners: runnersSituations });
 
         //console.log({ batter: offense.batter, inning: inning, inningHalf: inningHalf, outs: outs, situation: type, runners: runnersSituations })
@@ -207,7 +230,7 @@ export default function GameScorer() {
                 if (isThirdOccupied && isSecondOccupied && isFirstOccupied)
                     return [{ basePosition: "3B", player: offense.thirdBaseRunner }, { basePosition: "2B", player: offense.secondBaseRunner }];
                 else if (isSecondOccupied && isFirstOccupied)
-                    return [offense.secondBaseRunner]
+                    return [{ basePosition: "2B", player: offense.secondBaseRunner }];
                 else if (isThirdOccupied && isSecondOccupied)
                     return [{ basePosition: "3B", player: offense.thirdBaseRunner }];
                 return [];
@@ -263,23 +286,34 @@ export default function GameScorer() {
     };
 
     const switchTeams = () => {
+        const oldBatterTurn = oldBattingTurn;
+        let defenseRoster, attackRoster;
+        setOldBattingTurn(battingTurn);
         if (inningHalf == "UP") {
             const newPoints = points.away;
-            newPoints[inning - 1] = 0; setPoints({ home: points.home, away: newPoints })
+            newPoints[inning - 1] = 0;
+            setPoints({ home: points.home, away: newPoints })
+            setRoster(awayRoster);
+            attackRoster = awayRoster;
+            defenseRoster = homeRoster;
         } else {
             const newPoints = points.home;
             newPoints[inning - 1] = 0;
             setPoints({ home: newPoints, away: points.away })
+            setRoster(homeRoster);
+            attackRoster = homeRoster;
+            defenseRoster = awayRoster;
         }
         const newDefense = {};
-        Object.keys(defense).forEach((position) => newDefense[position] = roster.filter((player) => player.position === positionTextToAbbreviations[position])[0]);
+        Object.keys(defense).forEach((position) => newDefense[position] = defenseRoster.filter((player) => player.position === positionTextToAbbreviations[position])[0]);
         setDefense(newDefense);
         const newOffense = {
-            batter: roster.filter((player) => player.battingOrder == batterTurn)[0],
+            batter: attackRoster.filter((player) => player.battingOrder == oldBatterTurn)[0],
             firstBaseRunner: null,
             secondBaseRunner: null,
             thirdBaseRunner: null
         };
+        setBattingTurn(oldBatterTurn);
         setOffense(newOffense);
     }
     useEffect((() => switchTeams()), [inningHalf]);
@@ -292,7 +326,10 @@ export default function GameScorer() {
 
             nextBatter();
         }} />,
-        "Quick": <GameScorerQuickOptions close={clearOption} incrementOuts={() => incrementOuts()} moveRunners={(bases) => moveRunners(bases)} addSituation={(outsInc, type) => addSituation(outs + outsInc, type)} />,
+        "Quick": <GameScorerQuickOptions close={clearOption}
+            incrementOuts={() => incrementOuts()}
+            moveRunners={(bases) => moveRunners(bases)}
+            addSituation={(outsInc, type) => { setRunnersSituations([...runnersSituations, { player: offense.batter, situation: type }]); addSituation(outs + outsInc, type) }} />,
         "Strikeout": <GameScorerStrikeoutOptions close={clearOption}
             situationFunction={(strikeoutType) => {
                 setIsSituationReady(false);
@@ -304,7 +341,6 @@ export default function GameScorer() {
             }}
         />,
         "Groundout": <GameScorerOutOptions close={clearOption} situationFunction={(positions) => {
-
             setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Groundout ${positions}` }])
             addSituation(outs + 1, `Groundout ${positions}`);
             moveRunners(0);
@@ -317,32 +353,32 @@ export default function GameScorer() {
             incrementOuts();
         }} />,
         "Sac flyout": <GameScorerFlyoutOptions close={clearOption} situation="Sacrifice fly" situationCode="SF" situationFunction={(position) => {
-            setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Flyout ${positionValuesToAbbrevations[position]}` }])
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Sacrificise flyout ${positionValuesToAbbrevations[position]}` }])
             addSituation(outs + 1, `Sacrificise flyout ${positionValuesToAbbrevations[position]}`);
             moveRunners(0);
             incrementOuts();
         }} />,
         "Linedrive": <GameScorerFlyoutOptions close={clearOption} situation="Linedrive" situationCode="L" situationFunction={(position) => {
-            setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Flyout ${positionValuesToAbbrevations[position]}` }])
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Linedrive  ${positionValuesToAbbrevations[position]}` }])
             addSituation(outs + 1, `Linedrive ${positionValuesToAbbrevations[position]}`);
             moveRunners(0);
             incrementOuts();
         }
         } />,
         "Foul fly": <GameScorerFlyoutOptions close={clearOption} situation="Foul fly" situationCode="FF" situationFunction={(position) => {
-            setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Flyout ${positionValuesToAbbrevations[position]}` }])
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Foul flyout ${positionValuesToAbbrevations[position]}` }])
             addSituation(outs + 1, `Foul flyout ${positionValuesToAbbrevations[position]}`);
             moveRunners(0);
             incrementOuts();
         }} />,
         "Pop fly": <GameScorerFlyoutOptions close={clearOption} situation="Pop fly" situationCode="P" situationFunction={(position) => {
-            setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Flyout ${positionValuesToAbbrevations[position]}` }])
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Pop flyout ${positionValuesToAbbrevations[position]}` }])
             addSituation(outs + 1, `Pop flyout ${positionValuesToAbbrevations[position]}`);
             moveRunners(0);
             incrementOuts();
         }} />,
         "Infield fly": <GameScorerFlyoutOptions close={clearOption} situation="Infield fly" situationCode="IF" situationFunction={(position) => {
-            setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Flyout ${positionValuesToAbbrevations[position]}` }])
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Infield flyout ${positionValuesToAbbrevations[position]}` }])
             addSituation(outs + 1, `Infield flyout ${positionValuesToAbbrevations[position]}`);
             moveRunners(0);
             incrementOuts();
@@ -353,15 +389,26 @@ export default function GameScorer() {
             moveRunners(1);
         }} />,
         "Dropped 3rd": <GameScorerDroppedStrikeoutOptions close={clearOption} situationFunction={(droppedType) => {
-
             setRunnersSituations([...runnersSituations, { player: offense.batter, situation: droppedType }]);
             addSituation(outs, droppedType);
             moveRunners(1);
         }} />,
         "Fielder's choice": <GameScorerOutOptions close={clearOption} />,
-        "Sac bunt": <GameScorerOutOptions close={clearOption} />,
+        "Sac bunt": <GameScorerOutOptions close={clearOption} situationFunction={(positions) => {
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Sacrifice bunt ${positions}` }])
+            addSituation(outs + 1, `Sacrifice bunt ${positions}`);
+            moveRunners(0);
+            incrementOuts();
+        }} />,
         "GDP": <GameScorerOutOptions close={clearOption} />,
-        "Error": <GameScorerErrorOptions close={clearOption} />,
+        "Error": <GameScorerErrorOptions close={clearOption}
+            situationFunction={(errorSituation) => {
+                console.log(errorSituation)
+                setIsSituationReady(false);
+                setRunnersSituations([...runnersSituations, { player: offense.batter, situation: errorSituation }]);
+                addSituation(outs, errorSituation);
+                moveRunners(1);
+            }} />,
         "Runner": <GameScorerRunnerOptions close={() => {
             if (runnerWindowCount > 1)
                 setRunnerWindowCount(runnerWindowCount - 1);
@@ -374,8 +421,8 @@ export default function GameScorer() {
                 if (situation != "")
                     setRunnersSituations([...runnersSituations, { player: player, situation: situation, finalBase: finalBase }]);
                 const newOffense = { ...offense };
-                console.log(startBase);
-                console.log(finalBase);
+                // console.log(startBase);
+                // console.log(finalBase);
                 if (finalBase != "Home")
                     newOffense[finalBase == "1B" ? "firstBaseRunner" : finalBase == "2B" ? "secondBaseRunner" : finalBase == "3B" ? "thirdBaseRunner" : ""] = player;
                 if (finalBase == "Home") {
@@ -407,8 +454,35 @@ export default function GameScorer() {
                     else
                         return null;
                 }).filter((value) => !!value)
-            } />,
-        "More": <GameScorerMoreOptions close={clearOption} changeOption={(newOption) => setSituationOption(newOption)} />
+            }
+            changeOption={(newOption) => setSituationOption(newOption)} />,
+        "More": <GameScorerMoreOptions close={clearOption}
+            outs={outs}
+            changeOption={(newOption) => setSituationOption(newOption)}
+            incrementOuts={() => incrementOuts()}
+            moveRunners={(bases) => moveRunners(bases)}
+            addSituation={(outsInc, type) => { setRunnersSituations([...runnersSituations, { player: offense.batter, situation: type }]); addSituation(outs + outsInc, type) }}
+            occupiedBases={
+                Object.entries(offense).map(([key, value]) => {
+                    if (value && key != "batter")
+                        return runnersToBases[key];
+                    else
+                        return null;
+                }).filter((value) => !!value)
+            }
+            incrementBallCount={() => {
+                if (ballCount == 3) {
+                    setRunnersSituations([...runnersSituations, { player: offense.batter, situation: "Walk on balk" }]);
+                    addSituation(outs, "Walk");
+                    moveRunners(1);
+                }
+                else {
+                    setRunnersSituations([...runnersSituations, { player: offense.batter, situation: "Ball on balk" }]);
+                    setBallCount(ballCount + 1);
+                }
+            }}
+        />,
+        "Out by rule": <GameScorerOutByRuleOptions close={clearOption} />
     }
     return (
         <>
@@ -726,7 +800,7 @@ export default function GameScorer() {
                             {situations[0] && <> <div className="flex flex-col w-4/5 gap-2">
                                 <div className="flex flex-row  gap-6 ">
                                     {situations[0].batter && <div>
-                                        Batter: #{situations[0].batter.uniformNumber} {situations[0].batter.lastName}
+                                        Batter: #{situations[0].batter.uniformNumber} {situations[0].batter.firstName} {situations[0].batter.lastName}
                                     </div>
                                     }
                                 </div>

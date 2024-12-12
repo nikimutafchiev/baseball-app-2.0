@@ -12,63 +12,54 @@ export default function GameScorerQuickOptions(props) {
                             props.addSituation(1, `Groundout 5-3`);
                             props.incrementOuts();
                             props.moveRunners(0);
-                            props.close();
                         }}><div>5-3</div><div>Groundout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"
                         onClick={() => {
                             props.addSituation(1, `Groundout 4-3`);
                             props.incrementOuts();
                             props.moveRunners(0);
-                            props.close();
                         }}><div>4-3</div><div>Groundout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"
                         onClick={() => {
                             props.addSituation(1, `Groundout 1-3`);
                             props.incrementOuts();
                             props.moveRunners(0);
-                            props.close();
                         }}><div>1-3</div><div>Groundout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"
                         onClick={() => {
                             props.addSituation(1, `Groundout 2-3`);
                             props.incrementOuts();
                             props.moveRunners(0);
-                            props.close();
                         }}><div>2-3</div><div>Groundout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"
                         onClick={() => {
                             props.addSituation(1, `Groundout 3-1`);
                             props.incrementOuts();
                             props.moveRunners(0);
-                            props.close();
                         }}><div>3-1</div><div>Groundout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"
                         onClick={() => {
                             props.addSituation(1, `Groundout 3`);
                             props.incrementOuts();
                             props.moveRunners(0);
-                            props.close();
                         }}><div>U3</div><div>Groundout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"
                         onClick={() => {
                             props.addSituation(1, `Flyout LF`);
                             props.incrementOuts();
                             props.moveRunners(0);
-                            props.close();
                         }}><div>F7</div><div>Flyout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"
                         onClick={() => {
                             props.addSituation(1, `Flyout CF`);
                             props.incrementOuts();
                             props.moveRunners(0);
-                            props.close();
                         }}><div>F8</div><div>Flyout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"
                         onClick={() => {
                             props.addSituation(1, `Flyout RF`);
                             props.incrementOuts();
                             props.moveRunners(0);
-                            props.close();
                         }}><div>F9</div><div>Flyout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>6-4-3</div><div>GDP</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>4-6-3</div><div>GDP</div></div>
