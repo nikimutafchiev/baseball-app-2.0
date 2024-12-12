@@ -2,8 +2,8 @@ import { RiCloseCircleLine } from "react-icons/ri"
 import { ToggleButton, ToggleButtonGroup } from "@mui/material"
 import { useEffect, useState } from "react";
 export default function GameScorerRunnerOptions(props) {
-    const [basePosition, setBasePosition] = useState(props.runner.basePosition);
-    useEffect((() => setBasePosition(props.runner.basePosition)), [props.runner]);
+    const [basePosition, setBasePosition] = useState(props.runner.newBasePosition);
+    useEffect((() => setBasePosition(props.runner.newBasePosition)), [props.runner]);
     return (
         <div className="fixed inset-0 z-10 bg-black bg-opacity-50">
             <div className="fixed z-20 flex flex-col  inset-0 px-6 py-2 overflow-y-hidden text-white font-semibold bg-white w-3/4 h-4/5 self-center justify-self-center rounded">
@@ -23,25 +23,25 @@ export default function GameScorerRunnerOptions(props) {
                                     setBasePosition(newValue);
                                 }}
                             >
-                                <ToggleButton value="1B" disabled={props.runner.basePosition == "2B" || props.runner.basePosition == "3B" || props.runner.basePosition == "Home"}>First</ToggleButton>
-                                <ToggleButton value="2B" disabled={props.runner.basePosition == "3B" || props.runner.basePosition == "Home"}>Second</ToggleButton>
-                                <ToggleButton value="3B" disabled={props.runner.basePosition == "Home"}>Third</ToggleButton>
-                                <ToggleButton value="Home">Home</ToggleButton>
+                                <ToggleButton value="1B" disabled={props.runner.newBasePosition == "2B" || props.runner.newBasePosition == "3B" || props.runner.newBasePosition == "Home"}>First</ToggleButton>
+                                <ToggleButton value="2B" disabled={(props.occupiedBases.includes("2B") && props.runner.newBasePosition == "1B") || props.runner.newBasePosition == "3B" || props.runner.newBasePosition == "Home"}>Second</ToggleButton>
+                                <ToggleButton value="3B" disabled={(props.occupiedBases.includes("2B") && props.runner.newBasePosition == "1B") || (props.occupiedBases.includes("3B") && (props.runner.newBasePosition == "1B" || props.runner.newBasePosition == "2B")) || props.runner.newBasePosition == "Home"}>Third</ToggleButton>
+                                <ToggleButton value="Home" disabled={(props.occupiedBases.includes("2B") && props.runner.newBasePosition == "1B") || (props.occupiedBases.includes("3B") && (props.runner.newBasePosition == "1B" || props.runner.newBasePosition == "2B"))}>Home</ToggleButton>
                             </ToggleButtonGroup>
                         </div>
                     </>
                     }
                 </div>
                 <div className="flex-1 grid grid-cols-3 overflow-y-auto gap-y-2 gap-x-2 text-white text-2xl font-semibold py-4 px-1">
-                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "advances", props.runner.basePosition, basePosition); props.close() }}><div></div><div>Advanced by batter</div></div>
-                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "on the throw", basePosition); props.close() }}><div>T</div><div>On the throw</div></div>
+                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "advances", props.runner.oldBasePosition, basePosition); props.close() }}><div></div><div>Advanced by batter</div></div>
+                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "on the throw", props.runner.oldBasePosition, basePosition); props.close() }}><div>T</div><div>On the throw</div></div>
 
-                    <div className="bg-gray-500 hover:bg-gray-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "", props.runner.basePosition, props.runner.basePosition); props.close() }}><div></div><div>Stays on base</div></div>
-                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "SB", props.runner.basePosition, basePosition); props.close() }}><div>SB</div><div>Stolen base</div></div>
-                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "on ball out of play", props.runner.basePosition, basePosition); props.close() }}><div></div><div>Ball out of play</div></div>
+                    <div className="bg-gray-500 hover:bg-gray-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "", props.runner.oldBasePosition, basePosition); props.close() }}><div></div><div>Stays on base</div></div>
+                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "SB", props.runner.oldBasePosition, basePosition); props.close() }}><div>SB</div><div>Stolen base</div></div>
+                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "on ball out of play", props.runner.oldBasePosition, basePosition); props.close() }}><div></div><div>Ball out of play</div></div>
 
-                    <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "PB", props.runner.basePosition, basePosition); props.close() }}><div>PB</div><div>Passed ball</div></div>
-                    <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "WP", props.runner.basePosition, basePosition); props.close() }}><div>WP</div><div>Wild pitch</div></div>
+                    <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "PB", props.runner.oldBasePosition, basePosition); props.close() }}><div>PB</div><div>Passed ball</div></div>
+                    <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "WP", props.runner.oldBasePosition, basePosition); props.close() }}><div>WP</div><div>Wild pitch</div></div>
                     <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>E</div><div>Error</div></div>
                     <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div></div><div>Extra base error</div></div>
 

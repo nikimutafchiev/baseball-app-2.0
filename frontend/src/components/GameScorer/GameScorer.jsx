@@ -162,8 +162,8 @@ export default function GameScorer() {
     const [runnerWindowCount, setRunnerWindowCount] = useState(0);
     const [runnersToMove, setRunnersToMove] = useState([]);
     const moveRunners = (bases) => {
-
-        const runnersMove = [{ basePosition: "1B", player: getMovedRunner("1B", bases) }, { basePosition: "2B", player: getMovedRunner("2B", bases) }, { basePosition: "3B", player: getMovedRunner("3B", bases) }, ...getScoringRunners(bases).map((player) => ({ basePosition: "Home", player: player }))].filter((value) => !!value.player);
+        const movedRunnerFirst = getMovedRunner("1B", bases), movedRunnerSecond = getMovedRunner("2B", bases), movedRunnerThird = getMovedRunner("3B", bases);
+        const runnersMove = [{ newBasePosition: "1B", player: movedRunnerFirst.player, oldBasePosition: movedRunnerFirst.basePosition }, { newBasePosition: "2B", player: movedRunnerSecond.player, oldBasePosition: movedRunnerSecond.basePosition }, { newBasePosition: "3B", player: movedRunnerThird.player, oldBasePosition: movedRunnerThird.basePosition }, ...getScoringRunners(bases).map((player) => { return { newBasePosition: "Home", player: player.player, oldBasePosition: player.basePosition } })].filter((value) => !!value.player);
         setRunnersToMove(runnersMove);
         setRunnerWindowCount(runnersMove.length);
         if (bases == 0)
@@ -183,43 +183,57 @@ export default function GameScorer() {
         // setOffense(newOffense);
         nextBatter();
     }
+    const runnersToBases = {
+        firstBaseRunner: "1B",
+        secondBaseRunner: "2B",
+        thirdBaseRunner: "3B",
+        batter: "Home"
+    }
+    const basesToRunners = {
+        "1B": "firstBaseRunner",
+        "2B": "secondBaseRunner",
+        "3B": "thirdBaseRunner",
+        "Home": "batter"
+    }
     const getScoringRunners = (bases) => {
         const isFirstOccupied = !!offense.firstBaseRunner, isSecondOccupied = !!offense.secondBaseRunner, isThirdOccupied = !!offense.thirdBaseRunner;
         switch (bases) {
             case 1: {
                 if (isSecondOccupied && isThirdOccupied && isFirstOccupied)
-                    return [offense.thirdBaseRunner];
+                    return [{ basePosition: "3B", player: offense.thirdBaseRunner }];
                 return [];
             }
             case 2: {
                 if (isThirdOccupied && isSecondOccupied && isFirstOccupied)
-                    return [offense.thirdBaseRunner, offense.secondBaseRunner];
+                    return [{ basePosition: "3B", player: offense.thirdBaseRunner }, { basePosition: "2B", player: offense.secondBaseRunner }];
                 else if (isSecondOccupied && isFirstOccupied)
                     return [offense.secondBaseRunner]
                 else if (isThirdOccupied && isSecondOccupied)
-                    return [offense.thirdBaseRunner];
+                    return [{ basePosition: "3B", player: offense.thirdBaseRunner }];
                 return [];
             }
             case 3: {
                 if (isThirdOccupied && isSecondOccupied && isFirstOccupied)
-                    return [offense.thirdBaseRunner, offense.secondBaseRunner, offense.firstBaseRunner];
+                    return [{ basePosition: "3B", player: offense.thirdBaseRunner }, { basePosition: "2B", player: offense.secondBaseRunner }, { basePosition: "1B", player: offense.firstBaseRunner }];
                 else if (isThirdOccupied && isSecondOccupied)
-                    return [offense.thirdBaseRunner, offense.secondBaseRunner];
+                    return [{ basePosition: "3B", player: offense.thirdBaseRunner }, { basePosition: "2B", player: offense.secondBaseRunner }];
                 else if (isThirdOccupied && isFirstOccupied)
-                    return [offense.thirdBaseRunner, offense.firstBaseRunner];
+                    return [{ basePosition: "3B", player: offense.thirdBaseRunner }, { basePosition: "1B", player: offense.firstBaseRunner }];
                 else if (isSecondOccupied && isFirstOccupied)
-                    return [offense.secondBaseRunner, offense.firstBaseRunner];
+                    return [{ basePosition: "2B", player: offense.secondBaseRunner }, { basePosition: "1B", player: offense.firstBaseRunner }];
                 else if (isThirdOccupied)
-                    return [offense.thirdBaseRunner];
+                    return [{ basePosition: "3B", player: offense.thirdBaseRunner }];
                 else if (isSecondOccupied)
-                    return [offense.secondBaseRunner];
+                    return [{ basePosition: "2B", player: offense.secondBaseRunner }];
                 else if (isFirstOccupied)
-                    return [offense.firstBaseRunner];
+                    return [{ basePosition: "1B", player: offense.firstBaseRunner }];
                 else return [];
 
             }
             case 4: {
-                return Object.entries(offense).filter(([key, value]) => !!value).map(([key, value]) => value);
+                return Object.entries(offense).filter(([key, value]) => !!value).map(([key, value]) => {
+                    return { basePosition: (runnersToBases[key]), player: value }
+                });
             }
             default:
                 return [];
@@ -228,22 +242,22 @@ export default function GameScorer() {
     const getMovedRunner = (position, bases) => {
         switch (position) {
             case "1B":
-                return bases == 1 ? offense.batter : bases > 1 ? null : offense.firstBaseRunner;
+                return bases == 1 ? { basePosition: "Home", player: offense.batter } : bases > 1 ? { player: null, basePosition: null } : { basePosition: "1B", player: offense.firstBaseRunner };
             case "2B":
-                return offense.firstBaseRunner && bases == 1 ? offense.firstBaseRunner : bases == 2 ? offense.batter : bases > 2 ? null : offense.secondBaseRunner;
+                return offense.firstBaseRunner && bases == 1 ? { basePosition: "1B", player: offense.firstBaseRunner } : bases == 2 ? { basePosition: "Home", player: offense.batter } : bases > 2 ? { player: null, basePosition: null } : { basePosition: "2B", player: offense.secondBaseRunner };
             case "3B": {
                 if (offense.firstBaseRunner && offense.secondBaseRunner && bases == 1)
-                    return offense.secondBaseRunner
+                    return { basePosition: "2B", player: offense.secondBaseRunner }
                 else if (offense.firstBaseRunner && bases == 2)
-                    return offense.firstBaseRunner
+                    return { basePosition: "1B", player: offense.firstBaseRunner }
                 else if (offense.secondBaseRunner && bases == 2)
-                    return offense.secondBaseRunner
+                    return { basePosition: "2B", player: offense.secondBaseRunner }
                 else if (bases == 3)
-                    return offense.batter
+                    return { basePosition: "Home", player: offense.batter }
                 else if (bases == 4)
-                    return null;
+                    return { player: null, basePosition: null };
                 else
-                    return offense.thirdBaseRunner;
+                    return { basePosition: "3B", player: offense.thirdBaseRunner };
             }
         }
     };
@@ -358,8 +372,10 @@ export default function GameScorer() {
         }} runner={runnersToMove[runnerWindowCount - 1]}
             situationFunction={(player, situation, startBase, finalBase) => {
                 if (situation != "")
-                    setRunnersSituations([...runnersSituations, { player: player, situation: situation, finalBase: finalBase }])
+                    setRunnersSituations([...runnersSituations, { player: player, situation: situation, finalBase: finalBase }]);
                 const newOffense = { ...offense };
+                console.log(startBase);
+                console.log(finalBase);
                 if (finalBase != "Home")
                     newOffense[finalBase == "1B" ? "firstBaseRunner" : finalBase == "2B" ? "secondBaseRunner" : finalBase == "3B" ? "thirdBaseRunner" : ""] = player;
                 if (finalBase == "Home") {
@@ -382,6 +398,15 @@ export default function GameScorer() {
 
                 setOffense(newOffense);
             }
+
+            }
+            occupiedBases={
+                Object.entries(offense).map(([key, value]) => {
+                    if (value)
+                        return runnersToBases[key];
+                    else
+                        return null;
+                }).filter((value) => !!value)
             } />,
         "More": <GameScorerMoreOptions close={clearOption} changeOption={(newOption) => setSituationOption(newOption)} />
     }
@@ -536,7 +561,7 @@ export default function GameScorer() {
                                 }
                                 } />
                             <div style={{ gridColumn: "span 2/ span 2" }}></div>
-                            <div onClick={() => { if (offense.secondBaseRunner) { setRunnerWindowCount(1); setRunnersToMove([{ basePosition: "2B", player: offense.secondBaseRunner }]); setSituationOption("Runner"); } }} className={`${offense.secondBaseRunner ? "bg-accent_1" : "border-4 border-accent_1"} col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md`}>
+                            <div onClick={() => { if (offense.secondBaseRunner) { setRunnerWindowCount(1); setRunnersToMove([{ oldBasePosition: "2B", newBasePosition: "2B", player: offense.secondBaseRunner }]); setSituationOption("Runner"); } }} className={`${offense.secondBaseRunner ? "bg-accent_1" : "border-4 border-accent_1"} col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md`}>
                                 {offense.secondBaseRunner && <Tooltip
                                     title={<div className="text-xs">{offense.secondBaseRunner.firstName} {offense.secondBaseRunner.lastName}</div>}
                                     arrow
@@ -597,7 +622,7 @@ export default function GameScorer() {
                             <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
                             <div style={{ gridColumn: "span 6/ span 6" }}></div>
                             <div onClick={() => {
-                                if (offense.thirdBaseRunner) { setRunnerWindowCount(1); setRunnersToMove([{ basePosition: "3B", player: offense.thirdBaseRunner }]); setSituationOption("Runner"); }
+                                if (offense.thirdBaseRunner) { setRunnerWindowCount(1); setRunnersToMove([{ oldBasePosition: "3B", newBasePosition: "3B", player: offense.thirdBaseRunner }]); setSituationOption("Runner"); }
                             }} className={`${offense.thirdBaseRunner ? "bg-accent_1" : "border-4 border-accent_1"} col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md`}>
                                 {offense.thirdBaseRunner && <Tooltip
                                     title={<div className="text-xs">{offense.thirdBaseRunner.firstName} {offense.thirdBaseRunner.lastName}</div>}
@@ -623,7 +648,7 @@ export default function GameScorer() {
                                 }
                                 } />
                             <div style={{ gridColumn: "span 6/ span 6" }}></div>
-                            <div onClick={() => { if (offense.firstBaseRunner) { setRunnerWindowCount(1); setRunnersToMove([{ basePosition: "1B", player: offense.firstBaseRunner }]); setSituationOption("Runner"); } }} className={`${offense.firstBaseRunner ? "bg-accent_1" : "border-4 border-accent_1"} col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md`}>
+                            <div onClick={() => { if (offense.firstBaseRunner) { setRunnerWindowCount(1); setRunnersToMove([{ oldBasePosition: "1B", newBasePosition: "1B", player: offense.firstBaseRunner }]); setSituationOption("Runner"); } }} className={`${offense.firstBaseRunner ? "bg-accent_1" : "border-4 border-accent_1"} col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md`}>
                                 {offense.firstBaseRunner && <Tooltip
                                     title={<div className="text-xs">{offense.firstBaseRunner.firstName} {offense.firstBaseRunner.lastName}</div>}
                                     arrow
