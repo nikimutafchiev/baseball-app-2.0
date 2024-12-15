@@ -32,16 +32,16 @@ export default function GameScorerRunnerOptions(props) {
                     }
                 </div>
                 <div className="flex-1 grid grid-cols-3 overflow-y-auto gap-y-2 gap-x-2 text-white text-2xl font-semibold py-4 px-1">
+
                     <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "advances", props.runner.oldBasePosition, basePosition); props.close() }}><div></div><div>Advanced by batter</div></div>
+                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer " onClick={() => { props.situationFunction(props.runner.player, "", props.runner.oldBasePosition, basePosition); props.close() }}><div></div><div>Stays on base</div></div>
+
                     <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "on the throw", props.runner.oldBasePosition, basePosition); props.close() }}><div>T</div><div>On the throw</div></div>
 
-                    <div className="bg-gray-500 hover:bg-gray-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "", props.runner.oldBasePosition, basePosition); props.close() }}><div></div><div>Stays on base</div></div>
                     <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "SB", props.runner.oldBasePosition, basePosition); props.close() }}><div>SB</div><div>Stolen base</div></div>
-                    <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "on ball out of play", props.runner.oldBasePosition, basePosition); props.close() }}><div></div><div>Ball out of play</div></div>
 
                     <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "PB", props.runner.oldBasePosition, basePosition); props.close() }}><div>PB</div><div>Passed ball</div></div>
                     <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "WP", props.runner.oldBasePosition, basePosition); props.close() }}><div>WP</div><div>Wild pitch</div></div>
-                    <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" ><div>E</div><div>Error</div></div>
                     <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div></div><div>Extra base error</div></div>
 
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer text-lg" onClick={() => { props.situationFunction(props.runner.player, "Defensive indifference", props.runner.oldBasePosition, basePosition); props.close() }} ><div>O/2</div><div>Defensive indifference</div></div>
@@ -52,6 +52,7 @@ export default function GameScorerRunnerOptions(props) {
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer text-lg"><div>INT</div><div>Runner interference</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>OB</div><div>Obstruction</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"><div>OBR</div><div>Out by rule</div></div>
+                    <div className="bg-slate-500 hover:bg-slate-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer" onClick={() => { props.situationFunction(props.runner.player, "on ball out of play", props.runner.oldBasePosition, basePosition); props.close() }}><div></div><div>Ball out of play</div></div>
 
                     <div className="bg-slate-500 hover:bg-slate-400 p-2 px-4 rounded flex flex-row justify-center items-center cursor-pointer "><div>Pinch runner</div></div>
 

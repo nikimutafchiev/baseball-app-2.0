@@ -184,7 +184,7 @@ export default function GameScorer() {
     }
     const [runnerWindowCount, setRunnerWindowCount] = useState(0);
     const [runnersToMove, setRunnersToMove] = useState([]);
-    const moveRunners = (bases) => {
+    const moveRunners = (bases, isBatterMoving) => {
         const movedRunnerFirst = getMovedRunner("1B", bases), movedRunnerSecond = getMovedRunner("2B", bases), movedRunnerThird = getMovedRunner("3B", bases);
         const runnersMove = [{ newBasePosition: "1B", player: movedRunnerFirst.player, oldBasePosition: movedRunnerFirst.basePosition }, { newBasePosition: "2B", player: movedRunnerSecond.player, oldBasePosition: movedRunnerSecond.basePosition }, { newBasePosition: "3B", player: movedRunnerThird.player, oldBasePosition: movedRunnerThird.basePosition }, ...getScoringRunners(bases).map((player) => { return { newBasePosition: "Home", player: player.player, oldBasePosition: player.basePosition } })].filter((value) => !!value.player);
         setRunnersToMove(runnersMove);
@@ -201,10 +201,7 @@ export default function GameScorer() {
 
         //console.log("3");
         // const newOffense = { batter: roster.filter((player) => player.battingOrder == (batterTurn >= 9 ? 1 : batterTurn + 1))[0], firstBaseRunner: getMovedRunner("1B", bases), secondBaseRunner: getMovedRunner("2B", bases), thirdBaseRunner: getMovedRunner("3B", bases) }
-        clearCount();
 
-        // setOffense(newOffense);
-        nextBatter();
     }
     const runnersToBases = {
         firstBaseRunner: "1B",
@@ -323,7 +320,7 @@ export default function GameScorer() {
             moveRunners(bases);
             setRunnersSituations([...runnersSituations, { player: offense.batter, situation: hitType }])
             addSituation(outs, hitType);
-
+            clearCount();
             nextBatter();
         }} />,
         "Quick": <GameScorerQuickOptions close={clearOption}
@@ -335,6 +332,7 @@ export default function GameScorer() {
                 setIsSituationReady(false);
                 setRunnersSituations([...runnersSituations, { player: offense.batter, situation: strikeoutType }])
                 addSituation(outs + 1, strikeoutType);
+                clearCount();
                 nextBatter();
                 incrementOuts();
                 setIsSituationReady(true);
@@ -344,24 +342,32 @@ export default function GameScorer() {
             setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Groundout ${positions}` }])
             addSituation(outs + 1, `Groundout ${positions}`);
             moveRunners(0);
+            clearCount();
+            nextBatter();
             incrementOuts();
         }} />,
         "Flyout": <GameScorerFlyoutOptions close={clearOption} situation="Flyout" situationCode="F" situationFunction={(position) => {
             setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Flyout ${positionValuesToAbbrevations[position]}` }])
             addSituation(outs + 1, `Flyout ${positionValuesToAbbrevations[position]}`);
             moveRunners(0);
+            clearCount();
+            nextBatter();
             incrementOuts();
         }} />,
         "Sac flyout": <GameScorerFlyoutOptions close={clearOption} situation="Sacrifice fly" situationCode="SF" situationFunction={(position) => {
             setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Sacrificise flyout ${positionValuesToAbbrevations[position]}` }])
             addSituation(outs + 1, `Sacrificise flyout ${positionValuesToAbbrevations[position]}`);
             moveRunners(0);
+            clearCount();
+            nextBatter();
             incrementOuts();
         }} />,
         "Linedrive": <GameScorerFlyoutOptions close={clearOption} situation="Linedrive" situationCode="L" situationFunction={(position) => {
             setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Linedrive  ${positionValuesToAbbrevations[position]}` }])
             addSituation(outs + 1, `Linedrive ${positionValuesToAbbrevations[position]}`);
             moveRunners(0);
+            clearCount();
+            nextBatter();
             incrementOuts();
         }
         } />,
@@ -369,45 +375,60 @@ export default function GameScorer() {
             setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Foul flyout ${positionValuesToAbbrevations[position]}` }])
             addSituation(outs + 1, `Foul flyout ${positionValuesToAbbrevations[position]}`);
             moveRunners(0);
+            clearCount();
+            nextBatter();
             incrementOuts();
         }} />,
         "Pop fly": <GameScorerFlyoutOptions close={clearOption} situation="Pop fly" situationCode="P" situationFunction={(position) => {
             setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Pop flyout ${positionValuesToAbbrevations[position]}` }])
             addSituation(outs + 1, `Pop flyout ${positionValuesToAbbrevations[position]}`);
             moveRunners(0);
+            clearCount();
+            nextBatter();
             incrementOuts();
         }} />,
         "Infield fly": <GameScorerFlyoutOptions close={clearOption} situation="Infield fly" situationCode="IF" situationFunction={(position) => {
             setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Infield flyout ${positionValuesToAbbrevations[position]}` }])
             addSituation(outs + 1, `Infield flyout ${positionValuesToAbbrevations[position]}`);
             moveRunners(0);
+            clearCount();
+            nextBatter();
             incrementOuts();
         }} />,
         "Walk": <GameScorerWalkOptions close={clearOption} situationFunction={(walkType) => {
             setRunnersSituations([...runnersSituations, { player: offense.batter, situation: walkType }]);
             addSituation(outs, walkType);
             moveRunners(1);
+            clearCount();
+            nextBatter();
         }} />,
         "Dropped 3rd": <GameScorerDroppedStrikeoutOptions close={clearOption} situationFunction={(droppedType) => {
             setRunnersSituations([...runnersSituations, { player: offense.batter, situation: droppedType }]);
             addSituation(outs, droppedType);
             moveRunners(1);
+            clearCount();
+            nextBatter();
         }} />,
         "Fielder's choice": <GameScorerOutOptions close={clearOption} />,
         "Sac bunt": <GameScorerOutOptions close={clearOption} situationFunction={(positions) => {
             setRunnersSituations([...runnersSituations, { player: offense.batter, situation: `Sacrifice bunt ${positions}` }])
             addSituation(outs + 1, `Sacrifice bunt ${positions}`);
             moveRunners(0);
+            clearCount();
+            nextBatter();
             incrementOuts();
         }} />,
         "GDP": <GameScorerOutOptions close={clearOption} />,
         "Error": <GameScorerErrorOptions close={clearOption}
             situationFunction={(errorSituation) => {
-                console.log(errorSituation)
-                setIsSituationReady(false);
+                // console.log(errorSituation)
+                // setIsSituationReady(false);
                 setRunnersSituations([...runnersSituations, { player: offense.batter, situation: errorSituation }]);
                 addSituation(outs, errorSituation);
                 moveRunners(1);
+                clearCount();
+                nextBatter();
+
             }} />,
         "Runner": <GameScorerRunnerOptions close={() => {
             if (runnerWindowCount > 1)
@@ -461,6 +482,8 @@ export default function GameScorer() {
             changeOption={(newOption) => setSituationOption(newOption)}
             incrementOuts={() => incrementOuts()}
             moveRunners={(bases) => moveRunners(bases)}
+            clearCount={() => clearCount()}
+            nextBatter={() => nextBatter()}
             addSituation={(outsInc, type) => { setRunnersSituations([...runnersSituations, { player: offense.batter, situation: type }]); addSituation(outs + outsInc, type) }}
             occupiedBases={
                 Object.entries(offense).map(([key, value]) => {
