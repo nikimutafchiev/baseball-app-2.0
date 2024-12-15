@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { BiEdit } from "react-icons/bi";
 import { RiSaveLine } from "react-icons/ri";
+import { IoReorderThree } from "react-icons/io5";
 import useSWR from "swr";
 export default function PlayerInfo() {
     const [isEdit, setIsEdit] = useState(false);
@@ -11,41 +12,57 @@ export default function PlayerInfo() {
     const years = ["2021", '2022', '2023', "2024"];
     const teams = ["Lions", "Blues", "Akademik", "Coyotes", "Buffaloes", "Yunak"];
     const tournaments = ["Bulgarian Cup", "Champions League", "World cup"];
+    const [isShrinked, setIsShrinked] = useState(false);
     return (
         <>
             {player.data && <div className="flex flex-row w-full gap-8 text-white text-sm ">
-                <div className="relative w-1/4">
-                    <div className="flex flex-col h-fit bg-gradient-to-br p-4 gap-4 items-center from-accent_3 via-accent_2 to-accent_1 rounded ">
-                        <h3 className="text-2xl font-semibold">
-                            {player.data.firstName} {player.data.lastName}
-                        </h3>
-                        <img src="https://placehold.co/150x200" />
-                        <div className="flex flex-col gap-0.5 items-center w-full">
-                            <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50" ><div>Height:</div> <div className="w-fit flex flex-row gap-1"><div>{player.data.height}</div><div> cm</div></div></div>
-                            <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Weigth:</div> <div>{player.data.weigth} kg</div></div>
-                            <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Birthday:</div> <div>{new Date(player.data.dateOfBirth).toLocaleDateString()}</div></div>
-                            <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50 text-nowrap"><div>Birthplace:</div> <div>{player.data.country}</div></div>
-                            <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Batting/Throwing:</div><div>{player.data.battingSide}/{player.data.throwingArm}</div> </div>
+                {!isShrinked &&
+                    <div className="relative w-1/4">
+                        <div className="flex flex-col h-fit bg-gradient-to-br p-4 gap-4 items-center from-accent_3 via-accent_2 to-accent_1 rounded ">
+                            <button className=" left-1 top-1 absolute rounded-full p-1 bg-accent_1 hover:bg-accent_2 " onClick={() => setIsShrinked(!isShrinked)}>
+                                <IoReorderThree size={20} />
+                            </button>
+                            <h3 className="text-xl font-semibold">
+                                {player.data.firstName} {player.data.lastName}
+                            </h3>
+                            <img src="https://placehold.co/150x200" />
+                            <div className="flex flex-col gap-0.5 items-center w-full">
+                                <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50" ><div>Height:</div> <div className="w-fit flex flex-row gap-1"><div>{player.data.height}</div><div> cm</div></div></div>
+                                <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Weigth:</div> <div>{player.data.weigth} kg</div></div>
+                                <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Birthday:</div> <div>{new Date(player.data.dateOfBirth).toLocaleDateString()}</div></div>
+                                <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50 text-nowrap"><div>Birthplace:</div> <div>{player.data.country}</div></div>
+                                <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Batting/Throwing:</div><div>{player.data.battingSide}/{player.data.throwingArm}</div> </div>
+                            </div>
+                            <button className={`flex items-center gap-2 px-4 py-2 text-sm bg-white font-medium rounded border-2 transition ${isEdit
+                                ? "border-green-500 text-green-600 hover:bg-green-50"
+                                : "border-gray-500 text-gray-600 hover:bg-gray-50"
+                                }`}
+                                onClick={() => setIsEdit(!isEdit)}>
+                                {isEdit ? (
+                                    <>
+                                        <RiSaveLine size={20} />
+                                        Save
+                                    </>
+                                ) : (
+                                    <>
+                                        <BiEdit size={20} />
+                                        Edit
+                                    </>
+                                )}
+                            </button>
                         </div>
-                        <button className={`flex items-center gap-2 px-4 py-2 text-sm bg-white font-medium rounded border-2 transition ${isEdit
-                            ? "border-green-500 text-green-600 hover:bg-green-50"
-                            : "border-gray-500 text-gray-600 hover:bg-gray-50"
-                            }`}
-                            onClick={() => setIsEdit(!isEdit)}>
-                            {isEdit ? (
-                                <>
-                                    <RiSaveLine size={20} />
-                                    Save
-                                </>
-                            ) : (
-                                <>
-                                    <BiEdit size={20} />
-                                    Edit
-                                </>
-                            )}
-                        </button>
                     </div>
-                </div>
+                }
+                {isShrinked &&
+                    <div className="size-16">
+                        <div className="fixed size-16 bg-gradient-to-br p-4 flex flex-row from-accent_3 via-accent_2 to-accent_1 rounded text-white justify-center">
+                            <button className="rounded-full p-2 absolute bg-accent_1 hover:bg-accent_3 " onClick={() => setIsShrinked(!isShrinked)}>
+                                <IoReorderThree size={20} />
+                            </button>
+
+                        </div>
+                    </div>}
+
                 <div className="flex flex-row flex-1 gap-8">
                     <div className="bg-line w-[2px]"></div>
                     <div className="flex flex-col flex-1 text-black gap-4 h-fit">
