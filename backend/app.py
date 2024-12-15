@@ -93,6 +93,40 @@ def get_team_by_id(team_id):
         "headCoach":team.headCoach
     }
 
+
+@app.route("/tournament",methods=['POST'])
+def add_tournament():
+    data = request.json
+    print(data['startDate'])
+    new_team = Tournament(name=data['name'],place=data['place'],startDate=date(data['startDate']['year'], data['startDate']['month'],data['startDate']['date'] ),endDate=date(data['endDate']['year'],data['endDate']['month'],data['endDate']['date']))
+    db.session.add(new_team)
+    db.session.commit()
+    return "Successfully added tournament",200
+
+
+@app.route("/tournaments",methods=['GET'])
+def get_tournaments():
+    tournaments = Tournament.query.all()
+    res = [{
+        'id':tournament.id,
+        'name': tournament.name,
+        "startDate":tournament.startDate,
+        'endDate': tournament.endDate,
+    } for tournament in tournaments]
+    return res,200
+
+
+@app.route("/tournament/<int:tournament_id>",methods=['GET'])
+def get_tournament_by_id(tournament_id):
+    tournament = Tournament.query.get(tournament_id)
+    return {
+        'id':tournament.id,
+        'name': tournament.name,
+        "startDate":tournament.startDate,
+        'endDate': tournament.endDate,
+    } 
+
+
 class Handedness(enum.Enum):
     LEFTY = "L"
     RIGHTY = "R"
@@ -131,15 +165,14 @@ class Team(db.Model):
 class Tournament(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(60), nullable=False)
-    venue: Mapped[str] = mapped_column(String(100))
+    place: Mapped[str] = mapped_column(String(100))
     startDate: Mapped[date] = mapped_column(Date)
     endDate: Mapped[date] = mapped_column(Date)
 
 
 
 with app.app_context():
-    db.session.execute(text("DROP TABLE Team"));
-    db.session.commit()
+
     db.create_all()
 
 if __name__ == "__main__":

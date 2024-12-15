@@ -21,8 +21,8 @@ export default function Profile() {
                 !isShrinked
                 &&
                 <div className="relative w-1/4 h-fit flex flex-col items-center gap-4 p-5 shadow-xl rounded-md bg-white">
-                    <button className="absolute text-black left-2 top-2 rounded-full hover:bg-gray-300 bg-gray-200 p-2" onClick={() => setIsShrinked(!isShrinked)}>
-                        <IoReorderThree size={30} />
+                    <button className="absolute text-black left-2 top-2 rounded-full hover:bg-gray-300 bg-gray-200 p-1" onClick={() => setIsShrinked(!isShrinked)}>
+                        <IoReorderThree size={20} />
                     </button>
                     <img src="https://placehold.co/200x200" className="rounded-full border-black border-[1.5px]" />
                     <div className="text-2xl font-semibold">
@@ -42,10 +42,10 @@ export default function Profile() {
             }
             {
                 isShrinked &&
-                <div className=" size-16">
-                    <div className="fixed p-5 size-16 shadow-xl rounded-md bg-white">
-                        <button className="absolute text-black left-2 top-2 rounded-full hover:bg-gray-300 bg-gray-200 p-2" onClick={() => setIsShrinked(!isShrinked)}>
-                            <IoReorderThree size={30} />
+                <div className=" size-11">
+                    <div className="fixed p-5 size-11 shadow-xl rounded-md bg-white">
+                        <button className="absolute text-black left-2 top-2 rounded-full hover:bg-gray-300 bg-gray-200 p-1" onClick={() => setIsShrinked(!isShrinked)}>
+                            <IoReorderThree size={20} />
                         </button>
                     </div>
                 </div>
