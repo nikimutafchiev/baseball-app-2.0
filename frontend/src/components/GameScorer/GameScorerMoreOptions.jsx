@@ -27,7 +27,7 @@ export default function GameScorerMoreOptions(props) {
                             }
                             else {
                                 props.addSituation(0, "Balk");
-                                props.moveRunners(1);
+                                props.moveRunners(1, false);
                             }
                         }}>
                         <div>BK</div><div>Balk</div></div>

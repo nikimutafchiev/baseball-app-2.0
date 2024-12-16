@@ -22,9 +22,11 @@ export default function Team(props) {
             <div className="w-full flex flex-col text-gray-500 items-center gap-2 text-xs">
                 <div>Address: {props.address}</div>
                 <div>Contact: {props.contact}</div>
-                <div className="w-3/5 flex flex-row justify-around mt-2">
-                    {Object.entries(props.socialMedia).filter(([media, page]) => page !== "").map(([media, page]) => <a href={page} target="_blank">{icons[media]}</a>)}
-                </div>
+                {props.socialMedia &&
+                    <div className="w-3/5 flex flex-row justify-around mt-2">
+                        {Object.entries(props.socialMedia).filter(([media, page]) => page !== "").map(([media, page]) => <a href={page} target="_blank">{icons[media]}</a>)}
+                    </div>
+                }
             </div>
             <Link className="p-2 bg-accent_2 hover:bg-accent_3 rounded text-white font-semibold text-xs" to={`${props.id}`}>More Info</Link>
 

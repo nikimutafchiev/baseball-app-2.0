@@ -49,7 +49,7 @@ export default function TournamentInfo() {
                         </button>
                     </div>
                 </div>}
-                <div className="flex flex-row gap-4 flex-1">
+                <div className="flex flex-row  gap-4 flex-1">
                     <div className="bg-line w-[2px]"></div>
                     <Outlet />
                 </div>

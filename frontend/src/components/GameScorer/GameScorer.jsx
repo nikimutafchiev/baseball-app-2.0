@@ -184,9 +184,11 @@ export default function GameScorer() {
     }
     const [runnerWindowCount, setRunnerWindowCount] = useState(0);
     const [runnersToMove, setRunnersToMove] = useState([]);
-    const moveRunners = (bases, isBatterMoving) => {
+    const moveRunners = (bases, isBatterMoving = true) => {
         const movedRunnerFirst = getMovedRunner("1B", bases), movedRunnerSecond = getMovedRunner("2B", bases), movedRunnerThird = getMovedRunner("3B", bases);
-        const runnersMove = [{ newBasePosition: "1B", player: movedRunnerFirst.player, oldBasePosition: movedRunnerFirst.basePosition }, { newBasePosition: "2B", player: movedRunnerSecond.player, oldBasePosition: movedRunnerSecond.basePosition }, { newBasePosition: "3B", player: movedRunnerThird.player, oldBasePosition: movedRunnerThird.basePosition }, ...getScoringRunners(bases).map((player) => { return { newBasePosition: "Home", player: player.player, oldBasePosition: player.basePosition } })].filter((value) => !!value.player);
+        let runnersMove = [{ newBasePosition: "1B", player: movedRunnerFirst.player, oldBasePosition: movedRunnerFirst.basePosition }, { newBasePosition: "2B", player: movedRunnerSecond.player, oldBasePosition: movedRunnerSecond.basePosition }, { newBasePosition: "3B", player: movedRunnerThird.player, oldBasePosition: movedRunnerThird.basePosition }, ...getScoringRunners(bases).map((player) => { return { newBasePosition: "Home", player: player.player, oldBasePosition: player.basePosition } })].filter((value) => !!value.player);
+        if (!isBatterMoving)
+            runnersMove = runnersMove.filter((runner) => runner.oldBasePosition != "Home");
         setRunnersToMove(runnersMove);
         setRunnerWindowCount(runnersMove.length);
         if (bases == 0)
@@ -197,8 +199,6 @@ export default function GameScorer() {
         }
         else
             setSituationOption("");
-
-
         //console.log("3");
         // const newOffense = { batter: roster.filter((player) => player.battingOrder == (batterTurn >= 9 ? 1 : batterTurn + 1))[0], firstBaseRunner: getMovedRunner("1B", bases), secondBaseRunner: getMovedRunner("2B", bases), thirdBaseRunner: getMovedRunner("3B", bases) }
 
@@ -481,7 +481,7 @@ export default function GameScorer() {
             outs={outs}
             changeOption={(newOption) => setSituationOption(newOption)}
             incrementOuts={() => incrementOuts()}
-            moveRunners={(bases) => moveRunners(bases)}
+            moveRunners={moveRunners}
             clearCount={() => clearCount()}
             nextBatter={() => nextBatter()}
             addSituation={(outsInc, type) => { setRunnersSituations([...runnersSituations, { player: offense.batter, situation: type }]); addSituation(outs + outsInc, type) }}

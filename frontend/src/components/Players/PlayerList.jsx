@@ -10,7 +10,7 @@ export default function PlayerList() {
     ]
     const filteredLetters = players.data ? letters.map((letter) => { return { label: letter, value: players.data.filter((player) => player.firstName.charAt(0) === letter) } }).filter((letter) => letter.value.length > 0) : [];
     return (<>
-        {players.isLoading && <div className="mt-10 flex flex-row justify-center w-full"><CircularProgress size={60} /></div>}
+        {players.isLoading && <div className="mt-10 flex flex-row justify-center w-full"><CircularProgress color='success' size={60} /></div>}
         {(players.error && !players.isLoading) && <Alert className="mt-10 flex flex-row justify-center w-1/2 mx-auto" severity="error">Error occured, while fetching players!</Alert>}
         {players.data && players.data.length != 0 &&
             <div className="w-full flex flex-row pt-10 gap-6">
