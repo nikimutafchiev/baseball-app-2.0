@@ -1,9 +1,9 @@
 from flask import Flask, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Enum, Date, JSON,text
+from sqlalchemy import String, Enum, Date, JSON, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 import enum
 app = Flask(__name__)
@@ -97,9 +97,8 @@ def get_team_by_id(team_id):
 @app.route("/tournament",methods=['POST'])
 def add_tournament():
     data = request.json
-    print(data['startDate'])
-    new_team = Tournament(name=data['name'],place=data['place'],startDate=date(data['startDate']['year'], data['startDate']['month'],data['startDate']['date'] ),endDate=date(data['endDate']['year'],data['endDate']['month'],data['endDate']['date']))
-    db.session.add(new_team)
+    new_tournament = Tournament(name=data['name'],place=data['place'],startDate=date(data['startDate']['year'], data['startDate']['month'],data['startDate']['date'] ),endDate=date(data['endDate']['year'],data['endDate']['month'],data['endDate']['date']))
+    db.session.add(new_tournament)
     db.session.commit()
     return "Successfully added tournament",200
 
@@ -126,6 +125,24 @@ def get_tournament_by_id(tournament_id):
         'endDate': tournament.endDate,
     } 
 
+
+@app.route("/game",methods=['POST'])
+def add_game():
+    data = request.json
+    new_game = Game(homeTeam = data['homeTeam'], awayTeam = data['awayTeam'])
+    db.session.add(new_game)
+    db.session.commit()
+    return "Successfully added tournament",200
+
+@app.route("/games",methods=['GET'])
+def get_games():
+    games = Game.query.all()
+    res = [{
+        'id':game.id,
+        'homeTeam': game.homeTeam,
+        "awayTeam":game.awayTeam,
+    } for game in games]
+    return res,200
 
 class Handedness(enum.Enum):
     LEFTY = "L"
@@ -169,6 +186,11 @@ class Tournament(db.Model):
     startDate: Mapped[date] = mapped_column(Date)
     endDate: Mapped[date] = mapped_column(Date)
 
+class Game(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    homeTeam: Mapped[str] = mapped_column(String(60), nullable=False)
+    awayTeam: Mapped[str] = mapped_column(String(60), nullable=False)
+    # startTime: Mapped[datetime] = mapped_column(DateTime,nullable=False)
 
 
 with app.app_context():

@@ -8,13 +8,15 @@ export default function GameList(props) {
         { id: 5, datetime: "2024-01-19T19:45:00Z", home: { logo: "https://placehold.co/40x40", teamName: "Slavia Sofia", result: 0 }, away: { logo: "https://placehold.co/40x40", teamName: "Etar Veliko Tarnovo", result: 1 }, status: "live" },
     ];
 
-    return (
+    return (<>{
+        props.games.data &&
         <div className="w-full flex flex-col gap-6" >
             {
-                games.map((game) =>
+                props.games.data.map((game) =>
                     <Game {...game} size={props.size} />
                 )
             }
 
-        </div >)
+        </div >
+    }</>)
 }

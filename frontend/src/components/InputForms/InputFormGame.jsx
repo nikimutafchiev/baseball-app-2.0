@@ -3,10 +3,29 @@ import { RiCloseCircleLine } from "react-icons/ri"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 export default function InputFormGame(props) {
     const errorSubmit = false;
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [homeTeam, setHomeTeam] = useState("");
+    const [awayTeam, setAwayTeam] = useState("");
+    useEffect(() => {
+        if (isSubmitted) {
+            fetch("http://localhost:6363/game", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    homeTeam: homeTeam,
+                    awayTeam: awayTeam
+                }),
+            });
+            setHomeTeam("");
+            setAwayTeam("");
+            setIsSubmitted(false);
+        }
+    }, [isSubmitted]);
     return (<>
         <div className="top-10 absolute self-center z-20 w-7/12 p-2 px-4 bg-white rounded border-black border-[1px] drop-shadow-xl">
             <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
@@ -15,8 +34,8 @@ export default function InputFormGame(props) {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateTimePicker label="Start time" className="bg-white rounded" />
                     </LocalizationProvider>
-                    <TextField label={<div >Home team</div>} variant="outlined" />
-                    <TextField label={<div >Away team</div>} variant="outlined" />
+                    <TextField label={<div >Home team</div>} value={homeTeam} onChange={(e) => { setHomeTeam(e.target.value) }} variant="outlined" />
+                    <TextField label={<div >Away team</div>} value={awayTeam} onChange={(e) => { setAwayTeam(e.target.value) }} variant="outlined" />
 
                 </div>
                 <button className={`bg-primary_2 w-1/2 self-center px-2 py-1 align-middle  text-lg font-semibold rounded ${errorSubmit ? "cursor-not-allowed bg-primary_1 text-gray-400" : "hover:bg-primary_3 text-white"}`} onClick={() => {
