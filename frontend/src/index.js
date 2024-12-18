@@ -25,6 +25,8 @@ import ProfileFavoriteGames from './components/Profile/ProfileFavoriteGames';
 import ProfileAccountInfo from './components/Profile/ProfileAccountInfo';
 import ProfileGameAssignments from './components/Profile/ProfileGameAssignments';
 import ProfileToDoGames from './components/Profile/ProfileToDoGames';
+import TeamTournamentInfoPage from './pages/TeamTournamentInfoPage';
+import TeamRoster from './components/Teams/TeamRoster';
 const rooter = createBrowserRouter([
   {
     path: "/",
@@ -81,6 +83,14 @@ const rooter = createBrowserRouter([
             element: <TournamentInfoRanking />
           }
         ]
+      },
+      {
+        path: "tournaments/:id/teams/:team_id",
+        element: < TeamTournamentInfoPage />,
+      },
+      {
+        path: "tournaments/:id/teams/:team_id/roster",
+        element: <TeamRoster />
       },
       {
         path: "teams",
