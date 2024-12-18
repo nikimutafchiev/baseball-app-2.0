@@ -9,7 +9,7 @@ export default function GameScorerErrorOptions(props) {
     return (<div className="fixed inset-0 z-10 bg-black bg-opacity-50">
         <div className="fixed z-20 inset-0 flex flex-col gap-4 text-white font-semibold text-4xl bg-white w-1/2 h-[90%] self-center justify-self-center rounded">
             <div className="h-[2%]">
-                <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
+                <button className="absolute end-4 hover:text-gray-600 text-gray-500" onClick={() => props.close()}><RiCloseCircleLine size={30} /></button>
             </div>
             <div className="text-black text-center h-[8%] ">
                 {positions.length == 2 ? `${positions[0]}E${positions[1]}` : positions.length == 1 ? (errorType === "Throwing" ? `E${positions[0]}T` : `E${positions[0]}`) : ""}
@@ -38,7 +38,7 @@ export default function GameScorerErrorOptions(props) {
                 <div className="col-span-2"></div>
                 <button className="bg-primary_2 hover:bg-primary_2_hover rounded text-center  p-2 content-center col-span-2" onClick={() => { if (positions.length < maxAssists && positions[positions.length - 1] != "2") setPositions([...positions, "2"]); }}>C</button>
                 <div className="col-span-2"></div>
-                <button className="mt-4 bg-blue-500 hover:bg-blue-400 rounded text-center  p-2 content-center col-span-2 text-lg" onClick={() => { props.situationFunction(positions.length == 2 ? `${positions[0]}E${positions[1]}` : positions.length == 1 ? (errorType === "Throwing" ? `E${positions[0]}T` : `E${positions[0]}`) : ""); }}>Confirm</button>
+                <button className="mt-4 bg-blue-500 hover:bg-blue-400 rounded text-center  p-2 content-center col-span-2 text-lg" onClick={() => { if (!props.isRunner) props.situationFunction(positions.length == 2 ? `${positions[0]}E${positions[1]}` : positions.length == 1 ? (errorType === "Throwing" ? `E${positions[0]}T` : `E${positions[0]}`) : ""); else props.runnerSituationFunction(positions.length == 2 ? `${positions[0]}E${positions[1]}` : positions.length == 1 ? (errorType === "Throwing" ? `E${positions[0]}T` : `E${positions[0]}`) : "") }}>Confirm</button>
             </div>
             <div className="bg-white rounded self-center drop-shadow-lg h-fit ">
                 <ToggleButtonGroup

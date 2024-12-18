@@ -53,7 +53,7 @@ export default function Schedule() {
             {tournaments.map((tournament) =>
                 <div className="flex flex-col gap-6">
                     <h1 className="text-3xl font-semibold">{tournament.name}</h1>
-                    <GameList size="normal" />
+                    <GameList size="normal" games={[]} />
                     <Link className="w-1/5 text-xl text-white font-semibold bg-accent_2 hover:bg-accent_3 p-3 self-end rounded text-center" to={`/tournaments/${tournament.id}/games`}>View tournament info</Link>
                 </div>
             )}

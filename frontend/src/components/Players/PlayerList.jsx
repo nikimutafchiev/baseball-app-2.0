@@ -3,16 +3,16 @@ import useSWR from 'swr';
 import CircularProgress from "@mui/material/CircularProgress";
 import { Alert } from "@mui/material";
 
-export default function PlayerList() {
-    const players = useSWR("http://localhost:6363/players", (url) => fetch(url).then((res) => res.json()));
+export default function PlayerList(props) {
+
     const letters = [
         "A", 'B', "C", "D", "E", "F", "G", "H", "I", "J", 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
     ]
-    const filteredLetters = players.data ? letters.map((letter) => { return { label: letter, value: players.data.filter((player) => player.firstName.charAt(0) === letter) } }).filter((letter) => letter.value.length > 0) : [];
+    const filteredLetters = props.players.data ? letters.map((letter) => { return { label: letter, value: props.players.data.filter((player) => player.firstName.charAt(0) === letter) } }).filter((letter) => letter.value.length > 0) : [];
     return (<>
-        {players.isLoading && <div className="mt-10 flex flex-row justify-center w-full"><CircularProgress color='success' size={60} /></div>}
-        {(players.error && !players.isLoading) && <Alert className="mt-10 flex flex-row justify-center w-1/2 mx-auto" severity="error">Error occured, while fetching players!</Alert>}
-        {players.data && players.data.length != 0 &&
+        {props.players.isLoading && <div className="mt-10 flex flex-row justify-center w-full"><CircularProgress color='success' size={60} /></div>}
+        {(props.players.error && !props.players.isLoading) && <Alert className="mt-10 flex flex-row justify-center w-1/2 mx-auto" severity="error">Error occured, while fetching players!</Alert>}
+        {props.players.data && props.players.data.length != 0 &&
             <div className="w-full flex flex-row pt-10 gap-6">
                 <div className="w-10">
                     <div className="w-6 sticky top-[20vh] rounded-lg p-2 bg-white text-primary_2 text-4xs flex flex-col justify-around items-center font-semibold">{filteredLetters.map((letter) => <a className="px-[4px] text-center rounded-full hover:bg-primary_2 hover:text-white cursor-pointer" href={`#section-${letter.label}`}>{letter.label}</a>)}</div>
@@ -33,7 +33,7 @@ export default function PlayerList() {
                 </div>
             </div>
         }
-        {players.data && players.data.length == 0 && <div className="text-3xl pt-10">Oops, no data here yet!</div>}
+        {props.players.data && props.players.data.length == 0 && <div className="text-3xl pt-10">Oops, no data here yet!</div>}
     </>
     )
 }

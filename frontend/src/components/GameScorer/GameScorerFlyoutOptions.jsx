@@ -6,7 +6,7 @@ export default function GameScorerFlyoutOptions(props) {
     return (<div className="fixed inset-0 z-10 bg-black bg-opacity-50">
         <div className="fixed z-20 inset-0 flex flex-col gap-4 py-2 text-white font-semibold text-4xl bg-white w-1/2 h-4/5 self-center justify-self-center rounded">
             <div className="h-[2%]">
-                <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
+                <button className="absolute end-4 hover:text-gray-600 text-gray-500" onClick={() => props.close()}><RiCloseCircleLine size={30} /></button>
             </div>
             <div className="text-black flex flex-row justify-center w-full h-[10%] ">
                 {position !== "" && <div>{props.situationCode}{position}</div>}
