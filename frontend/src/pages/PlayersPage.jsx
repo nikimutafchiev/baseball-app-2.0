@@ -1,11 +1,16 @@
 import PlayerList from "../components/Players/PlayerList";
 import { RiAddCircleLine } from "react-icons/ri";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InputFormPlayer from "../components/InputForms/InputFormPlayer";
 import { TextField } from "@mui/material";
 import { FiSearch } from "react-icons/fi";
+import useSWR from "swr";
 export default function PlayersPage() {
     const [addClicked, setAddClicked] = useState(false);
+    const players = useSWR("http://localhost:6363/players", (url) => fetch(url).then((res) => res.json()));
+    useEffect(
+        () => { players.mutate() }, [addClicked]
+    )
     return (
         <div className="flex flex-col px-10 py-4">
             <div className="flex flex-row  justify-between">
@@ -16,6 +21,6 @@ export default function PlayersPage() {
             </div>
             {addClicked && <InputFormPlayer close={() => setAddClicked(false)} />}
             {addClicked && <div className="fixed inset-0 z-10 bg-black bg-opacity-50" ></div>}
-            <PlayerList />
+            <PlayerList players={players} />
         </div>)
 }

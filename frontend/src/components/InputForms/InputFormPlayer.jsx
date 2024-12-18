@@ -79,6 +79,7 @@ export default function InputFormPlayer(props) {
     ];
     useEffect((() => {
         if (isSubmitted) {
+
             fetch("http://localhost:6363/player", {
                 method: "POST",
                 headers: {
@@ -95,7 +96,7 @@ export default function InputFormPlayer(props) {
                     gender: gender,
                     country: country
                 }),
-            });
+            }).catch(() => console.log("hello"));
             setFirstName("");
             setLastName("");
             setDateOfBirth({ day: "", month: "", year: "" });
