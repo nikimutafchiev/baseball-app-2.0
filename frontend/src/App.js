@@ -14,11 +14,11 @@ function App() {
     <>
 
       <div className='flex flex-col min-h-screen'>
-        <NavBar />
+        {location.pathname !== "/login" && <NavBar />}
         <div className='flex-1 '>
           <Outlet />
         </div>
-        <Footer />
+        {location.pathname !== "/login" && <Footer />}
       </div>
     </>
   );

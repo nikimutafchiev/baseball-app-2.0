@@ -27,6 +27,7 @@ import ProfileGameAssignments from './components/Profile/ProfileGameAssignments'
 import ProfileToDoGames from './components/Profile/ProfileToDoGames';
 import TeamTournamentInfoPage from './pages/TeamTournamentInfoPage';
 import TeamRoster from './components/Teams/TeamRoster';
+import LoginPage from './pages/LoginPage';
 const rooter = createBrowserRouter([
   {
     path: "/",
@@ -126,6 +127,10 @@ const rooter = createBrowserRouter([
       {
         path: "score/:id/roster",
         element: <RosterPage />
+      },
+      {
+        path: "login",
+        element: <LoginPage />
       }
     ]
   }
