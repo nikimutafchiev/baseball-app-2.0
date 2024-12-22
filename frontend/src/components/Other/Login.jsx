@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../AuthContext";
 import { Link } from "react-router-dom";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
@@ -9,13 +9,16 @@ export default function Login() {
     const [password, setPassword] = useState('');
 
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [errorLogin, setErrorLogin] = useState(0);
     const handleLogin = () => {
-        login({ username, password });
-        console.log(username);
-        console.log(password)
+        setErrorLogin(login({ username, password }));
     };
 
-    const errorSubmit = username.length < 8 || password.length < 8;
+    useEffect(() => {
+        if (errorLogin instanceof Promise)
+            errorLogin.then((promiseValue) => setErrorLogin(promiseValue));
+    }, [errorLogin]);
+    const errorSubmit = username.length < 5 || password.length < 5;
     return (
         <div class="flex min-h-full w-fit flex-col justify-center p-12 rounded-lg bg-white drop-shadow-xl">
             <div class="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -66,7 +69,7 @@ export default function Login() {
                         />
                     </div>
                 </div>
-
+                {errorLogin == -1 && <div className="text-red-400 font-semibold text-sm">Invalid username or password</div>}
                 <div>
                     <button onClick={handleLogin} class={`flex w-full justify-center rounded-md ${!errorSubmit ? "bg-primary_2 hover:bg-primary_2_hover text-white" : "bg-primary_1 pointer-events-none text-gray-400"}  px-3 py-1.5 text-sm/6 font-semibold  shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary_2`}> Login</button>
                 </div>

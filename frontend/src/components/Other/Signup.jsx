@@ -1,9 +1,9 @@
 import { useAuth } from "../../AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TextField, InputAdornment } from "@mui/material";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 export default function Signup() {
-    const { login } = useAuth();
+    const { signup } = useAuth();
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [username, setUsername] = useState('');
@@ -11,12 +11,15 @@ export default function Signup() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
-    const handleLogin = () => {
-        login({ username, password });
-        console.log(username);
-        console.log(password)
+    const [errorSignUp, setErrorSignUp] = useState(0);
+    const handleSignUp = () => {
+        setErrorSignUp(signup({ username, password, firstName, lastName }));
     };
 
+    useEffect(() => {
+        if (errorSignUp instanceof Promise)
+            errorSignUp.then((promiseValue) => setErrorSignUp(promiseValue));
+    }, [errorSignUp]);
     const errorSubmit = username.length < 8 || password.length < 8 || password !== confirmPassword;
 
     return (<div class="flex min-h-full w-1/2 flex-col justify-center py-4 px-8 rounded-lg bg-white drop-shadow-xl" >
@@ -161,9 +164,9 @@ export default function Signup() {
                         }}
                     /></div>
             </div>
-
+            {errorSignUp == -1 && <div className='text-red-500 font-semibold text-sm'>This username is already taken</div>}
             <div className="mt-5">
-                <button onClick={handleLogin} class={`flex w-full justify-center rounded-md ${!errorSubmit ? "bg-primary_2 hover:bg-primary_2_hover text-white" : "bg-primary_1 pointer-events-none text-gray-400"}  px-3 py-1.5 text-sm/6 font-semibold  shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary_2`}>Create account</button>
+                <button onClick={handleSignUp} class={`flex w-full justify-center rounded-md ${!errorSubmit ? "bg-primary_2 hover:bg-primary_2_hover text-white" : "bg-primary_1 pointer-events-none text-gray-400"}  px-3 py-1.5 text-sm/6 font-semibold  shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary_2`}>Create account</button>
             </div>
         </div>
     </div >)

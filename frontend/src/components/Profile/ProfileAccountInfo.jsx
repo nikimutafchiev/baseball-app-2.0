@@ -6,13 +6,6 @@ import { useAuth } from "../../AuthContext";
 export default function ProfileAccountInfo() {
     const [isEdit, setIsEdit] = useState(false);
     const { user } = useAuth();
-    const [data, setData] = useState({
-        firstName: "Petar",
-        lastName: "Petrov",
-
-        username: user.username,
-        password: user.password
-    })
     return (
         <div className="w-full p-6 flex flex-col  bg-white rounded-lg shadow-md h-1/2">
             <div className="flex flex-row justify-between items-center mb-6 ">
@@ -41,20 +34,19 @@ export default function ProfileAccountInfo() {
                 <div className="flex items-center gap-4">
                     <label className="w-1/4 text-lg font-medium text-gray-700">Email:</label>
 
-                    <span className="w-3/4 text-gray-800">{data.username}</span>
+                    <span className="w-3/4 text-gray-800">{user.username}</span>
 
                 </div>
                 <div className="flex items-center gap-4">
                     <label className="w-1/4 text-lg font-medium text-gray-700">Password:</label>
                     {!isEdit ? (
-                        <span className="w-3/4 text-gray-800">{data.password}</span>
+                        <span className="w-3/4 text-gray-800">{user.password}</span>
                     ) : (
                         <TextField
                             className="w-3/4"
                             variant="outlined"
                             size="small"
-                            value={data.password}
-                            onChange={(e) => setData({ ...data, password: e.target.value })}
+                            value={user.password}
                         />
                     )}
                 </div>

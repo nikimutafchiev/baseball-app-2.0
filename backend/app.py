@@ -1,15 +1,20 @@
-from flask import Flask, request
+from flask import Flask, request,jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Enum, Date, JSON, DateTime
+from sqlalchemy import String, Enum, Date, JSON, DateTime,text
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import date, datetime
 from typing import Optional
+from flask_jwt_extended import  create_access_token,JWTManager
 import enum
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
+app.config['SECRET_KEY'] = 'mcskdcmk2mkd23kmdkkm33ksodcoexsd'
+app.config["JWT_SECRET_KEY"] = 'csimdcisdmc5d1eaaa59e6480eb1ff546458903fc90551fb4dbef1f0ef204f18aaf903a39e9'
+app.config['JWT_TOKEN_LOCATION'] = ['headers']
 CORS(app)
 db =  SQLAlchemy(app)
+jwt = JWTManager(app)
 
 @app.route("/player",methods=['POST'])
 def add_player():
@@ -144,6 +149,32 @@ def get_games():
     } for game in games]
     return res,200
 
+@app.route("/signup", methods=["POST"])
+def signup():
+    data = request.json    
+
+   
+    if User.query.filter_by(username=data['username']).first():
+        return "This username is taken",400
+    new_user = User(username=data['username'],password=data['password'],firstName=data['firstName'], lastName= data['lastName'])
+    db.session.add(new_user)
+    db.session.commit()
+    return ""
+
+@app.route("/login",methods=["POST"])
+def login():
+    data = request.json
+    username = data['username']
+    password = data['password']
+
+    user = User.query.filter_by(username=username).first()
+
+    if user and user.password == password:
+        access_token = create_access_token(identity=user.id,additional_claims={"user":{"username":user.username,"firstName":user.firstName,"lastName":user.lastName,"password":user.password}})
+        return {'access_token': access_token}
+    else:
+        return {},400
+    
 class Handedness(enum.Enum):
     LEFTY = "L"
     RIGHTY = "R"
@@ -204,7 +235,10 @@ class User(db.Model):
 
 
 with app.app_context():
+    db.session.execute(text("DROP TABLE User"))
+    db.session.commit()
     db.create_all()
+    
 
 if __name__ == "__main__":
     app.run(host="localhost",port=6363,debug=True)

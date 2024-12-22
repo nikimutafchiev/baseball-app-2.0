@@ -45,7 +45,7 @@ export default function Schedule() {
 
     return (
         <div className="flex flex-col">
-            <div className="w-full flex flex-row justify-end px-4">
+            <div className="w-full flex flex-row mb-10 px-4">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker disablePast format="DD/MM/YYYY" label="Pick date" className="bg-white rounded" />
                 </LocalizationProvider>

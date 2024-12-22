@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoReorderThree } from "react-icons/io5";
 import { MdCheck, } from 'react-icons/md';
 import { RiStarLine } from "react-icons/ri";
@@ -8,15 +8,15 @@ import { useAuth } from "../../AuthContext";
 export default function Profile() {
     const { user } = useAuth();
     const [data, setData] = useState({
-        firstName: "Petar",
-        lastName: "Petrov",
+        firstName: user.firstName,
+        lastName: user.lastName,
         username: user.username,
         password: user.password
     });
 
     const [isShrinked, setIsShrinked] = useState(false);
 
-
+    useEffect(() => console.log(user));
     return (
         <div className="h-full w-full flex flex-row gap-8 p-10">
             {
