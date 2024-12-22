@@ -2,14 +2,16 @@ import { useState } from "react";
 import { BiEdit } from "react-icons/bi";
 import { TextField } from "@mui/material";
 import { RiSaveLine } from "react-icons/ri";
+import { useAuth } from "../../AuthContext";
 export default function ProfileAccountInfo() {
     const [isEdit, setIsEdit] = useState(false);
+    const { user } = useAuth();
     const [data, setData] = useState({
         firstName: "Petar",
         lastName: "Petrov",
 
-        email: "ppetrov@abc.bg",
-        password: "*********"
+        username: user.username,
+        password: user.password
     })
     return (
         <div className="w-full p-6 flex flex-col  bg-white rounded-lg shadow-md h-1/2">
@@ -38,17 +40,9 @@ export default function ProfileAccountInfo() {
             <div className="flex flex-1 flex-col justify-around">
                 <div className="flex items-center gap-4">
                     <label className="w-1/4 text-lg font-medium text-gray-700">Email:</label>
-                    {!isEdit ? (
-                        <span className="w-3/4 text-gray-800">{data.email}</span>
-                    ) : (
-                        <TextField
-                            className="w-3/4"
-                            variant="outlined"
-                            size="small"
-                            value={data.email}
-                            onChange={(e) => setData({ ...data, email: e.target.value })}
-                        />
-                    )}
+
+                    <span className="w-3/4 text-gray-800">{data.username}</span>
+
                 </div>
                 <div className="flex items-center gap-4">
                     <label className="w-1/4 text-lg font-medium text-gray-700">Password:</label>

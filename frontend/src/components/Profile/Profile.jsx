@@ -4,14 +4,16 @@ import { MdCheck, } from 'react-icons/md';
 import { RiStarLine } from "react-icons/ri";
 import { Link, Outlet } from "react-router-dom";
 import { MdOutlineInfo, MdOutlineAssignment } from "react-icons/md";
+import { useAuth } from "../../AuthContext";
 export default function Profile() {
+    const { user } = useAuth();
     const [data, setData] = useState({
         firstName: "Petar",
         lastName: "Petrov",
-        username: "Peshkata36",
-        email: "ppetrov@abc.bg",
-        password: "*********"
-    })
+        username: user.username,
+        password: user.password
+    });
+
     const [isShrinked, setIsShrinked] = useState(false);
 
 

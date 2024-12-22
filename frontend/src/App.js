@@ -3,6 +3,7 @@ import './App.css';
 import NavBar from './components/Other/NavBar';
 import Footer from './components/Other/Footer';
 import { useEffect } from 'react';
+import { AuthProvider } from './AuthContext';
 
 function App() {
   const location = useLocation();
@@ -12,14 +13,15 @@ function App() {
   }, [location.pathname]);
   return (
     <>
-
-      <div className='flex flex-col min-h-screen'>
-        {location.pathname !== "/login" && <NavBar />}
-        <div className='flex-1 '>
-          <Outlet />
+      <AuthProvider>
+        <div className='flex flex-col min-h-screen'>
+          {location.pathname !== "/login" && location.pathname !== "/signup" && <NavBar />}
+          <div className='flex-1 '>
+            <Outlet />
+          </div>
+          {location.pathname !== "/login" && location.pathname !== "/signup" && <Footer />}
         </div>
-        {location.pathname !== "/login" && <Footer />}
-      </div>
+      </AuthProvider>
     </>
   );
 }

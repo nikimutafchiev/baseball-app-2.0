@@ -191,6 +191,16 @@ class Game(db.Model):
     homeTeam: Mapped[str] = mapped_column(String(60), nullable=False)
     awayTeam: Mapped[str] = mapped_column(String(60), nullable=False)
     # startTime: Mapped[datetime] = mapped_column(DateTime,nullable=False)
+    status: Mapped[Optional[str]] = mapped_column(String(10))
+    scoringStatus: Mapped[Optional[str]] = mapped_column(String(10))
+
+
+class User(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    username: Mapped[str] = mapped_column(String(60),nullable=False,unique=True)
+    password: Mapped[str] = mapped_column(String(60),nullable=False)
+    firstName: Mapped[str] = mapped_column(String(60),nullable=False)
+    lastName: Mapped[str] = mapped_column(String(60),nullable=False)
 
 
 with app.app_context():

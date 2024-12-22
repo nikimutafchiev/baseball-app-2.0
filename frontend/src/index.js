@@ -28,6 +28,8 @@ import ProfileToDoGames from './components/Profile/ProfileToDoGames';
 import TeamTournamentInfoPage from './pages/TeamTournamentInfoPage';
 import TeamRoster from './components/Teams/TeamRoster';
 import LoginPage from './pages/LoginPage';
+import ProtectedRoute from './ProtectedRoute';
+import SignUpPage from './pages/SigupPage';
 const rooter = createBrowserRouter([
   {
     path: "/",
@@ -99,7 +101,7 @@ const rooter = createBrowserRouter([
       },
       {
         path: "profile",
-        element: <ProfilePage />,
+        element: (<ProtectedRoute component={ProfilePage} roles={['user', 'admin']} > </ProtectedRoute >),
         children: [
           {
             path: "info",
@@ -111,11 +113,11 @@ const rooter = createBrowserRouter([
           },
           {
             path: "assignments",
-            element: <ProfileGameAssignments />
+            element: <ProtectedRoute component={ProfileGameAssignments} roles={['admin']} />
           },
           {
             path: "to_do",
-            element: <ProfileToDoGames />
+            element: <ProtectedRoute component={ProfileToDoGames} roles={['admin']} />
           }
         ]
       },
@@ -131,6 +133,10 @@ const rooter = createBrowserRouter([
       {
         path: "login",
         element: <LoginPage />
+      },
+      {
+        path: "signup",
+        element: <SignUpPage />
       }
     ]
   }
