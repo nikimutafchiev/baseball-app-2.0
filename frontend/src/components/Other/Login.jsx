@@ -20,8 +20,8 @@ export default function Login() {
     }, [errorLogin]);
     const errorSubmit = username.length < 5 || password.length < 5;
     return (
-        <div class="flex min-h-full w-fit flex-col justify-center p-12 rounded-lg bg-white drop-shadow-xl">
-            <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+        <div class="flex w-fit flex-col justify-center p-12 rounded-lg bg-white drop-shadow-xl">
+            <div class="">
 
                 <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">Sign in to your account</h2>
             </div>

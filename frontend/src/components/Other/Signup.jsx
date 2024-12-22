@@ -22,7 +22,7 @@ export default function Signup() {
     }, [errorSignUp]);
     const errorSubmit = username.length < 8 || password.length < 8 || password !== confirmPassword;
 
-    return (<div class="flex min-h-full w-1/2 flex-col justify-center py-4 px-8 rounded-lg bg-white drop-shadow-xl" >
+    return (<div class="flex  flex-col justify-center py-4 px-8 rounded-lg bg-white drop-shadow-xl" >
         <div class="sm:mx-auto sm:w-full sm:max-w-sm">
             <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">Create new account</h2>
         </div>
