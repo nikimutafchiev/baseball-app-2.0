@@ -17,8 +17,8 @@ export default function TournamentInfoPlayerLeaderboard() {
                     <div className="w-full flex flex-col">
                         <h3 className="text-xl font-semibold text-gray-800 mb-4">{stat}</h3>
                         <div className="w-full flex flex-col bg-white rounded-lg shadow-md overflow-hidden">
-                            <div className="flex flex-col bg-gray-200  hover:bg-[rgb(219,222,227)] p-4 cursor-pointer">
-                                <h4 className="text-lg font-bold text-gray-800 mb-2">
+                            <div className="flex flex-col bg-primary_2  hover:bg-primary_2_hover p-4 cursor-pointer ">
+                                <h4 className="text-xl font-semibold text-white mb-2">
                                     #1 - Evgenii Chernozemsky
                                 </h4>
                                 <div className="flex items-center gap-3">
@@ -27,9 +27,9 @@ export default function TournamentInfoPlayerLeaderboard() {
                                         alt="Top Player"
                                         className="size-10 rounded-full border border-gray-300"
                                     />
-                                    <div className="text-sm text-gray-600">Blues Sofia</div>
+                                    <div className="text-sm text-white">Blues Sofia</div>
                                 </div>
-                                <div className="text-2xl font-bold text-gray-800 text-right mt-2">
+                                <div className="text-2xl font-bold text-white text-right mt-2">
                                     0.999
                                 </div>
                             </div>

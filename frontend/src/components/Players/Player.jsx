@@ -31,7 +31,7 @@ export default function Player(props) {
                     </div>
                     <div>
                         <div className="text-center text-xs ">All time stats</div>
-                        <div className="rounded grid grid-cols-3 gap-y-2 gap-x-1 border-gray-300 border-2 text-3xs font-semibold p-2 place-items-center">
+                        <div className="rounded grid grid-cols-3 gap-y-2 gap-x-1 mt-1 bg-opacity-50 bg-gray-500 text-3xs font-semibold p-2 place-items-center">
                             <div>AVG: {stats.AVG}</div>
                             <div>BB: {stats.BB}</div>
                             <div>ERA: {stats.ERA}</div>

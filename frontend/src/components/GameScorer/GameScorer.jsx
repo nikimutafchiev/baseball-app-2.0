@@ -64,6 +64,12 @@ export default function GameScorer() {
     const [strikeCount, setStrikeCount] = useState(0);
     const [homePoints, setHomePoints] = useState(0);
     const [awayPoints, setAwayPoints] = useState(0);
+    const [homeHits, setHomeHits] = useState(0);
+    const [awayHits, setAwayHits] = useState(0);
+    const [homeErrors, setHomeErrors] = useState(0);
+    const [awayErrors, setAwayErrors] = useState(0);
+    const [homeLOB, setHomeLOB] = useState(0);
+    const [awayLOB, setAwayLOB] = useState(0);
     const [outs, setOuts] = useState(0);
     const [situations, setSituations] = useState([]);
     const [runnersSituations, setRunnersSituations] = useState([]);
@@ -294,6 +300,8 @@ export default function GameScorer() {
             const newPoints = points.away;
             newPoints[inning - 1] = 0;
             setPoints({ home: points.home, away: newPoints })
+            setHomeLOB(homeLOB + Object.entries(offense).filter(([position, player]) => position !== "batter" && player !== null).length);
+
             setRoster(awayRoster);
             attackRoster = awayRoster;
             defenseRoster = homeRoster;
@@ -301,6 +309,7 @@ export default function GameScorer() {
             const newPoints = points.home;
             newPoints[inning - 1] = 0;
             setPoints({ home: newPoints, away: points.away })
+            setAwayLOB(awayLOB + Object.entries(offense).filter(([position, player]) => position != "batter" && player != null).length);
             setRoster(homeRoster);
             attackRoster = homeRoster;
             defenseRoster = awayRoster;
@@ -326,6 +335,11 @@ export default function GameScorer() {
             moveRunners(bases);
             clearCount();
             nextBatter();
+            if (inningHalf == "UP")
+                setAwayHits(awayHits + 1);
+            else
+                setHomeHits(homeHits + 1);
+
         }} />,
         "Quick": <GameScorerQuickOptions close={clearOption}
             incrementOuts={() => incrementOuts()}
@@ -438,7 +452,10 @@ export default function GameScorer() {
                 moveRunners(1);
                 clearCount();
                 nextBatter();
-
+                if (inningHalf == "DOWN")
+                    setAwayErrors(awayErrors + 1);
+                else
+                    setHomeErrors(homeErrors + 1);
             }} />,
         "Runner": <GameScorerRunnerOptions close={() => {
             if (runnerWindowCount > 1)
@@ -611,10 +628,10 @@ export default function GameScorer() {
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            {["AKA", ...points.away, awayPoints, 13, 2, 1].map((value) => <td className="text-center font-semibold text-2xs">{value}</td>)}
+                                            {["AKA", ...points.away, awayPoints, awayHits, awayErrors, awayLOB].map((value) => <td className="text-center font-semibold text-2xs">{value}</td>)}
                                         </tr>
                                         <tr>
-                                            {["BLU", ...points.home, homePoints, 13, 2, 1].map((value) => <td className="text-center font-semibold text-2xs">{value}</td>)}
+                                            {["BLU", ...points.home, homePoints, homeHits, homeErrors, homeLOB].map((value) => <td className="text-center font-semibold text-2xs">{value}</td>)}
                                         </tr>
                                     </tbody>
                                 </table>

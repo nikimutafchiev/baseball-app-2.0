@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 export default function TeamRoster() {
     const [roster, setRoster] = useState([
 
@@ -85,23 +86,37 @@ export default function TeamRoster() {
     ]
 
     );
-    return (<div className="bg-white drop-shadow-lg rounded flex flex-col gap-2 m-4 px-4 py-2 text-lg font-semibold ">
-        {
-            roster.map((player) => <div className=" justify-between grid grid-cols-5 border-b p-2">
-                <div>
-                    {player.uniformNumber}
-                </div>
-                <div className="col-span-2">
-                    {player.firstName} {player.lastName}
-                </div>
-                <div>
-                    {player.dateOfBirth}
-                </div>
-                <div>
-                    {player.country}
+    return (
+        <div className=" p-4 rounded-lg shadow-md">
+            {roster.sort((a, b) => a.uniformNumber - b.uniformNumber).map((player) => (
+                <div
+                    className="bg-white rounded-lg shadow-sm p-4 mb-4 flex flex-row items-center justify-between gap-4"
+                >
+                    <div className="flex flex-row gap-4">
+                        <div className="flex items-center justify-center size-12 bg-primary_1 text-white text-xl font-semibold rounded-full">
+                            {player.uniformNumber}
+                        </div>
+
+                        {/* Player Details */}
+                        <div className="flex flex-col">
+                            <div className="text-xl font-semibold">
+                                {player.firstName} {player.lastName}
+                            </div>
+                            <div className="text-gray-600 text-sm">
+                                {player.dateOfBirth}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex flex-row gap-8">
+                        <div className="text-sm font-medium content-center text-gray-800 bg-gray-200 py-1 px-3 rounded-full">
+                            {player.country}
+                        </div>
+                        <Link className="px-3 py-2 bg-red-500 text-white hover:bg-red-600 rounded  font-semibold text-sm" to={``}>View more</Link>
+                    </div>
                 </div>
 
-            </div>)
-        }
-    </div>)
+            ))}
+        </div>
+    );
+
 }

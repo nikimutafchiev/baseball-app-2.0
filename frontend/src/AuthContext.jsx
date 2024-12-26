@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(userData),
+                body: JSON.stringify({ ...userData, role: "ADMIN" }),
             });
             if (response.status == 200) {
                 alert("Succefully signed up")
@@ -58,7 +58,6 @@ export const AuthProvider = ({ children }) => {
             console.error(err);
         }
     }
-    useEffect(() => { navigate("/") }, [user]);
     return (
         <AuthContext.Provider value={{ token, user, login, logout, signup }}>
             {children}
