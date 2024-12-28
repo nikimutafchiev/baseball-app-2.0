@@ -1,109 +1,38 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
+import { RiAddCircleLine } from "react-icons/ri";
+import PlayerSelectList from "../Other/PlayerSelectList";
+import useSWR from "swr";
 export default function TeamRoster() {
-    const [roster, setRoster] = useState([
-
-        {
-            "id": 121,
-            "uniformNumber": 55,
-            "firstName": "Nikolay",
-            "lastName": "Mutafchiev",
-            "dateOfBirth": "1990-02-15",
-            "country": "Bulgaria"
-        },
-        {
-            "id": 122,
-            "uniformNumber": 12,
-            "firstName": "Ivan",
-            "lastName": "Petrov",
-            "dateOfBirth": "1985-06-10",
-            "country": "Bulgaria"
-        },
-        {
-            "id": 123,
-            "uniformNumber": 34,
-            "firstName": "Maria",
-            "lastName": "Ivanova",
-            "dateOfBirth": "1992-08-22",
-            "country": "Bulgaria"
-        },
-        {
-            "id": 124,
-            "uniformNumber": 7,
-            "firstName": "Georgi",
-            "lastName": "Dimitrov",
-            "dateOfBirth": "1988-01-30",
-            "country": "Bulgaria"
-        },
-        {
-            "id": 125,
-            "uniformNumber": 22,
-            "firstName": "Anna",
-            "lastName": "Kirilova",
-            "dateOfBirth": "1995-04-18",
-            "country": "Bulgaria"
-        },
-        {
-            "id": 126,
-            "uniformNumber": 10,
-            "firstName": "Peter",
-            "lastName": "Stoyanov",
-            "dateOfBirth": "1989-11-09",
-            "country": "Bulgaria"
-        },
-        {
-            "id": 127,
-            "uniformNumber": 3,
-            "firstName": "Elena",
-            "lastName": "Todorova",
-            "dateOfBirth": "1993-07-25",
-            "country": "Bulgaria"
-        },
-        {
-            "id": 128,
-            "uniformNumber": 45,
-            "firstName": "Viktor",
-            "lastName": "Georgiev",
-            "dateOfBirth": "1991-09-14",
-            "country": "Bulgaria"
-        },
-        {
-            "id": 129,
-            "uniformNumber": 88,
-            "firstName": "Sofia",
-            "lastName": "Mladenova",
-            "dateOfBirth": "1994-12-03",
-            "country": "Bulgaria"
-        },
-        {
-            "id": 130,
-            "uniformNumber": 99,
-            "firstName": "Dimitar",
-            "lastName": "Kolev",
-            "dateOfBirth": "1990-05-16",
-            "country": "Bulgaria"
-        }
-    ]
-
-    );
-    return (
-        <div className=" p-4 rounded-lg shadow-md">
-            {roster.sort((a, b) => a.uniformNumber - b.uniformNumber).map((player) => (
+    const [addClicked, setAddClicked] = useState(false);
+    const { team_id, id } = useParams();
+    const roster = useSWR(`http://localhost:6363/team_tournament/roster/?team_id=${team_id}&tournament_id=${id}`, (url) => fetch(url).then((res) => res.json()));
+    const players = useSWR("http://localhost:6363/players", (url) => fetch(url).then((res) => res.json()));
+    const taken_players = useSWR(`http://localhost:6363/tournament/taken_players/?tournament_id=${id}`, (url) => fetch(url).then((res) => res.json()));
+    const select_list = players.data && taken_players.data ? players.data.filter((player) => !taken_players.data.includes(player.id)) : [];
+    useEffect(
+        () => { console.log(taken_players.data); roster.mutate() }, [addClicked, taken_players]
+    )
+    return (<div className="h-fit flex flex-col w-full gap-4 p-4">
+        <button className="w-fit flex flex-row self-end items-center gap-2 px-4 py-2 rounded-lg text-white bg-primary_2 hover:bg-primary_3 font-semibold " onClick={() => setAddClicked(true)}>
+            {<RiAddCircleLine />} ADD PLAYER
+        </button>
+        <div className="flex flex-col gap-4">
+            {roster.data && roster.data.sort((a, b) => a.uniformNumber - b.uniformNumber).map((player) => (
                 <div
-                    className="bg-white rounded-lg shadow-sm p-4 mb-4 flex flex-row items-center justify-between gap-4"
+                    className="bg-white rounded-lg shadow-sm  flex flex-row items-center justify-between gap-4 p-4"
                 >
                     <div className="flex flex-row gap-4">
                         <div className="flex items-center justify-center size-12 bg-primary_1 text-white text-xl font-semibold rounded-full">
                             {player.uniformNumber}
                         </div>
 
-                        {/* Player Details */}
                         <div className="flex flex-col">
                             <div className="text-xl font-semibold">
                                 {player.firstName} {player.lastName}
                             </div>
                             <div className="text-gray-600 text-sm">
-                                {player.dateOfBirth}
+                                {new Date(player.dateOfBirth).toLocaleDateString()}
                             </div>
                         </div>
                     </div>
@@ -116,7 +45,10 @@ export default function TeamRoster() {
                 </div>
 
             ))}
+            {roster.data && roster.data.length == 0 && <div className="text-2xl">Oops, no players here yet.</div>}
         </div>
+        {addClicked && <PlayerSelectList close={() => setAddClicked(false)} players={select_list} />}
+        {addClicked && <div className="fixed inset-0 z-10 bg-black bg-opacity-50" ></div>}</div>
     );
 
 }

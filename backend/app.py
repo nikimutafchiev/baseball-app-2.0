@@ -134,26 +134,41 @@ def get_tournament_by_id(tournament_id):
     } 
 
 
-@app.route("/game",methods=['POST'])
-def add_game():
+@app.route("/tournament_game/",methods=['POST'])
+def add_game_to_tournament():
+    query = request.args.to_dict()
     data = request.json
-    new_game = Game(homeTeam = data['homeTeam'], awayTeam = data['awayTeam'],startTime = datetime(year=data['startTime']["year"],month=data['startTime']["month"],day=data['startTime']["day"],hour=data['startTime']["hour"],minute=data['startTime']["minutes"],tzinfo=timezone.utc))
+    tournament = Tournament.query.get(query["tournament_id"])
+    new_game = Game(startTime = datetime(year=data['startTime']["year"],month=data['startTime']["month"],day=data['startTime']["day"],hour=data['startTime']["hour"],minute=data['startTime']["minutes"],tzinfo=timezone.utc),tournamentId = int(query["tournament_id"]),venue=data["venue"],venueLink=data['venueLink'])
     db.session.add(new_game)
+    tournament.games.append(new_game)
+    home_game_association = GameTeam(game=new_game,team= Team.query.get(data["homeTeam"]["id"]),homeAway = HomeAway.HOME)
+    away_game_association = GameTeam(game=new_game,team= Team.query.get(data["awayTeam"]["id"]),homeAway = HomeAway.AWAY)
+    db.session.add(home_game_association)
+    db.session.add(away_game_association)
     db.session.commit()
-    return "Successfully added tournament",200
+    return "Successfully added game",200
 
-@app.route("/games",methods=['GET'])
-def get_games():
-    games = Game.query.all()
-    res = [{
+@app.route("/tournament_games/",methods=['GET'])
+def get_games_by_tournament():
+    query = request.args.to_dict()
+    tournament = Tournament.query.get(query["tournament_id"])
+    res = []
+    for game in tournament.games:
+        game_teams = GameTeam.query.filter_by(gameId = game.id).all();
+        home_team = list(filter(lambda x: x.homeAway.value == "home",game_teams))[0]
+        away_team = list(filter(lambda x: x.homeAway.value == "away",game_teams))[0]
+        res.append({
         'id':game.id,
-        'homeTeam': game.homeTeam,
-        "awayTeam":game.awayTeam,
+        'homeTeam': home_team.team.name,
+        "awayTeam":away_team.team.name,
         "startTime": game.startTime,
         "status": game.status.value,
-        "homeResult":game.homeResult,
-        "awayResult": game.awayResult
-    } for game in games]
+        "homeResult":home_team.result,
+        "awayResult": away_team.result,
+        "venue": game.venue,
+        "venueLink": game.venueLink
+        })
     return res,200
 
 @app.route("/signup", methods=["POST"])
@@ -176,7 +191,7 @@ def login():
     user = User.query.filter_by(username=username).first()
 
     if user and user.password == password:
-        access_token = create_access_token(identity=user.id,additional_claims={"user":{"username":user.username,"firstName":user.firstName,"lastName":user.lastName,"password":user.password,"role":user.role.value}})
+        access_token = create_access_token(identity=user.id,additional_claims={"user":{"id":user.id,"username":user.username,"firstName":user.firstName,"lastName":user.lastName,"password":user.password,"role":user.role.value}})
         return {'access_token': access_token}
     else:
         return {},400
@@ -210,6 +225,104 @@ def get_teams_by_tournament():
         "headCoach":association.team.headCoach
     } for association in tournament.teams]
 
+@app.route("/game/like/",methods=["POST"])
+def like_game():
+    query = request.args.to_dict()
+    game = Game.query.get(query["game_id"])
+    user = User.query.get(query["user_id"])
+
+    team_tournament_association = UserFavoriteGame(game=game,user=user)
+    db.session.add(team_tournament_association)
+    db.session.commit()
+    return "Succefully liked game"
+
+@app.route("/liked_games/",methods=["GET"])
+def get_liked_games():
+    query = request.args.to_dict()
+    user = User.query.get(query["user_id"])
+    res=[]
+    for association in user.favoriteGames:
+        game_teams = GameTeam.query.filter_by(gameId = association.game.id).all();
+        home_team = list(filter(lambda x: x.homeAway.value == "home",game_teams))[0]
+        away_team = list(filter(lambda x: x.homeAway.value == "away",game_teams))[0]
+        res.append({
+        'id':association.game.id,
+        'homeTeam': home_team.team.name,
+        "awayTeam":away_team.team.name,
+        "startTime": association.game.startTime,
+        "status": association.game.status.value,
+        "homeResult":home_team.result,
+        "awayResult": away_team.result,
+        "venue": association.game.venue,
+        "venueLink": association.game.venueLink
+        })
+    return res,200
+
+@app.route("/game/liked/", methods=["GET"])
+def is_game_liked():
+    query = request.args.to_dict()
+    liked_game = UserFavoriteGame.query.filter_by(gameId = query["game_id"],userId = query["user_id"]).first()
+    return {"isLiked": liked_game != None}
+
+@app.route("/game/<int:game_id>",methods=["GET"])
+def get_game_by_id(game_id):
+    game = Game.query.get(game_id)
+    game_teams = GameTeam.query.filter_by(gameId = game.id).all();
+    home_team = list(filter(lambda x: x.homeAway.value == "home",game_teams))[0]
+    away_team = list(filter(lambda x: x.homeAway.value == "away",game_teams))[0]
+    return {
+        'id':game.id,
+        'homeTeam': {
+            "name":home_team.team.name,
+            "tlc": home_team.team.tlc},
+        "awayTeam":{"name":away_team.team.name,
+                    "tlc":away_team.team.tlc},
+        "startTime": game.startTime,
+        "status": game.status.value,
+        "homeResult":home_team.result,
+        "awayResult": away_team.result,
+        "venue": game.venue,
+        "venueLink": game.venueLink
+    }
+@app.route("/team_tournament/player/",methods=["POST"])
+def add_player_to_team_tournament():
+    query = request.args.to_dict()
+    data =request.json
+    teamTournament = TeamTournament.query.filter_by(team_id = query["team_id"],tournament_id = query["tournament_id"]).first()
+    player = Player.query.get(query["player_id"])
+
+    teamTournamentPlayerAssociation = TeamTournamentPlayer(team_tournament=teamTournament, player=player, uniformNumber = int(data["uniformNumber"]))
+    db.session.add(teamTournamentPlayerAssociation)
+    db.session.commit()
+    return ""
+
+@app.route("/team_tournament/roster/",methods=["GET"])
+def get_players_by_team_tournament():
+    query = request.args.to_dict()
+    teamTournament = TeamTournament.query.filter_by(team_id = query["team_id"],tournament_id = query["tournament_id"]).first()
+    res = []
+    for association in teamTournament.players:
+        player = association.player
+        res.append({
+            "id": player.id,
+            "firstName":player.firstName,
+            "lastName": player.lastName,
+            "uniformNumber": association.uniformNumber,
+            "dateOfBirth": player.dateOfBirth,
+            "country":player.country
+        })
+    return res
+
+@app.route("/tournament/taken_players/",methods=["GET"])
+def get_taken_players():
+    query = request.args.to_dict()
+    teams_tournament = TeamTournament.query.filter_by(tournament_id = query["tournament_id"]).all()
+    res = []
+    for teams in teams_tournament:
+        for player_association in teams.players:
+            res.append(player_association.player.id)
+    return res
+
 class Handedness(enum.Enum):
     LEFTY = "L"
     RIGHTY = "R"
@@ -227,11 +340,14 @@ class GameStatuses(enum.Enum):
 class UserRoles(enum.Enum):
     ADMIN = "admin"
     USER = "user"
-class Base(DeclarativeBase):
-    pass
+
+class HomeAway(enum.Enum):
+    HOME = "home"
+    AWAY = "away"
 
 
 class Player(db.Model):
+    __tablename__ = "Player"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     firstName: Mapped[str] = mapped_column(String(30),nullable=False)
     lastName: Mapped[str] = mapped_column(String(30),nullable=False)
@@ -242,11 +358,7 @@ class Player(db.Model):
     throwingArm: Mapped[Optional[Handedness]] = mapped_column(Enum(Handedness))
     battingSide: Mapped[Optional[Handedness]] = mapped_column(Enum(Handedness))
     gender: Mapped[Optional[Genders]] = mapped_column(Enum(Genders))
-
-
-
-
-
+    teams_tournaments: Mapped[List["TeamTournamentPlayer"]] = relationship(back_populates="player")
 
 class Team(db.Model):
     __tablename__ = "Team"
@@ -260,6 +372,7 @@ class Team(db.Model):
     manager: Mapped[Optional[str]] = mapped_column(String(100))
     headCoach: Mapped[Optional[str]] = mapped_column(String(100))
     tournaments: Mapped[List["TeamTournament"]] = relationship(back_populates="team")
+    games: Mapped[List["GameTeam"]] = relationship(back_populates="team")
 
 
 class Tournament(db.Model):
@@ -270,42 +383,76 @@ class Tournament(db.Model):
     startDate: Mapped[date] = mapped_column(Date)
     endDate: Mapped[date] = mapped_column(Date)
     teams: Mapped[List["TeamTournament"]] = relationship(back_populates="tournament")
+    games: Mapped[List["Game"]] = relationship(back_populates="tournament")
 
     
 class TeamTournament(db.Model):
+    __tablename__ = "TeamTournament"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     team_id: Mapped[int] = mapped_column(ForeignKey("Team.id"))
     tournament_id: Mapped[int] = mapped_column(ForeignKey("Tournament.id"))
-
     team: Mapped["Team"] = relationship(back_populates="tournaments")
     tournament: Mapped["Tournament"] = relationship(back_populates="teams")
+    __table_args__ = (
+        db.UniqueConstraint("team_id","tournament_id",name="unique_team_tournament"),
+    )
+    players: Mapped[List["TeamTournamentPlayer"]] = relationship(back_populates="team_tournament")
 
+class TeamTournamentPlayer(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    player_id: Mapped[int] =  mapped_column(ForeignKey("Player.id"))
+    team_tournament_id: Mapped[int] =  mapped_column(ForeignKey("TeamTournament.id"))
+    player: Mapped["Player"] = relationship(back_populates="teams_tournaments")
+    team_tournament: Mapped["TeamTournament"] = relationship(back_populates="players")
+    uniformNumber: Mapped[int] = mapped_column(Integer,nullable=False)
 
 class Game(db.Model):
+    __tablename__ = "Game"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    homeTeam: Mapped[str] = mapped_column(String(60), nullable=False)
-    awayTeam: Mapped[str] = mapped_column(String(60), nullable=False)
+    tournamentId: Mapped[int] = mapped_column(ForeignKey("Tournament.id"))
+    tournament: Mapped["Tournament"] = relationship(back_populates="games")
     startTime: Mapped[datetime] = mapped_column(DateTime,nullable=False)
     status:  Mapped[Optional[GameStatuses]] = mapped_column(Enum(GameStatuses),default=GameStatuses.SCHEDULED)
     scoringStatus: Mapped[Optional[str]] = mapped_column(String(10))
-    homeResult: Mapped[int] = mapped_column(Integer, nullable=False, default = 0)
-    awayResult: Mapped[int] = mapped_column(Integer, nullable=False, default = 0)
+    venue: Mapped[str] = mapped_column(String(60), nullable=False)
+    venueLink: Mapped[Optional[str]] = mapped_column(String(100))
+    teams: Mapped[List["GameTeam"]] = relationship(back_populates="game")
+    userLikes: Mapped[List["UserFavoriteGame"]] = relationship(back_populates="game")
 
+class GameTeam(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    teamId: Mapped[int] = mapped_column(ForeignKey("Team.id"))
+    gameId: Mapped[int] = mapped_column(ForeignKey("Game.id"))
+    game: Mapped["Game"] = relationship(back_populates="teams")
+    team: Mapped["Team"] = relationship(back_populates="games")
+    result: Mapped[int] = mapped_column(Integer,nullable=False,default=0)
+    homeAway: Mapped[HomeAway] = mapped_column(Enum(HomeAway),nullable=False)
+    __table_args__ = (db.UniqueConstraint("gameId","homeAway",name="unique_game_home_away"),)
 
 class User(db.Model):
+    __tablename__="User"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     username: Mapped[str] = mapped_column(String(60),nullable=False,unique=True)
     password: Mapped[str] = mapped_column(String(60),nullable=False)
     firstName: Mapped[str] = mapped_column(String(60),nullable=False)
     lastName: Mapped[str] = mapped_column(String(60),nullable=False)
     role: Mapped[UserRoles] = mapped_column(Enum(UserRoles), nullable=False)
+    favoriteGames: Mapped[List["UserFavoriteGame"]] = relationship(back_populates="user")
 
+class UserFavoriteGame(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    gameId: Mapped[int] = mapped_column(ForeignKey("Game.id"))
+    userId: Mapped[int] = mapped_column(ForeignKey("User.id"))
+
+    game: Mapped["Game"] = relationship(back_populates="userLikes")
+    user: Mapped["User"] = relationship(back_populates="favoriteGames")
 
 with app.app_context():
-    # db.session.execute(text("DROP TABLE User"))
+    # db.session.execute(text("DROP TABLE Game"))
     # db.session.commit()
+    # db.drop_all()
     db.create_all()
     
 
 if __name__ == "__main__":
-    app.run(host="localhost",port=6363,debug=True)
+    app.run(host="localhost",port=6363,debug=True,threaded=True)

@@ -185,7 +185,6 @@ export default function GameScorer() {
     }), [isSituationReady, currentSituation]);
     //TODO Empty runnerSituationList
     const addSituation = (type, isOut = false) => {
-
         setCurrentSituation({ batter: offense.batter, inning: inning, inningHalf: inningHalf, isOut: isOut, situation: type, runners: runnersSituations });
 
         //console.log({ batter: offense.batter, inning: inning, inningHalf: inningHalf, outs: outs, situation: type, runners: runnersSituations })
@@ -523,7 +522,7 @@ export default function GameScorer() {
             moveRunners={moveRunners}
             clearCount={() => clearCount()}
             nextBatter={() => nextBatter()}
-            addSituation={(outsInc, type) => { setRunnersSituations([...runnersSituations, { player: offense.batter, situation: type }]); addSituation(type, true) }}
+            addSituation={(outsInc, type) => { setRunnersSituations([...runnersSituations, { player: offense.batter, situation: type }]); addSituation(type) }}
             occupiedBases={
                 Object.entries(offense).map(([key, value]) => {
                     if (value && key != "batter")

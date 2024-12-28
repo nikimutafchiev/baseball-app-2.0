@@ -12,12 +12,16 @@ export default function GameScorerMoreOptions(props) {
                         onClick={() => {
                             props.addSituation(0, "Catcher's interference");
                             props.moveRunners(1);
+                            props.clearCount();
+                            props.nextBatter();
                         }}
                     ><div>CI</div><div>Catcher's interference</div></div>
                     <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer text-lg transform transition-transform hover:scale-105"
                         onClick={() => {
                             props.addSituation(0, "Ground rule double");
                             props.moveRunners(2);
+                            props.clearCount();
+                            props.nextBatter();
                         }}><div>GR</div><div>Ground rule double</div></div>
                     <div className="bg-yellow-500 hover:bg-yellow-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer transform transition-transform hover:scale-105"
                         onClick={() => {

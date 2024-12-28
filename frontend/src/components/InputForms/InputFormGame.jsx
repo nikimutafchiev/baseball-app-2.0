@@ -4,13 +4,19 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { useState, useEffect } from "react"
+import { Autocomplete } from "@mui/material"
 import dayjs from "dayjs"
+import { useParams } from "react-router-dom"
 export default function InputFormGame(props) {
-    const errorSubmit = false;
+    const { id } = useParams();
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const [homeTeam, setHomeTeam] = useState("");
-    const [awayTeam, setAwayTeam] = useState("");
+    const [homeTeam, setHomeTeam] = useState({ id: -1, name: "" });
+    const [awayTeam, setAwayTeam] = useState({ id: -1, name: "" });
     const [datetime, setDatetime] = useState(dayjs());
+    const [venue, setVenue] = useState("");
+    const [venueLink, setVenueLink] = useState("");
+    const errorSubmit = homeTeam.id == -1 || awayTeam.id == -1 || venue.length == 0;
+    const teams = props.teams ? props.teams : [{ id: -1, name: "" }];
     useEffect(() => {
         if (isSubmitted) {
             const time = new Date(datetime);
@@ -21,7 +27,7 @@ export default function InputFormGame(props) {
                 hour: time.getUTCHours(),
                 minutes: time.getUTCMinutes(),
             });
-            fetch("http://localhost:6363/game", {
+            fetch(`http://localhost:6363/tournament_game/?tournament_id=${id}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -35,11 +41,15 @@ export default function InputFormGame(props) {
                         day: time.getUTCDate(),
                         hour: time.getUTCHours(),
                         minutes: time.getUTCMinutes(),
-                    }
+                    },
+                    venue: venue,
+                    venueLink: venueLink
                 }),
             });
-            setHomeTeam("");
-            setAwayTeam("");
+            setHomeTeam({ id: -1, name: "" });
+            setAwayTeam({ id: -1, name: "" });
+            setVenue("");
+            setVenueLink("");
             setIsSubmitted(false);
         }
     }, [isSubmitted]);
@@ -51,9 +61,39 @@ export default function InputFormGame(props) {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateTimePicker value={datetime} onChange={(newValue) => setDatetime(newValue)} label="Start time" format="DD/MM/YYYY HH:mm" className="bg-white rounded" />
                     </LocalizationProvider>
-                    <TextField label={<div >Home team</div>} value={homeTeam} onChange={(e) => { setHomeTeam(e.target.value) }} variant="outlined" />
-                    <TextField label={<div >Away team</div>} value={awayTeam} onChange={(e) => { setAwayTeam(e.target.value) }} variant="outlined" />
-
+                    <Autocomplete
+                        value={homeTeam}
+                        getOptionLabel={(option) => option.name}
+                        getOptionDisabled={(option) => option.id === awayTeam.id}
+                        onChange={(e, newValue) => {
+                            setHomeTeam(newValue);
+                        }}
+                        options={teams}
+                        renderInput={(params) => <TextField {...params} label={<div >Home team</div>} />}
+                    >
+                    </Autocomplete>
+                    {/* <TextField label={<div >Home team</div>} value={homeTeam} onChange={(e) => { setHomeTeam(e.target.value) }} variant="outlined" /> */}
+                    <Autocomplete
+                        value={awayTeam}
+                        getOptionLabel={(option) => option.name}
+                        getOptionDisabled={(option) => option.id === homeTeam.id}
+                        onChange={(e, newValue) => {
+                            setAwayTeam(newValue);
+                        }}
+                        options={teams}
+                        renderInput={(params) => <TextField {...params} label={<div >Away team</div>} />}
+                    >
+                    </Autocomplete>
+                    <TextField
+                        label={<div>Venue</div>}
+                        onChange={(e) => { setVenue(e.target.value); }}
+                        value={venue}
+                    />
+                    <TextField
+                        label={<div>Venue link</div>}
+                        onChange={(e) => { setVenueLink(e.target.value); }}
+                        value={venueLink}
+                    />
                 </div>
                 <button className={`bg-primary_2 w-1/2 self-center px-2 py-1 align-middle  text-lg font-semibold rounded ${errorSubmit ? "cursor-not-allowed bg-primary_1 text-gray-400" : "hover:bg-primary_3 text-white"}`} onClick={() => {
                     if (!errorSubmit)

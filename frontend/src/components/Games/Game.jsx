@@ -1,17 +1,28 @@
 import { RiLiveLine, RiCalendarScheduleLine, RiCheckDoubleLine, RiArrowRightCircleLine, RiStarLine, RiStarFill } from 'react-icons/ri';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import useSWR from 'swr';
+import { useAuth } from '../../AuthContext';
 export default function Game(props) {
+    const { user, token } = useAuth();
     const statusIcons = {
         live: <RiLiveLine size={props.size == "small" ? 20 : 25} />,
         scheduled: <RiCalendarScheduleLine size={props.size == "small" ? 20 : 25} />,
         ended: <RiCheckDoubleLine size={props.size == "small" ? 20 : 25} />
     };
-    const [favorite, setFavorite] = useState(false);
-    useEffect(() => { console.log(props.startTime) }, []);
+    const favorite = useSWR(`http://localhost:6363/game/liked/?user_id=${user.id}&game_id=${props.id}`, (url) => fetch(url).then((res) => res.json()));
+    useEffect(() => { console.log(favorite.data); console.log(props.startTime) }, [favorite.data]);
     return (
         <div className="w-full flex flex-row justify-around min-h-[60px] px-8 py-2 rounded items-center text-gray-500 bg-white  font-semibold  drop-shadow-xl">
-            <button className='text-yellow-500' onClick={() => setFavorite(!favorite)}>{!favorite && <RiStarLine size={30} />}{favorite && <RiStarFill size={30} />}</button>
+            {token && <button className='text-yellow-500' onClick={() => {
+                fetch(`http://localhost:6363/game/like/?user_id=${user.id}&game_id=${props.id}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+
+                });
+            }}>{favorite.data && !favorite.data.isLiked && <RiStarLine size={30} />}{favorite.data && favorite.data.isLiked && <RiStarFill size={30} />}</button>}
             <div className="w-[20%] flex flex-col gap-2 items-center"><div className={`flex flex-row gap-2 items-center ${props.size == "normal" ? "text-normal" : "text-xs"}`}>{statusIcons[props.status]}{props.status}</div><div className=" font-semibold text-2xs" >{new Date(props.startTime).toLocaleString()}</div></div>
             <div className="flex flex-row justify-around items-center w-1/2">
                 <div className={`w-2/5 ${props.size == "normal" ? "text-xs" : "text-2xs"} flex flex-row gap-4 items-center`}>{<img src="https://placehold.co/40x40"></img>}<div className='w-1/2 text-center'>{props.homeTeam}</div></div>

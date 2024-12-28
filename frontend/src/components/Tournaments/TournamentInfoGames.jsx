@@ -3,9 +3,12 @@ import { RiAddCircleLine } from "react-icons/ri";
 import { useState, useEffect } from "react";
 import InputFormGame from "../InputForms/InputFormGame";
 import useSWR from "swr";
+import { useParams } from "react-router-dom";
 export default function TournamentInfoGames() {
     const [addClicked, setAddClicked] = useState(false);
-    const games = useSWR("http://localhost:6363/games", (url) => fetch(url).then((res) => res.json()));
+    const { id } = useParams();
+    const teams = useSWR(`http://localhost:6363/tournament_teams/?tournament_id=${id}`, (url) => fetch(url).then((res) => res.json()));
+    const games = useSWR(`http://localhost:6363/tournament_games/?tournament_id=${id}`, (url) => fetch(url).then((res) => res.json()));
     useEffect(
         () => { games.mutate() }, [addClicked]
     )
@@ -15,7 +18,7 @@ export default function TournamentInfoGames() {
                 {<RiAddCircleLine />} ADD GAME
             </button>
             <GameList games={games} size="small" />
-            {addClicked && <InputFormGame close={() => setAddClicked(false)} />}
+            {addClicked && <InputFormGame close={() => setAddClicked(false)} teams={teams.data} />}
             {addClicked && <div className="fixed inset-0 z-10 bg-black bg-opacity-50" ></div>}
         </div>)
 }
