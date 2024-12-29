@@ -119,6 +119,7 @@ def get_tournaments():
         'name': tournament.name,
         "startDate":tournament.startDate,
         'endDate': tournament.endDate,
+        "place": tournament.place
     } for tournament in tournaments]
     return res,200
 
@@ -131,6 +132,7 @@ def get_tournament_by_id(tournament_id):
         'name': tournament.name,
         "startDate":tournament.startDate,
         'endDate': tournament.endDate,
+        "place": tournament.place
     } 
 
 

@@ -17,7 +17,7 @@ export default function PlayerSelect(props) {
                             uniformNumber: uniformNumber
                         })
                     });
-                    props.close()
+                    props.close();
                 }
             }}>
 
