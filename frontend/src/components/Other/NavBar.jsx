@@ -65,11 +65,11 @@ export default function NavBar() {
                             pages.map((page) => <Link onClick={() => setIsExtendClicked(false)} className=" rounded cursor-pointer content-center px-4 py-2 hover:bg-white hover:text-primary_2 duration-200 ease-in-out " to={page.path}>{page.name}</Link>)
                         }
                         {token && <>
-                            <button onClick={() => setIsExtendClicked(false)} className="flex flex-row gap-1 hover:bg-white hover:text-primary_2 px-2 rounded  duration-200 ease-in-out">
-                                <IoNotificationsOutline size={27} /> Notifications
+                            <button onClick={() => setIsExtendClicked(false)} className="flex flex-row justify-between hover:bg-white px-4 hover:text-primary_2 px-2 rounded  duration-200 ease-in-out">
+                                Notifications <IoNotificationsOutline size={27} />
                             </button>
-                            <button onClick={() => { setIsExtendClicked(false); logout() }} className="flex flex-row gap-1 hover:bg-white hover:text-primary_2 p-2 rounded  duration-200 ease-in-out">
-                                <FiLogOut size={27} /> Log out
+                            <button onClick={() => { setIsExtendClicked(false); logout() }} className="flex flex-row justify-between px-4 hover:bg-white hover:text-primary_2 p-2 rounded  duration-200 ease-in-out">
+                                Log out <FiLogOut size={27} />
                             </button></>}
                     </div>
 
