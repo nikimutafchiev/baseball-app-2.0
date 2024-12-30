@@ -23,7 +23,7 @@ export default function PlayerList(props) {
                             <div className="text-3xl font-semibold">{letter.label}</div>
                             <hr className="w-full mt-2 border-t-2 border-gray-800"></hr>
                         </div>
-                        <div className="grid grid-cols-5 gap-8 py-2">
+                        <div className="flex flex-row flex-wrap  gap-8 py-2">
                             {letter.value.map((player) =>
                                 <Player {...player} />)
                             }

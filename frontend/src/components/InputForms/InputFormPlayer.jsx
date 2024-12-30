@@ -131,10 +131,10 @@ export default function InputFormPlayer(props) {
     }
     const months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     return (
-        <div className="top-6 fixed self-center z-20 w-8/12  bg-white rounded border-black border-[1px] drop-shadow-xl">
+        <div className=" top-2 md:top-6 fixed self-center z-20 w-11/12 md:w-8/12  bg-white rounded border-black border-[1px] drop-shadow-xl">
             <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
             <div className="w-full flex flex-col py-10 px-4">
-                <div className="w-full flex flex-row gap-20 py-10 px-4">
+                <div className="w-full flex flex-col md:flex-row gap-4 sm:gap-10 md:gap-20 py-10 px-4">
                     <div className='flex flex-col self-center gap-4 items-center'>
                         <div className='w-[150px] h-[200px] bg-gray-300 rounded'></div>
                         <button className='w-[120px] h-fit bg-blue-400 rounded p-3 text-white text-sm font-semibold'>Upload photo</button>
@@ -162,7 +162,7 @@ export default function InputFormPlayer(props) {
                             renderInput={(params) => <TextField {...params} label={<div className="text-sm">Country</div>} />}
                         >
                         </Autocomplete>
-                        <div className="gap-6 grid grid-cols-3">
+                        <div className="gap-6 grid grid-cols-2 md:grid-cols-3">
 
                             <TextField
                                 size="small"
