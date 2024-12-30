@@ -3,15 +3,16 @@ import { Link } from "react-router-dom";
 import { FiLogOut } from 'react-icons/fi';
 import { IoNotificationsOutline, IoReorderThreeOutline } from "react-icons/io5";
 import { useAuth } from "../../AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { RiTeamLine, RiHome6Line, RiCalendarScheduleLine, RiUserLine, RiMedalLine } from "react-icons/ri";
 export default function NavBar() {
     const pages = [
-        { name: "Home", path: "/" },
-        { name: "Schedule", path: "/schedule" },
-        { name: "Teams", path: "/teams" },
-        { name: "Players", path: "/players" },
-        { name: "Tournaments", path: "tournaments" },
-        { name: "Profile", path: "/profile/info" }
+        { name: "Home", path: "/", logo: < RiHome6Line size={27} /> },
+        { name: "Schedule", path: "/schedule", logo: <RiCalendarScheduleLine size={27} /> },
+        { name: "Teams", path: "/teams", logo: <RiTeamLine size={27} /> },
+        { name: "Players", path: "/players", logo: <BiBaseball size={27} /> },
+        { name: "Tournaments", path: "/tournaments", logo: <RiMedalLine size={27} /> },
+        { name: "Profile", path: "/profile/info", logo: < RiUserLine size={27} /> }
     ]
     const { logout, token } = useAuth();
     const [isExtendClicked, setIsExtendClicked] = useState(false);
@@ -60,15 +61,15 @@ export default function NavBar() {
                 </div>
 
                 <div className=" flex flex-col gap-3 text-white ">
-                    <div className="flex flex-col w-full mx-4 gap-2 md:hidden text-xl font-semibold">
+                    <div className="flex flex-col w-full mx-2 gap-2 md:hidden text-xl font-semibold">
                         {
-                            pages.map((page) => <Link onClick={() => setIsExtendClicked(false)} className=" rounded cursor-pointer content-center px-4 py-2 hover:bg-white hover:text-primary_2 duration-200 ease-in-out " to={page.path}>{page.name}</Link>)
+                            pages.map((page) => <Link onClick={() => setIsExtendClicked(false)} className="flex flex-row rounded cursor-pointer items-center px-3 py-2 hover:bg-white justify-between hover:text-primary_2 duration-200 ease-in-out " to={page.path}>{page.name}{page.logo}</Link>)
                         }
                         {token && <>
-                            <button onClick={() => setIsExtendClicked(false)} className="flex flex-row justify-between hover:bg-white px-4 hover:text-primary_2 px-2 rounded  duration-200 ease-in-out">
+                            <button onClick={() => setIsExtendClicked(false)} className="flex flex-row justify-between items-center hover:bg-white px-3 py-2 hover:text-primary_2  rounded  duration-200 ease-in-out">
                                 Notifications <IoNotificationsOutline size={27} />
                             </button>
-                            <button onClick={() => { setIsExtendClicked(false); logout() }} className="flex flex-row justify-between px-4 hover:bg-white hover:text-primary_2 p-2 rounded  duration-200 ease-in-out">
+                            <button onClick={() => { setIsExtendClicked(false); logout() }} className="flex flex-row justify-between items-center px-3 py-2 hover:bg-white hover:text-primary_2 p-2 rounded  duration-200 ease-in-out">
                                 Log out <FiLogOut size={27} />
                             </button></>}
                     </div>
