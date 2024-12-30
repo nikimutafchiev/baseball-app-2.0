@@ -325,6 +325,35 @@ def get_taken_players():
             res.append(player_association.player.id)
     return res
 
+@app.route("/schedule/",methods=["GET"])
+def get_games_by_date():
+    query = request.args.to_dict()
+    day,month,year = query["day"],query["month"],query["year"]
+    games = Game.query.all()
+    res = []
+    for game in games:
+        print(game.startTime.day)
+        if game.startTime.year == int(year) and game.startTime.month == int(month) and game.startTime.day == int(day):
+            game_teams = GameTeam.query.filter_by(gameId = game.id).all();
+            home_team = list(filter(lambda x: x.homeAway.value == "home",game_teams))[0]
+            away_team = list(filter(lambda x: x.homeAway.value == "away",game_teams))[0]
+            res.append({
+            'id':game.id,
+            'homeTeam': home_team.team.name,
+            "awayTeam":away_team.team.name,
+            "startTime": game.startTime,
+            "status": game.status.value,
+            "homeResult":home_team.result,
+            "awayResult": away_team.result,
+            "venue": game.venue,
+            "venueLink": game.venueLink,
+            "tournament":{
+                "id":game.tournamentId,
+                "name":game.tournament.name
+            }
+            })
+        
+    return res
 class Handedness(enum.Enum):
     LEFTY = "L"
     RIGHTY = "R"

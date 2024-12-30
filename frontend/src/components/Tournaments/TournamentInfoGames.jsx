@@ -17,7 +17,7 @@ export default function TournamentInfoGames() {
             <button className="w-fit flex flex-row self-end items-center gap-2 px-4 py-2 rounded-lg text-white bg-primary_2 hover:bg-primary_3 font-semibold " onClick={() => setAddClicked(true)}>
                 {<RiAddCircleLine />} ADD GAME
             </button>
-            <GameList games={games} size="small" />
+            <GameList games={games.data} size="small" />
             {addClicked && <InputFormGame close={() => setAddClicked(false)} teams={teams.data} />}
             {addClicked && <div className="fixed inset-0 z-10 bg-black bg-opacity-50" ></div>}
         </div>)

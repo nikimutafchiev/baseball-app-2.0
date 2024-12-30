@@ -20,13 +20,7 @@ export default function InputFormGame(props) {
     useEffect(() => {
         if (isSubmitted) {
             const time = new Date(datetime);
-            console.log({
-                year: time.getUTCFullYear(),
-                month: time.getUTCMonth() + 1,
-                day: time.getUTCDate(),
-                hour: time.getUTCHours(),
-                minutes: time.getUTCMinutes(),
-            });
+
             fetch(`http://localhost:6363/tournament_game/?tournament_id=${id}`, {
                 method: "POST",
                 headers: {

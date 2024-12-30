@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 import MenuItem from '@mui/material/MenuItem';
 import { TextField, InputAdornment, InputLabel, Autocomplete } from "@mui/material";
 import { RiCloseCircleLine } from "react-icons/ri";
-
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
 export default function InputFormPlayer(props) {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-    const [dateOfBirth, setDateOfBirth] = useState({ day: "", month: "", year: "" });
+    const [date, setDate] = useState(dayjs());
     const [height, setHeight] = useState("");
     const [weigth, setWeigth] = useState("");
     const [throwingArm, setThrowingArm] = useState("");
@@ -79,7 +82,7 @@ export default function InputFormPlayer(props) {
     ];
     useEffect((() => {
         if (isSubmitted) {
-
+            const dateOfBirth = new Date(date);
             fetch("http://localhost:6363/player", {
                 method: "POST",
                 headers: {
@@ -88,7 +91,11 @@ export default function InputFormPlayer(props) {
                 body: JSON.stringify({
                     firstName: firstName,
                     lastName: lastName,
-                    dateOfBirth: dateOfBirth,
+                    dateOfBirth: {
+                        day: dateOfBirth.getDate(),
+                        month: dateOfBirth.getMonth() + 1,
+                        year: dateOfBirth.getFullYear()
+                    },
                     height: height,
                     weigth: weigth,
                     throwingArm: throwingArm,
@@ -99,7 +106,7 @@ export default function InputFormPlayer(props) {
             }).catch(() => console.log("hello"));
             setFirstName("");
             setLastName("");
-            setDateOfBirth({ day: "", month: "", year: "" });
+            setDate(dayjs());
             setHeight("");
             setWeigth("");
             setThrowingArm("");
@@ -140,12 +147,9 @@ export default function InputFormPlayer(props) {
 
 
                         <div className=" w-4/5 flex flex-col gap-1 ">
-                            <InputLabel><div className="text-sm">Date of birth</div></InputLabel>
-                            <div className="grid grid-cols-3 gap-2">
-                                <TextField size="small" type="number" label={<div className="text-sm">Day</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, day: e.target.value }); setErrorDay(e.target.value !== "" && (e.target.value < 1 || e.target.value > maxDays(dateOfBirth.month, dateOfBirth.year))) }} value={dateOfBirth.day} error={errorDay} helperText={errorDay ? <div className="w-fit text-nowrap text-5xs">Date must be in range (1-{maxDays(dateOfBirth.month, dateOfBirth.year)})</div> : ""}></TextField>
-                                <TextField size="small" type="number" label={<div className="text-sm">Month</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, month: e.target.value }); setErrorMonth(e.target.value !== "" && (e.target.value < 1 || e.target.value > 12)) }} value={dateOfBirth.month} error={errorMonth} helperText={errorMonth ? <div className="w-fit text-nowrap text-5xs">Month must be in range (1-12)</div> : ""}></TextField>
-                                <TextField size="small" type="number" label={<div className="text-sm">Year</div>} variant="outlined" onChange={(e) => { setDateOfBirth({ ...dateOfBirth, year: e.target.value }); setErrorYear(e.target.value !== "" && (e.target.value < 1900 || e.target.value > 2024)) }} value={dateOfBirth.year} error={errorYear} helperText={errorYear ? <div className="w-fit text-nowrap text-5xs">Date must be in range (1900-2024)</div> : ""}></TextField>
-                            </div>
+                            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                <DatePicker value={date} onChange={(newValue) => setDate(newValue)} format="DD/MM/YYYY" label="Date of birth" className="bg-white rounded" />
+                            </LocalizationProvider>
                         </div>
                         <Autocomplete
                             size="small"
