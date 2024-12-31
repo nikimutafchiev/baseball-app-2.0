@@ -18,11 +18,11 @@ export default function Profile() {
 
     useEffect(() => console.log(user));
     return (
-        <div className="h-full w-full flex flex-row gap-8 p-10">
+        <div className="h-full w-full flex flex-col md:flex-row gap-8 p-10">
             {
                 !isShrinked
                 &&
-                <div className="relative w-1/4 h-fit flex flex-col items-center gap-4 p-5 shadow-xl rounded-md bg-white">
+                <div className="relative md:w-1/4 h-fit flex flex-col items-center gap-4 p-5 shadow-xl rounded-md bg-white">
                     <button className="absolute text-black left-2 top-2 rounded-full hover:bg-gray-300 bg-gray-200 p-1" onClick={() => setIsShrinked(!isShrinked)}>
                         <IoReorderThree size={20} />
                     </button>
@@ -52,8 +52,9 @@ export default function Profile() {
                     </div>
                 </div>
             }
+            <div className="bg-line w-[2px]"></div>
             <div className="flex flex-row gap-4 flex-1 h-full">
-                <div className="bg-line w-[2px]"></div>
+
                 <Outlet />
             </div>
         </div>)
