@@ -13,7 +13,7 @@ export default function Game(props) {
 
     const favorite = useSWR(`http://localhost:6363/game/liked/?user_id=${user ? user.id : -1}&game_id=${props.id}`, (url) => fetch(url).then((res) => res.json()));
     return (
-        <div className="w-full grid md:grid-cols-9 grid-cols-1 gap-2 justify-around min-h-[60px] px-8 py-2 rounded place-items-center text-gray-500 bg-white  font-semibold  drop-shadow-xl">
+        <div className="w-full grid md:grid-cols-10 grid-cols-1 gap-2 justify-around min-h-[60px] px-8 py-2 rounded place-items-center text-gray-500 bg-white  font-semibold  drop-shadow-xl">
             {user && <button className='text-yellow-500' onClick={() => {
                 fetch(`http://localhost:6363/game/like/?user_id=${user.id}&game_id=${props.id}`, {
                     method: "POST",
