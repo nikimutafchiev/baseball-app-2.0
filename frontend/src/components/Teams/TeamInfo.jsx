@@ -21,9 +21,9 @@ export default function TeamInfo() {
     const teams = ["Lions", "Blues", "Akademik", "Coyotes", "Buffaloes", "Yunak"];
     const tournaments = ["Bulgarian Cup", "Champions League", "World cup"];
     return (<>{
-        team.data && <div className="w-full h-full flex flex-row gap-4">
+        team.data && <div className="w-full h-full flex flex-col md:flex-row gap-4">
             {!isShrinked &&
-                <div className="w-1/5 h-fit ">
+                <div className="w-full md:w-1/5 h-fit ">
                     <div className="items-center flex flex-col gap-4 bg-white drop-shadow-lg p-2">
                         <button className="absolute text-black left-2 top-2 rounded-full hover:bg-gray-300 bg-gray-200 p-1" onClick={() => setIsShrinked(!isShrinked)}>
                             <IoReorderThree size={20} />
@@ -72,11 +72,10 @@ export default function TeamInfo() {
                 </div>
             </div>}
             <div className="flex flex-1 flex-row gap-8">
-                <div className="bg-line w-[2px]"></div>
                 <div className="flex flex-1 flex-col gap-4 h-fit">
                     <h3 className="text-3xl font-semibold">Stats overview</h3>
-                    <div className="flex flex-row justify-around h-12">
-                        <div className="w-1/4 rounded drop-shadow-lg">
+                    <div className="flex flex-col md:flex-row justify-around h-40 mb-4 md:h-12">
+                        <div className="md:w-1/4 rounded drop-shadow-lg">
                             <Autocomplete
                                 multiple
                                 limitTags={1}
@@ -91,7 +90,7 @@ export default function TeamInfo() {
                                 )}
                             />
                         </div>
-                        <div className=" w-1/3 rounded  drop-shadow-lg">
+                        <div className=" md:w-1/3 rounded  drop-shadow-lg">
                             <Autocomplete
                                 multiple
                                 limitTags={1}
@@ -105,7 +104,7 @@ export default function TeamInfo() {
                                 )}
                             />
                         </div>
-                        <div className=" w-1/3 rounded  drop-shadow-lg">
+                        <div className=" md:w-1/3 rounded  drop-shadow-lg">
                             <Autocomplete
                                 multiple
                                 limitTags={1}
@@ -121,7 +120,7 @@ export default function TeamInfo() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid md:grid-cols-2 gap-4">
                         {[
                             { label: "AVG", value: "0.707", rank: "#4" },
                             { label: "W-L", value: "12-23", rank: "#2" },
@@ -140,8 +139,8 @@ export default function TeamInfo() {
                     </div>
                     <hr className="border-t-2 border-line"></hr>
                     <h3 className="text-3xl font-semibold">Detailed stats</h3>
-                    <div className="flex flex-row justify-around h-12">
-                        <div className="w-1/4 rounded drop-shadow-lg">
+                    <div className="flex flex-col md:flex-row justify-around h-40 mb-4 md:h-12">
+                        <div className="md:w-1/4 rounded drop-shadow-lg">
                             <Autocomplete
                                 multiple
                                 limitTags={1}
@@ -155,7 +154,7 @@ export default function TeamInfo() {
                                 )}
                             />
                         </div>
-                        <div className=" w-1/3 rounded  drop-shadow-lg">
+                        <div className=" md:w-1/3 rounded  drop-shadow-lg">
                             <Autocomplete
                                 multiple
                                 limitTags={1}
@@ -169,7 +168,7 @@ export default function TeamInfo() {
                                 )}
                             />
                         </div>
-                        <div className=" w-1/3 rounded  drop-shadow-lg">
+                        <div className=" md:w-1/3 rounded  drop-shadow-lg">
                             <Autocomplete
                                 multiple
                                 limitTags={1}
