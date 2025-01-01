@@ -1,6 +1,6 @@
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material"
 export default function TournamentInfoRanking() {
-    return (<div className="w-full bg-white rounded mx-4 p-4">
+    return (<div className="w-full bg-white rounded p-4">
         <h2 className="text-3xl font-semibold mb-4">Rankings</h2>
         <TableContainer >
             <Table sx={{ minWidth: "100 %" }} size="small">

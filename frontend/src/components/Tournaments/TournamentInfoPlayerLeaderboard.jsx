@@ -12,7 +12,7 @@ export default function TournamentInfoPlayerLeaderboard() {
                     <ToggleButton>Fielding</ToggleButton>
                 </ToggleButtonGroup>
             </div>
-            <div className="w-full grid grid-cols-3 gap-x-6 gap-y-10">
+            <div className="w-full grid  grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
                 {["AVG", "OBP", "OPS", "H", "BB", "SO"].map((stat) => (
                     <div className="w-full flex flex-col">
                         <h3 className="text-xl font-semibold text-gray-800 mb-4">{stat}</h3>

@@ -12,9 +12,9 @@ export default function TournamentInfo() {
     return (<>
         {
             tournament.data &&
-            <div className="w-full h-full flex flex-row gap-4 p-10">
+            <div className="w-full h-full flex md:flex-row flex-col gap-4 p-10">
                 {!isShrinked &&
-                    <div className="w-1/4 items-center flex flex-col gap-4 bg-white drop-shadow-lg p-2 h-fit">
+                    <div className="md:w-1/4 w-full items-center flex flex-col gap-4 bg-white drop-shadow-lg p-2 h-fit">
                         <button className="absolute text-black left-2 top-2 rounded-full hover:bg-gray-300 bg-gray-200 p-1" onClick={() => setIsShrinked(!isShrinked)}>
                             <IoReorderThree size={20} />
                         </button>
@@ -49,8 +49,7 @@ export default function TournamentInfo() {
                         </button>
                     </div>
                 </div>}
-                <div className="flex flex-row  gap-4 flex-1">
-                    <div className="bg-line w-[2px]"></div>
+                <div className=" flex-1">
                     <Outlet />
                 </div>
             </div>
