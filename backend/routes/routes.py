@@ -131,8 +131,8 @@ def add_game_to_tournament():
     new_game = Game(startTime = datetime(year=data['startTime']["year"],month=data['startTime']["month"],day=data['startTime']["day"],hour=data['startTime']["hour"],minute=data['startTime']["minutes"],tzinfo=timezone.utc),tournamentId = int(query["tournament_id"]),venue=data["venue"],venueLink=data['venueLink'])
     db.session.add(new_game)
     tournament.games.append(new_game)
-    home_game_association = GameTeam(game=new_game,team= Team.query.get(data["homeTeam"]["id"]),homeAway = HomeAway.HOME)
-    away_game_association = GameTeam(game=new_game,team= Team.query.get(data["awayTeam"]["id"]),homeAway = HomeAway.AWAY)
+    home_game_association = GameTeam(game=new_game,teamTournament= TeamTournament.query.get(data["homeTeam"]["id"]),homeAway = HomeAway.HOME)
+    away_game_association = GameTeam(game=new_game,teamTournament= TeamTournament.query.get(data["awayTeam"]["id"]),homeAway = HomeAway.AWAY)
     db.session.add(home_game_association)
     db.session.add(away_game_association)
     db.session.commit()
@@ -149,8 +149,8 @@ def get_games_by_tournament():
         away_team = list(filter(lambda x: x.homeAway.value == "away",game_teams))[0]
         res.append({
         'id':game.id,
-        'homeTeam': home_team.team.name,
-        "awayTeam":away_team.team.name,
+'homeTeam': home_team.teamTournament.team.name,
+        "awayTeam":away_team.teamTournament.team.name,
         "startTime": game.startTime,
         "status": game.status.value,
         "homeResult":home_team.result,
@@ -203,7 +203,8 @@ def get_teams_by_tournament():
     query = request.args.to_dict()
     tournament = Tournament.query.get(query["tournament_id"])
     return [ {
-        'id':association.team_id,
+        'id':association.id,
+        "team_id":association.team.id,
         'name': association.team.name,
         "tlc":association.team.tlc,
         'logo': association.team.logo,
@@ -236,8 +237,8 @@ def get_liked_games():
         away_team = list(filter(lambda x: x.homeAway.value == "away",game_teams))[0]
         res.append({
         'id':association.game.id,
-        'homeTeam': home_team.team.name,
-        "awayTeam":away_team.team.name,
+        'homeTeam': home_team.teamTournament.team.name,
+        "awayTeam":away_team.teamTournament.team.name,
         "startTime": association.game.startTime,
         "status": association.game.status.value,
         "homeResult":home_team.result,
@@ -262,10 +263,10 @@ def get_game_by_id(game_id):
     return {
         'id':game.id,
         'homeTeam': {
-            "name":home_team.team.name,
-            "tlc": home_team.team.tlc},
-        "awayTeam":{"name":away_team.team.name,
-                    "tlc":away_team.team.tlc},
+            "name":home_team.teamTournament.team.name,
+            "tlc": home_team.teamTournament.team.tlc},
+        "awayTeam":{"name":away_team.teamTournament.team.name,
+                    "tlc":away_team.teamTournament.team.tlc},
         "startTime": game.startTime,
         "status": game.status.value,
         "homeResult":home_team.result,
@@ -341,4 +342,3 @@ def get_games_by_date():
             })
         
     return res
-

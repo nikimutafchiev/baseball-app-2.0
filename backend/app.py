@@ -18,6 +18,7 @@ jwt = JWTManager(app)
 app.register_blueprint(route_bp)
 
 with app.app_context():
+    # db.drop_all()
     db.create_all()
     
 

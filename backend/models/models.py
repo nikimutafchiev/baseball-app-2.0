@@ -34,7 +34,6 @@ class Team(db.Model):
     manager: Mapped[Optional[str]] = mapped_column(String(100))
     headCoach: Mapped[Optional[str]] = mapped_column(String(100))
     tournaments: Mapped[List["TeamTournament"]] = relationship(back_populates="team")
-    games: Mapped[List["GameTeam"]] = relationship(back_populates="team")
 
 
 class Tournament(db.Model):
@@ -59,8 +58,10 @@ class TeamTournament(db.Model):
         db.UniqueConstraint("team_id","tournament_id",name="unique_team_tournament"),
     )
     players: Mapped[List["TeamTournamentPlayer"]] = relationship(back_populates="team_tournament")
+    games: Mapped[List["GameTeam"]] = relationship(back_populates="teamTournament")
 
 class TeamTournamentPlayer(db.Model):
+    __tablename__ = "TeamTournamentPlayer"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     player_id: Mapped[int] =  mapped_column(ForeignKey("Player.id"))
     team_tournament_id: Mapped[int] =  mapped_column(ForeignKey("TeamTournament.id"))
@@ -82,14 +83,23 @@ class Game(db.Model):
     userLikes: Mapped[List["UserFavoriteGame"]] = relationship(back_populates="game")
 
 class GameTeam(db.Model):
+    __tablename__ = "GameTeam"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    teamId: Mapped[int] = mapped_column(ForeignKey("Team.id"))
+    teamTournamentId: Mapped[int] = mapped_column(ForeignKey("TeamTournament.id"))
     gameId: Mapped[int] = mapped_column(ForeignKey("Game.id"))
     game: Mapped["Game"] = relationship(back_populates="teams")
-    team: Mapped["Team"] = relationship(back_populates="games")
+    teamTournament: Mapped["TeamTournament"] = relationship(back_populates="games")
     result: Mapped[int] = mapped_column(Integer,nullable=False,default=0)
     homeAway: Mapped[HomeAway] = mapped_column(Enum(HomeAway),nullable=False)
     __table_args__ = (db.UniqueConstraint("gameId","homeAway",name="unique_game_home_away"),)
+
+# class GameTeamTeamTournamentPlayer(db.Model):
+#     __tablename__ = "GameTeamTeamTournamentPlayer"
+#     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+#     gameTeamId: Mapped[int] = mapped_column(ForeignKey("GameTeam.id"))
+#     teamTournamentPlayerId: Mapped[int] = mapped_column(ForeignKey("TeamTournamentPlayer.id"))
+#     gameTeam: Mapped["GameTeam"] = relationship(back_populates = "players")
+#     teamTournamentPlayer: Mapped["TeamTournamentPlayer"] = relationship(back_populates = "games")
 
 class User(db.Model):
     __tablename__="User"

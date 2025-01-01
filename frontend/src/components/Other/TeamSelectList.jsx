@@ -33,6 +33,9 @@ export default function TeamSelectList(props) {
                         </div>
                     </button >
                     )}
+                    {
+                        props.teams && props.teams.length == 0 && <div className="text-xl">No teams to select!</div>
+                    }
                 </div>
             </div>
         </div></>)

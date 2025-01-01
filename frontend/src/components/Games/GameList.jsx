@@ -9,6 +9,9 @@ export default function GameList(props) {
                     <Game {...game} size={props.size} />
                 )
             }
+            {
+                props.games.length == 0 && <div>Oops, there are no games here!</div>
+            }
 
         </div >
     }</>)

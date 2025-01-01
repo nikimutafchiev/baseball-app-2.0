@@ -10,7 +10,7 @@ export default function TournamentInfoTeams() {
     const { id } = useParams();
     const selectTeams = useSWR("http://localhost:6363/teams", (url) => fetch(url).then((res) => res.json()));
     const teams = useSWR(`http://localhost:6363/tournament_teams/?tournament_id=${id}`, (url) => fetch(url).then((res) => res.json()));
-    const teams_ids = teams.data ? teams.data.map((team) => team.id) : []
+    const teams_ids = teams.data ? teams.data.map((team) => team.team_id) : []
     const selectData = selectTeams.data ? selectTeams.data.filter((team) => !teams_ids.includes(team.id)) : [];
 
     useEffect(

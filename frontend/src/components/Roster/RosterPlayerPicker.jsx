@@ -1,5 +1,8 @@
 import { RiCloseCircleLine } from "react-icons/ri";
+import useSWR from "swr";
 export default function RosterPlayerPicker(props) {
+
+    const roster = useSWR(`http://localhost:6363/team_tournament/roster/?team_id=2&tournament_id=2`, (url) => fetch(url).then((res) => res.json()));
 
     return (<div className="fixed inset-0 z-10 bg-black bg-opacity-50">
         <div className="fixed z-20 inset-0 px-6 flex flex-col text-white font-semibold cursor-default bg-white w-1/2 h-4/5  self-center justify-self-center rounded">
@@ -17,17 +20,7 @@ export default function RosterPlayerPicker(props) {
             </div>
 
             <div className="flex flex-col flex-1 overflow-y-auto px-2">
-                {[{ id: 121, uniformNumber: 55, firstName: "Nikolay", lastName: "Mutafchiev" },
-                { id: 122, uniformNumber: 12, firstName: "Ivan", lastName: "Petrov" },
-                { id: 123, uniformNumber: 34, firstName: "Maria", lastName: "Ivanova" },
-                { id: 124, uniformNumber: 7, firstName: "Georgi", lastName: "Dimitrov" },
-                { id: 125, uniformNumber: 22, firstName: "Anna", lastName: "Kirilova" },
-                { id: 126, uniformNumber: 10, firstName: "Peter", lastName: "Stoyanov" },
-                { id: 127, uniformNumber: 3, firstName: "Elena", lastName: "Todorova" },
-                { id: 128, uniformNumber: 45, firstName: "Viktor", lastName: "Georgiev" },
-                { id: 129, uniformNumber: 88, firstName: "Sofia", lastName: "Mladenova" },
-                { id: 130, uniformNumber: 99, firstName: "Dimitar", lastName: "Kolev" }
-                ]
+                {roster.data && roster.data
                     .sort((player) => {
                         if (!props.takenPlayers.includes(player.id)) return -1
                         else return 0
