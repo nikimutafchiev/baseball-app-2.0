@@ -59,7 +59,7 @@ class TeamTournament(db.Model):
     )
     players: Mapped[List["TeamTournamentPlayer"]] = relationship(back_populates="team_tournament")
     games: Mapped[List["GameTeam"]] = relationship(back_populates="teamTournament")
-
+#TODO ADD unique constraint for player_id, team_tournament_id
 class TeamTournamentPlayer(db.Model):
     __tablename__ = "TeamTournamentPlayer"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)

@@ -204,7 +204,6 @@ def get_teams_by_tournament():
     tournament = Tournament.query.get(query["tournament_id"])
     return [ {
         'id':association.id,
-        "team_id":association.team.id,
         'name': association.team.name,
         "tlc":association.team.tlc,
         'logo': association.team.logo,
