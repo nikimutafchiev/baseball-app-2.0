@@ -15,9 +15,9 @@ export default function PlayerInfo() {
     const [isShrinked, setIsShrinked] = useState(false);
     return (
         <>
-            {player.data && <div className="flex flex-row w-full gap-8 text-white text-sm ">
+            {player.data && <div className="flex flex-col md:flex-row w-full gap-8 text-white text-sm ">
                 {!isShrinked &&
-                    <div className="relative w-1/4">
+                    <div className="relative md:w-1/4">
                         <div className="flex flex-col h-fit bg-gradient-to-br p-4 gap-4 items-center from-accent_3 via-accent_2 to-accent_1 rounded ">
                             <button className=" left-1 top-1 absolute rounded-full p-1 bg-accent_1 hover:bg-accent_2 " onClick={() => setIsShrinked(!isShrinked)}>
                                 <IoReorderThree size={20} />
@@ -64,11 +64,10 @@ export default function PlayerInfo() {
                     </div>}
 
                 <div className="flex flex-row flex-1 gap-8">
-                    <div className="bg-line w-[2px]"></div>
                     <div className="flex flex-col flex-1 text-black gap-4 h-fit">
                         <h3 className="text-3xl font-semibold">Stats overview</h3>
-                        <div className="flex flex-row justify-around h-12">
-                            <div className="w-1/4 rounded drop-shadow-lg">
+                        <div className="flex flex-col md:flex-row justify-around mb-4 h-40 md:h-12">
+                            <div className="md:w-1/4 rounded drop-shadow-lg">
                                 <Autocomplete
                                     multiple
                                     limitTags={1}
@@ -82,7 +81,7 @@ export default function PlayerInfo() {
                                     )}
                                 />
                             </div>
-                            <div className=" w-1/3 rounded  drop-shadow-lg">
+                            <div className=" md:w-1/3 rounded  drop-shadow-lg">
                                 <Autocomplete
                                     multiple
                                     limitTags={1}
@@ -96,7 +95,7 @@ export default function PlayerInfo() {
                                     )}
                                 />
                             </div>
-                            <div className=" w-1/3 rounded  drop-shadow-lg">
+                            <div className=" md:w-1/3 rounded  drop-shadow-lg">
                                 <Autocomplete
                                     multiple
                                     limitTags={1}
@@ -112,7 +111,7 @@ export default function PlayerInfo() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {[
                                 { label: "AVG", value: "0.707", rank: "#4 in Leaderboard" },
                                 { label: "OBP", value: "0.815", rank: "#2" },
@@ -135,8 +134,8 @@ export default function PlayerInfo() {
                         </div>
                         <hr className="border-t-2 border-line"></hr>
                         <h3 className="text-3xl font-semibold">Detailed stats</h3>
-                        <div className="flex flex-row justify-around h-12">
-                            <div className="w-1/4 rounded drop-shadow-lg">
+                        <div className="flex flex-col md:flex-row justify-around mb-4 h-40 md:h-12">
+                            <div className="md:w-1/4 rounded drop-shadow-lg">
                                 <Autocomplete
                                     multiple
                                     limitTags={1}
@@ -150,7 +149,7 @@ export default function PlayerInfo() {
                                     )}
                                 />
                             </div>
-                            <div className=" w-1/3 rounded  drop-shadow-lg">
+                            <div className=" md:w-1/3 rounded  drop-shadow-lg">
                                 <Autocomplete
                                     multiple
                                     limitTags={1}
@@ -164,7 +163,7 @@ export default function PlayerInfo() {
                                     )}
                                 />
                             </div>
-                            <div className=" w-1/3 rounded  drop-shadow-lg">
+                            <div className=" md:w-1/3 rounded  drop-shadow-lg">
                                 <Autocomplete
                                     multiple
                                     limitTags={1}
