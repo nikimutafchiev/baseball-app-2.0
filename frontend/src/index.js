@@ -123,12 +123,12 @@ const rooter = createBrowserRouter([
       },
       {
         path: "score/:id",
-        element: <GameScorerPage />,
+        element: <ProtectedRoute component={GameScorerPage} roles={['admin']} />,
 
       },
       {
         path: "score/:id/roster",
-        element: <RosterPage />
+        element: <ProtectedRoute component={RosterPage} roles={['admin']} />
       },
       {
         path: "login",

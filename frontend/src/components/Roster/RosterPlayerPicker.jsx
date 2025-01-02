@@ -1,8 +1,7 @@
 import { RiCloseCircleLine } from "react-icons/ri";
 import useSWR from "swr";
 export default function RosterPlayerPicker(props) {
-
-    const roster = useSWR(`http://localhost:6363/team_tournament/roster/?team_id=2&tournament_id=2`, (url) => fetch(url).then((res) => res.json()));
+    const roster = useSWR(`http://localhost:6363/team_tournament/roster/?team_id=${props.team.id}&tournament_id=${props.tournament.id}`, (url) => fetch(url).then((res) => res.json()));
 
     return (<div className="fixed inset-0 z-10 bg-black bg-opacity-50">
         <div className="fixed z-20 inset-0 px-6 flex flex-col text-white font-semibold cursor-default bg-white w-1/2 h-4/5  self-center justify-self-center rounded">
@@ -12,7 +11,7 @@ export default function RosterPlayerPicker(props) {
                         onClick={() => { props.clear(); props.close() }}>Clear</button>
                 </div>
                 <div className="font-semibold text-center text-lg text-black">
-                    {props.helperText}
+                    Select player from {props.team.name}
                 </div>
                 <div>
                     <button onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
@@ -34,6 +33,7 @@ export default function RosterPlayerPicker(props) {
                             </div>
                         </button>
                     )}
+                {roster.data && roster.data.length == 0 && <div className="text-lg text-black font-normal mt-4">Oops, no players in this team!</div>}
             </div>
         </div >
     </div >)

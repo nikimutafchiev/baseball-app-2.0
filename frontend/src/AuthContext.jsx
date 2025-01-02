@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 const AuthContext = createContext();
 
@@ -7,6 +8,7 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem("access_token") || "");
     const [user, setUser] = useState(token != "" ? jwtDecode(token).user : null);
     const navigate = useNavigate();
+    const location = useLocation();
     const login = async (userData) => {
 
         try {
@@ -23,15 +25,20 @@ export const AuthProvider = ({ children }) => {
                 setToken(res.access_token);
                 setUser(jwtDecode(res.access_token).user);
                 localStorage.setItem("access_token", res.access_token);
-                navigate("/");
+                if (location.pathname == "login")
+                    navigate("/");
                 return 0;
             }
-            return -1;
+            if (response.status == 400) {
+                if (user)
+                    logout();
+                return -1;
+            }
         } catch (err) {
             console.error(err);
         }
     };
-
+    useEffect(() => { if (user) login({ "username": user.username, "password": user.password }) }, []);
     const logout = () => {
         setUser(null);
         setToken("");

@@ -10,7 +10,7 @@ export default function GameList(props) {
                 )
             }
             {
-                props.games.length == 0 && <div>Oops, there are no games here!</div>
+                props.games.length == 0 && <div className="text-xl">Oops, there are no games here!</div>
             }
 
         </div >

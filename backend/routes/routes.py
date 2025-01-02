@@ -262,16 +262,23 @@ def get_game_by_id(game_id):
     return {
         'id':game.id,
         'homeTeam': {
+            "id": home_team.teamTournament.team.id,
             "name":home_team.teamTournament.team.name,
             "tlc": home_team.teamTournament.team.tlc},
-        "awayTeam":{"name":away_team.teamTournament.team.name,
+        "awayTeam":{
+            "id": away_team.teamTournament.team.id,
+            "name":away_team.teamTournament.team.name,
                     "tlc":away_team.teamTournament.team.tlc},
         "startTime": game.startTime,
         "status": game.status.value,
         "homeResult":home_team.result,
         "awayResult": away_team.result,
         "venue": game.venue,
-        "venueLink": game.venueLink
+        "venueLink": game.venueLink,
+        "tournament":{
+                "id":game.tournamentId,
+                "name":game.tournament.name
+            }
     }
 @route_bp.route("/team_tournament/player/",methods=["POST"])
 def add_player_to_team_tournament():
@@ -326,8 +333,8 @@ def get_games_by_date():
             away_team = list(filter(lambda x: x.homeAway.value == "away",game_teams))[0]
             res.append({
             'id':game.id,
-            'homeTeam': home_team.team.name,
-            "awayTeam":away_team.team.name,
+            'homeTeam': home_team.teamTournament.team.name,
+            "awayTeam":away_team.teamTournament.team.name,
             "startTime": game.startTime,
             "status": game.status.value,
             "homeResult":home_team.result,
@@ -341,3 +348,4 @@ def get_games_by_date():
             })
         
     return res
+

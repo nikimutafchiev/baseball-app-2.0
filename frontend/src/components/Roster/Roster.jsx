@@ -21,14 +21,14 @@ export default function Roster(props) {
     return (
         < div className="w-[36%] bg-white flex flex-col gap-2 rounded-xl shadow-xl p-6" >
             <div className="text-center font-semibold text-xl">
-                {String(props.team).toUpperCase()}
+                {props.team.tlc}
             </div>
             {
                 roster.filter((player) => player.battingOrder !== "Flex").sort((a, b) => a.battingOrder - b.battingOrder).map((player, index) => <div className="flex flex-row items-center bg-primary_2 hover:bg-primary_2_hover cursor-pointer overflow-hidden text-white rounded-lg  shadow-md">
                     <div className="w-1/12 text-center font-semibold bg-primary_1 p-1">
                         {index + 1}
                     </div>
-                    <RosterCell player={player}
+                    <RosterCell team={props.team} tournament={props.tournament} player={player}
                         setPosition={(oldValue, newValue) => {
                             let updatedTakenPositions = takenPositions;
                             //асинхронен проблем с useState

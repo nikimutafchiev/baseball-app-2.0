@@ -38,7 +38,7 @@ export default function RosterCell(props) {
                 </div>
             </div>
         </div>
-        {clicked === 1 && <RosterPlayerPicker close={() => setClicked(0)} setter={(newValue) => { props.setPlayer(player.id, newValue.id); setPlayer(newValue) }} nextPage={position === "--" ? nextPage : () => setClicked(0)} takenPlayers={props.takenPlayers} />}
+        {clicked === 1 && <RosterPlayerPicker team={props.team} tournament={props.tournament} clear={() => clearPlayer()} close={() => setClicked(0)} setter={(newValue) => { props.setPlayer(player.id, newValue.id); setPlayer(newValue) }} nextPage={position === "--" ? nextPage : () => setClicked(0)} takenPlayers={props.takenPlayers} />}
         {clicked === 2 && <RosterPositionPicker close={() => setClicked(0)} setter={(newValue) => { props.setPosition(position, newValue); setPosition(newValue) }} nextPage={nextPage} takenPositions={props.takenPositions} />}
     </>
     );
