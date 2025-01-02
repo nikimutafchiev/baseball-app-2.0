@@ -2,6 +2,7 @@ import { TextField } from "@mui/material";
 import { RiCloseCircleLine } from "react-icons/ri";
 import { FaFacebook, FaInstagram, FaLink, FaYoutube } from "react-icons/fa";
 import { useState, useEffect } from "react";
+import validator from "validator";
 export default function InputFormTeam(props) {
     const icons = {
         facebook: <FaFacebook size={30} />,
@@ -25,7 +26,7 @@ export default function InputFormTeam(props) {
     const [manager, setManager] = useState("");
     const [headCoach, setHeadCoach] = useState("");
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const errorSubmit = name === "" || tlc.length != 3;
+    const errorSubmit = name === "" || tlc.length != 3 || Object.entries(links).map(([media, url]) => { return !validator.isURL(url) && url.length != 0 }).includes(true);
     useEffect((() => {
         if (isSubmitted) {
             fetch("http://localhost:6363/team", {
@@ -89,7 +90,7 @@ export default function InputFormTeam(props) {
                         <div className="flex flex-row gap-8 self-center text-gray-700">
                             {Object.entries(icons).map(([media, icon]) => <div className="cursor-pointer" onClick={() => setMediaOption(media)}>{icon}</div>)}
                         </div>
-                        <TextField label={<div>{mediaOption.charAt().toUpperCase() + mediaOption.slice(1)} link</div>} variant="outlined" value={links[mediaOption]} onChange={(e) => { setLinks({ ...links, [mediaOption]: e.target.value }) }} />
+                        <TextField label={<div>{mediaOption.charAt().toUpperCase() + mediaOption.slice(1)} link</div>} variant="outlined" value={links[mediaOption]} helperText={!validator.isURL(links[mediaOption]) && links[mediaOption].length != 0 ? "This is not valid link" : ""} onChange={(e) => { setLinks({ ...links, [mediaOption]: e.target.value }) }} />
                     </div>
                 </div>
                 <button className={`bg-primary_2  px-2 py-1 w-2/3  text-lg font-semibold rounded ${errorSubmit ? "cursor-not-allowed bg-primary_1 text-gray-400" : "hover:bg-primary_3 text-white"}`} onClick={() => {

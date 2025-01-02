@@ -1,34 +1,75 @@
+import { useParams } from "react-router-dom";
 import RosterCell from "./RosterCell";
 import RosterPitcherCell from "./RosterPitcherCell";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useSWR from "swr";
 export default function Roster(props) {
-    const [roster, setRoster] = useState([
-        { id: 121, battingOrder: 5, uniformNumber: 55, firstName: "Nikolay", lastName: "Mutafchiev", position: "CF" },
-        { id: 122, battingOrder: 2, uniformNumber: 12, firstName: "Ivan", lastName: "Petrov", position: "1B" },
-        { id: 123, battingOrder: 3, uniformNumber: 34, firstName: "Maria", lastName: "Ivanova", position: "SS" },
-        { id: 124, battingOrder: 4, uniformNumber: 7, firstName: "Georgi", lastName: "Dimitrov", position: "RF" },
-        { id: 125, battingOrder: 7, uniformNumber: 22, firstName: "Anna", lastName: "Kirilova", position: "2B" },
-        { id: 126, battingOrder: 6, uniformNumber: 10, firstName: "Peter", lastName: "Stoyanov", position: "3B" },
-        { id: 127, battingOrder: 1, uniformNumber: 3, firstName: "Elena", lastName: "Todorova", position: "LF" },
-        { id: 128, battingOrder: 8, uniformNumber: 45, firstName: "Viktor", lastName: "Georgiev", position: "C" },
-        { id: 129, battingOrder: 9, uniformNumber: 88, firstName: "Sofia", lastName: "Mladenova", position: "DH" },
-        { id: 130, battingOrder: "Flex", uniformNumber: 99, firstName: "Dimitar", lastName: "Kolev", position: "P" },
-    ]);
-    const [takenPositions, setTakenPositions] = useState(roster.map((player) => player.position));
-    const [takenPlayers, setTakenPlayers] = useState(roster.map((player) => player.id));
-    const pitcher = roster.filter((player) => player.position === "P")[0];
+    const { id } = useParams();
+    const roster = useSWR(`http://localhost:6363/game/team/roster/?home_away=${props.homeAway}&game_id=${id}`, (url) => fetch(url).then((res) => res.json()));
+    const [takenPositions, setTakenPositions] = useState([]);
+    const [takenPlayers, setTakenPlayers] = useState([]);
+    const [pitcher, setPitcher] = useState({
+        id: -1,
+        uniformNumber: "",
+        firstName: "",
+        lastName: "",
+        position: "--"
+    });
 
+    const [players, setPlayers] = useState([]);
+    const getMissingOrders = (roster) => {
+        return [1, 2, 3, 4, 5, 6, 7, 8, 9].filter((number) => !roster.map((player) => player.battingOrder).includes(number));
+    }
+    useEffect(() => {
+        if (roster.data) {
+            var newData = [...roster.data];
+            //needed because players with order 1,2,4 are put 1,2,3 instead
+            var missingOrders = getMissingOrders(roster.data);
+            console.log(missingOrders)
+            while (newData.length < 9)
+                newData.push({
+                    id: -1,
+                    uniformNumber: "",
+                    firstName: "",
+                    lastName: "",
+                    position: "--",
+                    battingOrder: missingOrders.pop()
+                });
+            setPlayers(newData);
+        }
+        else
+            setPlayers(new Array(9).fill({
+                id: -1,
+                uniformNumber: "",
+                firstName: "",
+                lastName: "",
+                position: "--"
+            }))
+        setTakenPlayers(roster.data ? roster.data.map((player) => player.player.id) : []);
+        setTakenPositions(roster.data ? roster.data.map((player) => player.position) : []);
+        const newPitcher = roster.data ? roster.data.filter((player) => player.position == "P") : [];
+        if (newPitcher.length == 0)
+            setPitcher({
+                id: -1,
+                uniformNumber: "",
+                firstName: "",
+                lastName: "",
+                position: "--"
+            });
+        else
+            setPitcher(newPitcher[0]);
+    }, [roster.data]);
     return (
         < div className="w-[36%] bg-white flex flex-col gap-2 rounded-xl shadow-xl p-6" >
             <div className="text-center font-semibold text-xl">
                 {props.team.tlc}
             </div>
             {
-                roster.filter((player) => player.battingOrder !== "Flex").sort((a, b) => a.battingOrder - b.battingOrder).map((player, index) => <div className="flex flex-row items-center bg-primary_2 hover:bg-primary_2_hover cursor-pointer overflow-hidden text-white rounded-lg  shadow-md">
+                players.sort((a, b) => a.battingOrder - b.battingOrder).map((player, index) => <div className="flex flex-row items-center bg-primary_2 hover:bg-primary_2_hover cursor-pointer overflow-hidden text-white rounded-lg  shadow-md">
                     <div className="w-1/12 text-center font-semibold bg-primary_1 p-1">
                         {index + 1}
                     </div>
-                    <RosterCell team={props.team} tournament={props.tournament} player={player}
+                    <RosterCell team={props.team} tournament={props.tournament} player={player} order={index + 1} homeAway={props.homeAway}
                         setPosition={(oldValue, newValue) => {
                             let updatedTakenPositions = takenPositions;
                             //асинхронен проблем с useState
@@ -54,7 +95,7 @@ export default function Roster(props) {
                 </div>
                 )}
 
-            {pitcher && <div className="flex flex-row mt-4 items-center bg-primary_2 hover:bg-primary_2_hover cursor-pointer overflow-hidden text-white rounded-lg  shadow-md">
+            <div className="flex flex-row mt-4 items-center bg-primary_2 hover:bg-primary_2_hover cursor-pointer overflow-hidden text-white rounded-lg  shadow-md">
                 <div className="w-1/12 text-center font-semibold bg-primary_1 p-1">
                     P
                 </div>
@@ -72,7 +113,7 @@ export default function Roster(props) {
                     }
                     takenPlayers={takenPlayers}
                 />
-            </div>}
+            </div>
 
         </div >
     )

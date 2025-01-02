@@ -2,6 +2,7 @@ import { useAuth } from "../../AuthContext";
 import { useState, useEffect } from "react";
 import { TextField, InputAdornment } from "@mui/material";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import validator from "validator";
 export default function Signup() {
     const { signup } = useAuth();
     const [firstName, setFirstName] = useState("");
@@ -15,12 +16,11 @@ export default function Signup() {
     const handleSignUp = () => {
         setErrorSignUp(signup({ username, password, firstName, lastName }));
     };
-
     useEffect(() => {
         if (errorSignUp instanceof Promise)
             errorSignUp.then((promiseValue) => setErrorSignUp(promiseValue));
     }, [errorSignUp]);
-    const errorSubmit = username.length < 8 || password.length < 8 || password !== confirmPassword;
+    const errorSubmit = username.length < 8 || password.length < 8 || password !== confirmPassword || !validator.isEmail(username);
 
     return (<div class="flex  flex-col justify-center py-4 px-8 rounded-lg bg-white drop-shadow-xl" >
         <div class="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -83,6 +83,7 @@ export default function Signup() {
                     value={username} onChange={(e) => setUsername(e.target.value)
 
                     }
+                    helperText={!validator.isEmail(username) && username.length != 0 ? "Invalid email address" : ""}
                     sx={{
                         '& .MuiOutlinedInput-root.Mui-focused': {
                             '& fieldset': {

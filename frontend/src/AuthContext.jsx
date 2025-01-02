@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
                 setToken(res.access_token);
                 setUser(jwtDecode(res.access_token).user);
                 localStorage.setItem("access_token", res.access_token);
-                if (location.pathname == "login")
+                if (location.pathname == "/login")
                     navigate("/");
                 return 0;
             }

@@ -1,4 +1,4 @@
-from models.models import Player, Team, TeamTournament,TeamTournamentPlayer, Tournament, Game, User, UserFavoriteGame, GameTeam
+from models.models import Player, Team, TeamTournament,TeamTournamentPlayer, Tournament, Game, User, UserFavoriteGame, GameTeam,GameTeamTeamTournamentPlayer
 from models.enums import HomeAway
 from flask import request, Blueprint
 from flask_jwt_extended import  create_access_token
@@ -9,7 +9,7 @@ route_bp = Blueprint("routes",__name__)
 @route_bp.route("/player",methods=['POST'])
 def add_player():
     data = request.json
-    new_player = Player(firstName=data['firstName'],lastName=data['lastName'],dateOfBirth= date(int(data['dateOfBirth']["year"]),int(data['dateOfBirth']["month"]),int(data['dateOfBirth']["day"])), height=data['height'],weigth = data['weigth'], throwingArm = data['throwingArm'], battingSide=data["battingSide"], gender=data['gender'],country=data['country'])
+    new_player = Player(first_name=data['firstName'],last_name=data['lastName'],date_of_birth= date(int(data['dateOfBirth']["year"]),int(data['dateOfBirth']["month"]),int(data['dateOfBirth']["day"])), height=data['height'],weigth = data['weigth'], throwing_arm = data['throwingArm'], batting_side=data["battingSide"], gender=data['gender'],country=data['country'])
     db.session.add(new_player)
     db.session.commit()
     return "Successfully added player",200
@@ -131,8 +131,8 @@ def add_game_to_tournament():
     new_game = Game(start_time = datetime(year=data['startTime']["year"],month=data['startTime']["month"],day=data['startTime']["day"],hour=data['startTime']["hour"],minute=data['startTime']["minutes"],tzinfo=timezone.utc),tournament_id = int(query["tournament_id"]),venue=data["venue"],venue_link=data['venueLink'])
     db.session.add(new_game)
     tournament.games.append(new_game)
-    home_game_association = GameTeam(game=new_game,team_tournament= TeamTournament.query.get(data["homeTeam"]["id"]),home_away = HomeAway.HOME)
-    away_game_association = GameTeam(game=new_game,team_tournament= TeamTournament.query.get(data["awayTeam"]["id"]),home_away = HomeAway.AWAY)
+    home_game_association = GameTeam(game=new_game,team_tournament= TeamTournament.query.filter_by(team_id = data["homeTeam"]["id"]).first(),home_away = HomeAway.HOME)
+    away_game_association = GameTeam(game=new_game,team_tournament= TeamTournament.query.filter_by(team_id = data["awayTeam"]["id"]).first(),home_away = HomeAway.AWAY)
     db.session.add(home_game_association)
     db.session.add(away_game_association)
     db.session.commit()
@@ -144,9 +144,9 @@ def get_games_by_tournament():
     tournament = Tournament.query.get(query["tournament_id"])
     res = []
     for game in tournament.games:
-        game_teams = GameTeam.query.filter_by(gameId = game.id).all();
-        home_team = list(filter(lambda x: x.homeAway.value == "home",game_teams))[0]
-        away_team = list(filter(lambda x: x.homeAway.value == "away",game_teams))[0]
+        game_teams = GameTeam.query.filter_by(game_id = game.id).all();
+        home_team = list(filter(lambda x: x.home_away.value == "home",game_teams))[0]
+        away_team = list(filter(lambda x: x.home_away.value == "away",game_teams))[0]
         res.append({
         'id':game.id,
 'homeTeam': home_team.team_tournament.team.name,
@@ -232,8 +232,8 @@ def get_liked_games():
     res=[]
     for association in user.favoriteGames:
         game_teams = GameTeam.query.filter_by(game_id = association.game.id).all();
-        home_team = list(filter(lambda x: x.homeAway.value == "home",game_teams))[0]
-        away_team = list(filter(lambda x: x.homeAway.value == "away",game_teams))[0]
+        home_team = list(filter(lambda x: x.home_away.value == "home",game_teams))[0]
+        away_team = list(filter(lambda x: x.home_away.value == "away",game_teams))[0]
         res.append({
         'id':association.game.id,
         'homeTeam': home_team.team_tournament.team.name,
@@ -257,8 +257,8 @@ def is_game_liked():
 def get_game_by_id(game_id):
     game = Game.query.get(game_id)
     game_teams = GameTeam.query.filter_by(game_id = game.id).all();
-    home_team = list(filter(lambda x: x.homeAway.value == "home",game_teams))[0]
-    away_team = list(filter(lambda x: x.homeAway.value == "away",game_teams))[0]
+    home_team = list(filter(lambda x: x.home_away.value == "home",game_teams))[0]
+    away_team = list(filter(lambda x: x.home_away.value == "away",game_teams))[0]
     return {
         'id':game.id,
         'homeTeam': {
@@ -328,9 +328,9 @@ def get_games_by_date():
     for game in games:
         print(game.startTime.day)
         if game.startTime.year == int(year) and game.startTime.month == int(month) and game.startTime.day == int(day):
-            game_teams = GameTeam.query.filter_by(gameId = game.id).all();
-            home_team = list(filter(lambda x: x.homeAway.value == "home",game_teams))[0]
-            away_team = list(filter(lambda x: x.homeAway.value == "away",game_teams))[0]
+            game_teams = GameTeam.query.filter_by(game_id = game.id).all();
+            home_team = list(filter(lambda x: x.home_away.value == "home",game_teams))[0]
+            away_team = list(filter(lambda x: x.home_away.value == "away",game_teams))[0]
             res.append({
             'id':game.id,
             'homeTeam': home_team.team_tournament.team.name,
@@ -349,3 +349,35 @@ def get_games_by_date():
         
     return res
 
+@route_bp.route("/game/team/roster/",methods=["GET"])
+def get_game_team_roster():
+    query = request.args.to_dict()
+    game_team = GameTeam.query.filter_by(game_id=query["game_id"],home_away=query["home_away"]).first()
+    res=[]
+    for player in game_team.players:
+        res.append({
+            "battingOrder": player.batting_order,
+            "position": player.position,
+            "uniformNumber":player.team_tournament_player.uniform_number,
+            "player":{
+                "id":player.team_tournament_player.player.id,
+                "firstName":player.team_tournament_player.player.first_name,
+                "lastName":player.team_tournament_player.player.last_name
+            }
+        })
+
+    return res
+
+@route_bp.route("/game/team/roster/player", methods=["POST"])
+def add_player_to_game_roster():
+    data = request.json
+    print(data)
+    gameTeam = GameTeam.query.filter_by(game_id=data["game_id"],home_away=data["home_away"]).first()
+    teamTournament = TeamTournament.query.filter_by(team_id=data["team_id"],tournament_id = data["tournament_id"]).first()
+    teamTournamentPlayer = TeamTournamentPlayer.query.filter_by(team_tournament_id = teamTournament.id, player_id = data["player_id"]).first()
+
+    association = GameTeamTeamTournamentPlayer(game_team = gameTeam, team_tournament_player = teamTournamentPlayer,position = data["position"],batting_order=int(data['battingOrder']))
+    db.session.add(association)
+    db.session.commit()
+
+    return ""

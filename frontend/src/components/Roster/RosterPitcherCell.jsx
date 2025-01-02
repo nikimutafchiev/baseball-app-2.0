@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RosterPlayerPicker from "./RosterPlayerPicker";
 import { IoClose } from "react-icons/io5";
 export default function RosterPitcherCell(props) {
     const [clicked, setClicked] = useState(0);
     const [hovered, setHovered] = useState(false);
     const [player, setPlayer] = useState({
-        id: props.player.id,
-        uniformNumber: props.player.uniformNumber,
-        firstName: props.player.firstName,
-        lastName: props.player.lastName
+        id: -1,
+        uniformNumber: "",
+        firstName: "",
+        lastName: ""
     })
     const clearPlayer = () => {
         props.setPlayer(player.id, -1);
@@ -19,6 +19,14 @@ export default function RosterPitcherCell(props) {
             lastName: ""
         })
     };
+    useEffect(() => setPlayer({
+        id: props.player.id,
+        uniformNumber: props.player.uniformNumber,
+        position: props.player.position,
+        firstName: props.player.player ? props.player.player.firstName : "",
+        lastName: props.player.player ? props.player.player.lastName : "",
+
+    }), [props.player]);
     return (<>
         <div className="flex flex-row flex-1 px-2 justify-between items-center" onClick={() => setClicked(1)} onMouseOver={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
             <div className="flex flex-row text-sm">

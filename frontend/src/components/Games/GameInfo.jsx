@@ -7,9 +7,12 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import useSWR from "swr";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import { RiArrowRightCircleLine } from "react-icons/ri";
+import { useAuth } from "../../AuthContext";
 
 export default function GameInfo() {
+    const { user } = useAuth();
     const stats = [
         {
             "Order": 1,
@@ -124,7 +127,7 @@ export default function GameInfo() {
     const game = useSWR(`http://localhost:6363/game/${id}`, (url) => fetch(url).then((res) => res.json()));
     return (<>{
         game.data && <div className="flex flex-row gap-8">
-            <div className="flex flex-col bg-white rounded-2xl drop-shadow-lg h-[80vh] w-1/3 p-10 items-center justify-between">
+            <div className="flex flex-col bg-white rounded-2xl drop-shadow-lg min-h-[80vh] max-h-[85vh] w-1/3 p-10 items-center justify-between">
                 <div className="flex flex-col text-gray-500 text-xs font-semibold ">
                     <div className="text-center">
                         {game.data.venue}
@@ -163,7 +166,7 @@ export default function GameInfo() {
                         L - Evgenii Chernozemsky
                     </div>
                 </div>
-                <div className="place-items-center  px-2 py-1 rounded">
+                <div className=" px-2 py-1 rounded">
                     <table className="table-auto">
                         <thead className="border-b-[1px] border-gray-500 ">
                             <tr>
@@ -180,6 +183,11 @@ export default function GameInfo() {
                         </tbody>
                     </table>
                 </div>
+                <div className="text-xs font-semibold">
+                    Field location - <a className="text-blue-500 underline" href={game.data.venueLink} target="_blank">{game.data.venueLink}</a>
+                </div>
+                <Link to={`/score/${game.data.id}`} className={`w-2/5 px-1 py-2 bg-orange-400 font-semibold rounded text-white text-nowrap hover:bg-orange-300 flex flex-row items-center gap-1 justify-center ${user && user.role == "admin" ? "" : "hidden"}`}><div>Score game</div><RiArrowRightCircleLine size={15} /></Link>
+
             </div>
             <div className="flex flex-col p-2 flex-1 bg-white rounded-2xl drop-shadow-lg min-h-[80vh]">
 

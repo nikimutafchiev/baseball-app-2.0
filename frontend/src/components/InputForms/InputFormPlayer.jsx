@@ -141,14 +141,17 @@ export default function InputFormPlayer(props) {
                     </div>
                     <div className="py-2 flex flex-col  gap-4">
                         <div className="flex flex-row gap-2">
-                            <TextField label={<div className="text-sm">First name*</div>} variant="outlined" className="w-1/2" onChange={(e) => { setFirstName(e.target.value) }} value={firstName} size="small"></TextField>
-                            <TextField label={<div className="text-sm">Last name*</div>} variant="outlined" className="w-1/2" onChange={(e) => { setLastName(e.target.value) }} value={lastName} size="small"></TextField>
+                            <TextField label={<div className="text-sm">First name*</div>} variant="outlined" className="w-1/2" onChange={(e) => { const newValue = e.target.value; if (/^[a-zA-Z]*$/.test(newValue.charAt(newValue.length - 1))) setFirstName(e.target.value) }} value={firstName} size="small"></TextField>
+                            <TextField label={<div className="text-sm">Last name*</div>} variant="outlined" className="w-1/2" onChange={(e) => { const newValue = e.target.value; if (/^[a-zA-Z]*$/.test(newValue.charAt(newValue.length - 1))) setLastName(e.target.value) }} value={lastName} size="small"></TextField>
                         </div>
 
 
                         <div className=" w-4/5 flex flex-col gap-1 ">
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DatePicker value={date} onChange={(newValue) => setDate(newValue)} format="DD/MM/YYYY" label="Date of birth" className="bg-white rounded" />
+                                <DatePicker value={date} shouldDisableYear={(date) => {
+                                    const currentYear = dayjs().year();
+                                    return date.year() >= currentYear - 1;
+                                }} onChange={(newValue) => setDate(newValue)} format="DD/MM/YYYY" label="Date of birth" className="bg-white rounded" />
                             </LocalizationProvider>
                         </div>
                         <Autocomplete
