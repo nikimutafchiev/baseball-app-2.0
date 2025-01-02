@@ -10,6 +10,7 @@ import useSWR from "swr";
 import { useParams, Link } from "react-router-dom";
 import { RiArrowRightCircleLine } from "react-icons/ri";
 import { useAuth } from "../../AuthContext";
+import { useEffect, useState } from "react";
 
 export default function GameInfo() {
     const { user } = useAuth();
@@ -125,6 +126,17 @@ export default function GameInfo() {
     ];
     const { id } = useParams();
     const game = useSWR(`http://localhost:6363/game/${id}`, (url) => fetch(url).then((res) => res.json()));
+    const [homeAway, setHomeAway] = useState("Home");
+    const homeRoster = useSWR(`http://localhost:6363/game/team/roster/?game_id=${id}&home_away=HOME`, (url) => fetch(url).then((res) => res.json()));
+    const awayRoster = useSWR(`http://localhost:6363/game/team/roster/?game_id=${id}&home_away=AWAY`, (url) => fetch(url).then((res) => res.json()));
+    const [roster, setRoster] = useState([]);
+    useEffect(() => {
+        if (homeAway == "Home" && homeRoster.data)
+            setRoster(homeRoster.data);
+        if (homeAway == "Away" && awayRoster.data)
+            setRoster(awayRoster.data);
+
+    }, [homeAway, homeRoster, awayRoster]);
     return (<>{
         game.data && <div className="flex flex-row gap-8">
             <div className="flex flex-col bg-white rounded-2xl drop-shadow-lg min-h-[80vh] max-h-[85vh] w-1/3 p-10 items-center justify-between">
@@ -193,13 +205,18 @@ export default function GameInfo() {
 
                 <div className="w-1/2 self-center">
                     <ToggleButtonGroup
-                        color="primary"
                         exclusive
                         size="small"
                         className="w-full"
+                        value={homeAway}
+                        onChange={(e, newValue) => {
+                            if (newValue) {
+                                setHomeAway(newValue);
+                            }
+                        }}
                     >
-                        <ToggleButton className="w-1/2" sx={{ borderColor: "black", borderWidth: "1px" }}><div>Home</div></ToggleButton>
-                        <ToggleButton className="w-1/2" sx={{ borderColor: "black", borderWidth: "1px" }}>Away</ToggleButton>
+                        <ToggleButton className="w-1/2" value="Home" ><div>Home</div></ToggleButton>
+                        <ToggleButton className="w-1/2" value="Away" >Away</ToggleButton>
                     </ToggleButtonGroup>
                 </div>
                 <div>
@@ -209,6 +226,7 @@ export default function GameInfo() {
                                 <TableRow>
                                     <TableCell>#</TableCell>
                                     <TableCell>Player name</TableCell>
+                                    <TableCell>Position</TableCell>
                                     <TableCell>AB</TableCell>
                                     <TableCell>R</TableCell>
                                     <TableCell>H</TableCell>
@@ -219,18 +237,20 @@ export default function GameInfo() {
                                     <TableCell>OPS</TableCell>
                                 </TableRow>
                             </TableHead>
-                            <TableBody>
-                                {stats.map((row) => (
+                            <TableBody>{
+
+                                roster.map((row) => (
                                     <TableRow
 
-                                        key={row.Order}
+                                        key={row.battingOrder}
 
                                     >
 
                                         <TableCell component="th" scope="row">
-                                            {row.Order}
+                                            {row.battingOrder}
                                         </TableCell>
-                                        <TableCell ><div className={row.Order == 8 ? "ml-8" : ""}>{row.Name}</div></TableCell>
+                                        <TableCell ><div className={row.battingOrder == 8 ? "ml-8" : ""}>{row.player.firstName} {row.player.lastName}</div></TableCell>
+                                        <TableCell><div>{row.position}</div></TableCell>
                                         <TableCell>{row.AB}</TableCell>
                                         <TableCell>{row.R}</TableCell>
                                         <TableCell>{row.H}</TableCell>

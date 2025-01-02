@@ -1,7 +1,6 @@
 from sqlalchemy import String, Enum, Date, JSON, DateTime, Integer, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column,relationship
 from typing import Optional,List
-from sqlalchemy.orm import relationship
 from models.enums import Handedness, HomeAway, Genders, GameStatuses, UserRoles
 from datetime import date, datetime
 from flask_sqlalchemy import SQLAlchemy
@@ -21,6 +20,7 @@ class Player(db.Model):
     batting_side: Mapped[Optional[Handedness]] = mapped_column(Enum(Handedness))
     gender: Mapped[Optional[Genders]] = mapped_column(Enum(Genders))
     teams_tournaments: Mapped[List["TeamTournamentPlayer"]] = relationship(back_populates="player")
+    
 
 class Team(db.Model):
     __tablename__ = "Team"
