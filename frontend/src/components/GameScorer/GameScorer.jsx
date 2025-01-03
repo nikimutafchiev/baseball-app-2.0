@@ -1,5 +1,5 @@
 import { FaCaretUp, FaCaretDown } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import GameScorerHitOptions from "./GameScorerHitOptions";
 import { useEffect, useState } from "react";
 import GameScorerQuickOptions from "./GameScorerQuickOptions";
@@ -18,8 +18,9 @@ import { GoDotFill } from "react-icons/go";
 import GameScorerPlayByPlay from "./GameScorerPlayByPlay";
 import GameScorerSettings from "./GameScorerSettings";
 import GameScorerOutByRuleOptions from "./GameScorerOutByRuleOptions";
-
+import useSWR from "swr";
 export default function GameScorer() {
+    const { id } = useParams();
     const [situationOption, setSituationOption] = useState("");
     const [points, setPoints] = useState({
         home: Array(9).fill("X"), away: Array(9).fill("X")
@@ -36,29 +37,31 @@ export default function GameScorer() {
     const [battingTurn, setBattingTurn] = useState(1);
     const [oldBattingTurn, setOldBattingTurn] = useState(1);
     const [roster, setRoster] = useState([]);
+    const homeRosterData = useSWR(`http://localhost:6363/game/team/roster/?game_id=${id}&home_away=HOME`, (url) => fetch(url).then((res) => res.json()));
+    const awayRosterData = useSWR(`http://localhost:6363/game/team/roster/?game_id=${id}&home_away=AWAY`, (url) => fetch(url).then((res) => res.json()));
     const [homeRoster, setHomeRoster] = useState([
-        { id: 121, battingOrder: 5, uniformNumber: 55, firstName: "Nikolay", lastName: "Mutafchiev", position: "CF" },
-        { id: 122, battingOrder: 2, uniformNumber: 12, firstName: "Ivan", lastName: "Petrov", position: "1B" },
-        { id: 123, battingOrder: 3, uniformNumber: 34, firstName: "Mario", lastName: "Ivanov", position: "SS" },
-        { id: 124, battingOrder: 4, uniformNumber: 7, firstName: "Georgi", lastName: "Dimitrov", position: "RF" },
-        { id: 125, battingOrder: 7, uniformNumber: 22, firstName: "Yao", lastName: "Kirilov", position: "2B" },
-        { id: 126, battingOrder: 6, uniformNumber: 10, firstName: "Peter", lastName: "Stoyanov", position: "3B" },
-        { id: 127, battingOrder: 1, uniformNumber: 3, firstName: "Georgi", lastName: "Todorov", position: "LF" },
-        { id: 128, battingOrder: 8, uniformNumber: 45, firstName: "Viktor", lastName: "Georgiev", position: "C" },
-        { id: 129, battingOrder: 9, uniformNumber: 88, firstName: "Ivan", lastName: "Mladenov", position: "DH" },
-        { id: 130, battingOrder: "Flex", uniformNumber: 99, firstName: "Dimitar", lastName: "Kolev", position: "P" },
+        // { id: 121, battingOrder: 5, uniformNumber: 55, firstName: "Nikolay", lastName: "Mutafchiev", position: "CF" },
+        // { id: 122, battingOrder: 2, uniformNumber: 12, firstName: "Ivan", lastName: "Petrov", position: "1B" },
+        // { id: 123, battingOrder: 3, uniformNumber: 34, firstName: "Mario", lastName: "Ivanov", position: "SS" },
+        // { id: 124, battingOrder: 4, uniformNumber: 7, firstName: "Georgi", lastName: "Dimitrov", position: "RF" },
+        // { id: 125, battingOrder: 7, uniformNumber: 22, firstName: "Yao", lastName: "Kirilov", position: "2B" },
+        // { id: 126, battingOrder: 6, uniformNumber: 10, firstName: "Peter", lastName: "Stoyanov", position: "3B" },
+        // { id: 127, battingOrder: 1, uniformNumber: 3, firstName: "Georgi", lastName: "Todorov", position: "LF" },
+        // { id: 128, battingOrder: 8, uniformNumber: 45, firstName: "Viktor", lastName: "Georgiev", position: "C" },
+        // { id: 129, battingOrder: 9, uniformNumber: 88, firstName: "Ivan", lastName: "Mladenov", position: "DH" },
+        // { id: 130, battingOrder: "Flex", uniformNumber: 99, firstName: "Dimitar", lastName: "Kolev", position: "P" },
     ]);
     const [awayRoster, setAwayRoster] = useState([
-        { id: 121, battingOrder: 5, uniformNumber: 55, firstName: "Kostadin", lastName: "Mutafchiev", position: "CF" },
-        { id: 122, battingOrder: 2, uniformNumber: 12, firstName: "Ivan", lastName: "Yordanov", position: "1B" },
-        { id: 123, battingOrder: 3, uniformNumber: 34, firstName: "Mario", lastName: "Ivanov", position: "SS" },
-        { id: 124, battingOrder: 4, uniformNumber: 71, firstName: "Georgi", lastName: "Vladimirov", position: "RF" },
-        { id: 125, battingOrder: 7, uniformNumber: 22, firstName: "Anton", lastName: "Kirilov", position: "2B" },
-        { id: 126, battingOrder: 6, uniformNumber: 10, firstName: "Peter", lastName: "Stoyanov", position: "3B" },
-        { id: 127, battingOrder: 1, uniformNumber: 3, firstName: "Ivan", lastName: "Todorov", position: "LF" },
-        { id: 128, battingOrder: 8, uniformNumber: 45, firstName: "Viktor", lastName: "Georgiev", position: "C" },
-        { id: 129, battingOrder: 9, uniformNumber: 88, firstName: "Petar", lastName: "Mladenov", position: "DH" },
-        { id: 130, battingOrder: "Flex", uniformNumber: 99, firstName: "Dimitar", lastName: "Kolev", position: "P" },
+        // { id: 121, battingOrder: 5, uniformNumber: 55, firstName: "Kostadin", lastName: "Mutafchiev", position: "CF" },
+        // { id: 122, battingOrder: 2, uniformNumber: 12, firstName: "Ivan", lastName: "Yordanov", position: "1B" },
+        // { id: 123, battingOrder: 3, uniformNumber: 34, firstName: "Mario", lastName: "Ivanov", position: "SS" },
+        // { id: 124, battingOrder: 4, uniformNumber: 71, firstName: "Georgi", lastName: "Vladimirov", position: "RF" },
+        // { id: 125, battingOrder: 7, uniformNumber: 22, firstName: "Anton", lastName: "Kirilov", position: "2B" },
+        // { id: 126, battingOrder: 6, uniformNumber: 10, firstName: "Peter", lastName: "Stoyanov", position: "3B" },
+        // { id: 127, battingOrder: 1, uniformNumber: 3, firstName: "Ivan", lastName: "Todorov", position: "LF" },
+        // { id: 128, battingOrder: 8, uniformNumber: 45, firstName: "Viktor", lastName: "Georgiev", position: "C" },
+        // { id: 129, battingOrder: 9, uniformNumber: 88, firstName: "Petar", lastName: "Mladenov", position: "DH" },
+        // { id: 130, battingOrder: "Flex", uniformNumber: 99, firstName: "Dimitar", lastName: "Kolev", position: "P" },
     ]);
     const [ballCount, setBallCount] = useState(0);
     const [strikeCount, setStrikeCount] = useState(0);
@@ -114,7 +117,7 @@ export default function GameScorer() {
         "8": "CF",
         "9": "RF"
     }
-
+    //TODO fix roster fetch
     const [inning, setInning] = useState(1);
     const [inningHalf, setInningHalf] = useState("UP");
     const [offense, setOffense] = useState({
@@ -123,6 +126,13 @@ export default function GameScorer() {
         secondBaseRunner: null,
         thirdBaseRunner: null
     });
+    useEffect(() => {
+        if (homeRosterData.data)
+            setHomeRoster(homeRosterData.data);
+        if (awayRosterData.data)
+            setAwayRoster(awayRosterData.data);
+        console.log(homeRosterData.data)
+    }, [homeRosterData.data, awayRosterData.data]);
     const [defense, setDefense] = useState(
         {
             pitcher: {
@@ -154,7 +164,7 @@ export default function GameScorer() {
             }
         }
     )
-    const [takenPlayers, setTakenPlayers] = useState(homeRoster.map((player) => player.id));
+    const [takenPlayers, setTakenPlayers] = useState([]);
 
     const clearCount = () => {
         setStrikeCount(0);
@@ -183,7 +193,6 @@ export default function GameScorer() {
             situationAdder();
         }
     }), [isSituationReady, currentSituation]);
-    //TODO Empty runnerSituationList
     const addSituation = (type, isOut = false) => {
         setCurrentSituation({ batter: offense.batter, inning: inning, inningHalf: inningHalf, isOut: isOut, situation: type, runners: runnersSituations });
 
@@ -314,7 +323,14 @@ export default function GameScorer() {
             defenseRoster = awayRoster;
         }
         const newDefense = {};
-        Object.keys(defense).forEach((position) => newDefense[position] = defenseRoster.filter((player) => player.position === positionTextToAbbreviations[position])[0]);
+        Object.keys(defense).forEach((position) => {
+            var newPositionPlayer = defenseRoster.filter((player) => player.position === positionTextToAbbreviations[position]);
+            if (newPositionPlayer.length == 0)
+                newDefense[position] = {};
+            else
+                newDefense[position] = newPositionPlayer[0];
+        });
+        console.log(newDefense);
         setDefense(newDefense);
         const newOffense = {
             batter: attackRoster.filter((player) => player.battingOrder == oldBatterTurn)[0],
@@ -325,6 +341,43 @@ export default function GameScorer() {
         setBattingTurn(oldBatterTurn);
         setOffense(newOffense);
     }
+    //No update on fetched rosters
+    const loadDefenseOffense = () => {
+        let attackRoster, defenseRoster
+
+        console.log(battingTurn)
+        if (inningHalf == "UP") {
+            setRoster(awayRoster);
+            attackRoster = awayRoster;
+            defenseRoster = homeRoster;
+        } else {
+            setRoster(homeRoster);
+            attackRoster = homeRoster;
+            defenseRoster = awayRoster;
+        }
+        setTakenPlayers(defenseRoster.map((player) => player.id))
+        const newDefense = {};
+        Object.keys(defense).forEach((position) => {
+            var newPositionPlayer = defenseRoster.filter((player) => player.position === positionTextToAbbreviations[position]);
+            if (newPositionPlayer.length == 0)
+                newDefense[position] = {};
+            else
+                newDefense[position] = newPositionPlayer[0];
+        });
+        console.log(newDefense);
+        console.log(defenseRoster)
+        console.log(attackRoster)
+        setDefense(newDefense);
+        const newOffense = {
+            batter: attackRoster.filter((player) => player.battingOrder == battingTurn)[0],
+            firstBaseRunner: null,
+            secondBaseRunner: null,
+            thirdBaseRunner: null
+        };
+        console.log(newOffense);
+        setOffense(newOffense);
+    }
+    useEffect(() => loadDefenseOffense(), [homeRoster, awayRoster])
     useEffect((() => switchTeams()), [inningHalf]);
 
     const situationComponents = {
@@ -575,9 +628,9 @@ export default function GameScorer() {
                         <div className="bg-gray-200 flex flex-col w-1/4 text-sm font-semibold">
                             {Object.keys(defense.pitcher).length != 0 &&
                                 < div className="h-1/2 flex flex-row items-center justify-between p-2">
-                                    <div>
-                                        {defense.pitcher.lastName}
-                                    </div>
+                                    {defense.pitcher.player && <div>
+                                        {defense.pitcher.player.lastName}
+                                    </div>}
                                     <div>
                                         P: 12
                                     </div>
@@ -587,7 +640,7 @@ export default function GameScorer() {
                                 <div className="h-1/2 flex flex-row items-center justify-between p-2">
 
                                     <div>
-                                        {offense.batter.battingOrder}. {offense.batter.lastName}
+                                        {battingTurn}. {offense.batter.player ? offense.batter.player.lastName : ""}
                                     </div>
                                     <div>
                                         1 for 1
@@ -698,7 +751,7 @@ export default function GameScorer() {
                             <div style={{ gridColumn: "span 2/ span 2" }}></div>
                             <div onClick={() => { if (offense.secondBaseRunner) { setRunnerWindowCount(1); setRunnersToMove([{ oldBasePosition: "2B", newBasePosition: "2B", player: offense.secondBaseRunner }]); setSituationOption("Runner"); } }} className={`${offense.secondBaseRunner ? "bg-accent_1" : "border-4 border-accent_1"} col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md`}>
                                 {offense.secondBaseRunner && <Tooltip
-                                    title={<div className="text-xs">{offense.secondBaseRunner.firstName} {offense.secondBaseRunner.lastName}</div>}
+                                    title={<div className="text-xs">{offense.secondBaseRunner.player.firstName} {offense.secondBaseRunner.player.lastName}</div>}
                                     arrow
                                     placement='top'
                                     slots={{
@@ -760,7 +813,7 @@ export default function GameScorer() {
                                 if (offense.thirdBaseRunner) { setRunnerWindowCount(1); setRunnersToMove([{ oldBasePosition: "3B", newBasePosition: "3B", player: offense.thirdBaseRunner }]); setSituationOption("Runner"); }
                             }} className={`${offense.thirdBaseRunner ? "bg-accent_1" : "border-4 border-accent_1"} col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md`}>
                                 {offense.thirdBaseRunner && <Tooltip
-                                    title={<div className="text-xs">{offense.thirdBaseRunner.firstName} {offense.thirdBaseRunner.lastName}</div>}
+                                    title={<div className="text-xs">{offense.thirdBaseRunner.player.firstName} {offense.thirdBaseRunner.player.lastName}</div>}
                                     arrow
                                     placement='top'
                                     slots={{
@@ -785,7 +838,7 @@ export default function GameScorer() {
                             <div style={{ gridColumn: "span 6/ span 6" }}></div>
                             <div onClick={() => { if (offense.firstBaseRunner) { setRunnerWindowCount(1); setRunnersToMove([{ oldBasePosition: "1B", newBasePosition: "1B", player: offense.firstBaseRunner }]); setSituationOption("Runner"); } }} className={`${offense.firstBaseRunner ? "bg-accent_1" : "border-4 border-accent_1"} col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md`}>
                                 {offense.firstBaseRunner && <Tooltip
-                                    title={<div className="text-xs">{offense.firstBaseRunner.firstName} {offense.firstBaseRunner.lastName}</div>}
+                                    title={<div className="text-xs">{offense.firstBaseRunner.player.firstName} {offense.firstBaseRunner.player.lastName}</div>}
                                     arrow
                                     placement='top'
                                     slots={{
@@ -804,7 +857,7 @@ export default function GameScorer() {
                             <div style={{ gridColumn: "span 11/ span 11" }}></div>
                             <div className={`${offense.batter ? "bg-accent_1" : "border-4 border-accent_1"} col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md`}>
                                 {offense.batter && <Tooltip
-                                    title={<div className="text-xs">{offense.batter.firstName} {offense.batter.lastName}</div>}
+                                    title={<div className="text-xs">{offense.batter.player.firstName} {offense.batter.player.lastName}</div>}
                                     arrow
                                     placement='top'
                                     slots={{
@@ -861,12 +914,12 @@ export default function GameScorer() {
                             {situations[0] && <> <div className="flex flex-col w-4/5 gap-2">
                                 <div className="flex flex-row  gap-6 ">
                                     {situations[0].batter && <div>
-                                        Batter: #{situations[0].batter.uniformNumber} {situations[0].batter.firstName} {situations[0].batter.lastName}
+                                        Batter: #{situations[0].batter.uniformNumber} {situations[0].batter.player.firstName} {situations[0].batter.player.lastName}
                                     </div>
                                     }
                                 </div>
                                 <div className="text-2xs flex flex-row flex-wrap gap-x-1">
-                                    {situations[0].runners.map((runner) => <div>#{runner.player.uniformNumber} {runner.player.lastName} {runner.situation} {runner.finalBase}</div>)}
+                                    {situations[0].runners.map((runner) => <div>#{runner.player.uniformNumber} {runner.player.player.lastName} {runner.situation} {runner.finalBase}</div>)}
                                 </div>
                             </div>
                                 <div className="flex flex-col gap-2 w-1/5">

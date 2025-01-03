@@ -8,12 +8,12 @@ export default function GameScorerPlayByPlay(props) {
                     <div className="flex flex-col w-4/5 gap-2">
                         <div className="flex flex-row gap-6">
                             {situation.batter && <div>
-                                Batter: #{situation.batter.uniformNumber} {situation.batter.firstName} {situation.batter.lastName}
+                                Batter: #{situation.batter.uniformNumber} {situation.batter.player.firstName} {situation.batter.player.lastName}
                             </div>
                             }
                         </div>
                         <div className="text-2xs flex flex-row flex-wrap gap-x-1">
-                            {situation.runners.map((runner) => <div>#{runner.player.uniformNumber} {runner.player.lastName} {runner.situation} {runner.finalBase}</div>)}
+                            {situation.runners.map((runner) => <div>#{runner.player.uniformNumber} {runner.player.player.lastName} {runner.situation} {runner.finalBase}</div>)}
                         </div>
                     </div>
                     <div className="flex flex-col w-1/5 gap-2">
