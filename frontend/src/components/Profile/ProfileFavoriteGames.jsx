@@ -37,6 +37,7 @@ export default function ProfileFavoriteGames() {
                 </div>
                 <Link className="p-2 rounded bg-blue-500 hover:bg-blue-400 text-white text-xs ease-in-out text-center duration-150" to={`/games/${game.id}`}>More Info</Link>
             </div>)}
+            {favoriteGames.data && favoriteGames.data.length == 0 && <div className="text-xl">No favorite games!</div>}
         </div>
     </div>)
 }

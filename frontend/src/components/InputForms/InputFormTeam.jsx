@@ -3,6 +3,7 @@ import { RiCloseCircleLine } from "react-icons/ri";
 import { FaFacebook, FaInstagram, FaLink, FaYoutube } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import validator from "validator";
+import convertToBase64 from "../../global/ImageToBase64";
 export default function InputFormTeam(props) {
     const icons = {
         facebook: <FaFacebook size={30} />,
@@ -24,6 +25,8 @@ export default function InputFormTeam(props) {
     const [address, setAddress] = useState("");
     const [contact, setContact] = useState("");
     const [manager, setManager] = useState("");
+    const [image, setImage] = useState(null);
+    const [imageURL, setImageURL] = useState("http://placehold.co/200x200")
     const [headCoach, setHeadCoach] = useState("");
     const [isSubmitted, setIsSubmitted] = useState(false);
     const errorSubmit = name === "" || tlc.length != 3 || Object.entries(links).map(([media, url]) => { return !validator.isURL(url) && url.length != 0 }).includes(true);
@@ -41,7 +44,8 @@ export default function InputFormTeam(props) {
                     contact: contact,
                     socialMedia: links,
                     manager: manager,
-                    headCoach: headCoach
+                    headCoach: headCoach,
+                    image: image
                 }),
             });
             setName("");
@@ -56,6 +60,8 @@ export default function InputFormTeam(props) {
                 youtube: "",
                 website: ""
             });
+            setImage(null);
+            setImageURL("http://placehold.co/200x200")
             setIsSubmitted(false);
         }
     }), [isSubmitted]);
@@ -64,9 +70,19 @@ export default function InputFormTeam(props) {
             <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
             <div className="flex flex-col items-center gap-12 mt-12">
                 <div className="flex flex-row w-full gap-12">
-                    <div className='flex flex-col self-center gap-4'>
-                        <div className='size-[200px] bg-gray-300 rounded'></div>
-                        <button className='w-[200px] bg-blue-400 rounded p-3 text-white text-sm font-semibold'>Upload photo</button>
+                    <div className='flex flex-col min-w-[200px] self-center items-center gap-4'>
+                        <img src={imageURL} className='size-[200px] rounded'></img>
+                        <label for="input-image-player" className="w-[120px] h-fit bg-blue-400 rounded p-3 text-white text-sm font-semibold text-center">Upload photo</label>
+                        <input type="file" id="input-image-player" className="hidden" accept=".jpeg, .png, .jpg" onChange={async (e) => {
+                            if (e.target.files.length != 0) {
+                                const base64 = await convertToBase64(e.target.files[0]);
+                                setImage(base64);
+                                setImageURL(base64)
+                            }
+                            else {
+                                setImageURL("http://placehold.co/200x200")
+                            }
+                        }} ></input>
                     </div>
                     <div className="w-full flex flex-col gap-4">
                         <div className="flex flex-row gap-4">

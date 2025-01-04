@@ -5,6 +5,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from "dayjs";
+import convertToBase64 from "../../global/ImageToBase64";
 
 export default function InputFormTournament(props) {
     const [name, setName] = useState("");
@@ -13,6 +14,8 @@ export default function InputFormTournament(props) {
     const [endDate, setEndDate] = useState(dayjs());
     const errorSubmit = name === "";
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [image, setImage] = useState(null);
+    const [imageURL, setImageURL] = useState("http://placehold.co/200x200");
     useEffect((() => {
         if (isSubmitted) {
             const start_date = new Date(startDate), end_date = new Date(endDate);
@@ -29,13 +32,16 @@ export default function InputFormTournament(props) {
                     },
                     endDate: {
                         "date": end_date.getDate(), "month": end_date.getMonth() + 1, "year": end_date.getFullYear()
-                    }
+                    },
+                    image: image
                 }),
             });
             setName("");
             setPlace("");
             setStartDate(dayjs());
             setEndDate(dayjs());
+            setImage(null);
+            setImageURL("http://placehold.co/200x200")
             setIsSubmitted(false);
         }
     }), [isSubmitted]);
@@ -44,9 +50,19 @@ export default function InputFormTournament(props) {
             <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
             <div className="flex flex-col items-center gap-12 mt-12">
                 <div className="flex flex-row w-full gap-12">
-                    <div className='flex flex-col self-center gap-4'>
-                        <div className='size-[200px] bg-gray-300 rounded'></div>
-                        <button className='w-[200px] bg-blue-400 rounded p-3 text-white text-sm font-semibold'>Upload photo</button>
+                    <div className='flex flex-col min-w-[200px] self-center items-center gap-4'>
+                        <img src={imageURL} className='size-[200px] rounded'></img>
+                        <label for="input-image-player" className="w-[120px] h-fit bg-blue-400 rounded p-3 text-white text-sm font-semibold text-center">Upload photo</label>
+                        <input type="file" id="input-image-player" className="hidden" accept=".jpeg, .png, .jpg" onChange={async (e) => {
+                            if (e.target.files.length != 0) {
+                                const base64 = await convertToBase64(e.target.files[0]);
+                                setImage(base64);
+                                setImageURL(base64)
+                            }
+                            else {
+                                setImageURL("http://placehold.co/200x200")
+                            }
+                        }} ></input>
                     </div>
                     <div className="w-full flex flex-col gap-4">
                         <TextField className="w-full" label={<div >Name*</div>} variant="outlined" value={name} onChange={(e) => setName(e.target.value)} />

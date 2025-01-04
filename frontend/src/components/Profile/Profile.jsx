@@ -26,8 +26,8 @@ export default function Profile() {
                     <button className="absolute text-black left-2 top-2 rounded-full hover:bg-gray-300 bg-gray-200 p-1" onClick={() => setIsShrinked(!isShrinked)}>
                         <IoReorderThree size={20} />
                     </button>
-                    <img src="https://placehold.co/200x200" className="rounded-full border-black border-[1.5px]" />
-                    <div className="text-2xl font-semibold">
+                    {/* <img src="https://placehold.co/200x200" className="rounded-full border-black border-[1.5px]" /> */}
+                    <div className="text-2xl font-semibold my-12">
                         {data.firstName} {data.lastName}
                     </div>
                     <div className="flex flex-col w-full">

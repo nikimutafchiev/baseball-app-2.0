@@ -23,7 +23,8 @@ export default function TeamSelectList(props) {
                 </div>
                 <div className="flex flex-col gap-2 overflow-y-auto">
                     {props.teams.map((team) => <button className="flex flex-row items-center  p-2 rounded  justify-between bg-gray-200 drop-shadow-sm " onClick={() => { setTeamSelected(true); setSelectedTeamId(team.id) }}>
-                        <div className="flex flex-row gap-4 items-center"><img src="https://placehold.co/60x60"></img>
+                        <div className="flex flex-row gap-4 items-center">
+                            <img className="size-[60px]" src={team.image ? team.image : "https://placehold.co/60x60"}></img>
                             <div className="font-semibold">
                                 {team.name}
                             </div>

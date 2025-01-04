@@ -1,4 +1,4 @@
-from sqlalchemy import String, Enum, Date, JSON, DateTime, Integer, ForeignKey
+from sqlalchemy import String, Enum, Date, JSON, DateTime, Integer, ForeignKey,Text
 from sqlalchemy.orm import Mapped, mapped_column,relationship
 from typing import Optional,List
 from models.enums import Handedness, HomeAway, Genders, GameStatuses, UserRoles
@@ -16,6 +16,7 @@ class Player(db.Model):
     country: Mapped[Optional[str]]
     height: Mapped[Optional[int]]
     weigth: Mapped[Optional[int]]
+    image: Mapped[Optional[str]] = mapped_column(Text)
     throwing_arm: Mapped[Optional[Handedness]] = mapped_column(Enum(Handedness))
     batting_side: Mapped[Optional[Handedness]] = mapped_column(Enum(Handedness))
     gender: Mapped[Optional[Genders]] = mapped_column(Enum(Genders))
@@ -27,7 +28,7 @@ class Team(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     tlc: Mapped[str] = mapped_column(String(3), nullable=False)
-    logo: Mapped[Optional[str]] = mapped_column(String(100))
+    image: Mapped[Optional[str]] = mapped_column(Text)
     social_media: Mapped[Optional[JSON]] = mapped_column(JSON)
     address: Mapped[Optional[str]] = mapped_column(String(200))
     contact: Mapped[Optional[str]] = mapped_column(String(20))
@@ -41,6 +42,7 @@ class Tournament(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(60), nullable=False)
     place: Mapped[str] = mapped_column(String(100))
+    image: Mapped[Optional[str]] = mapped_column(Text)
     start_date: Mapped[date] = mapped_column(Date)
     end_date: Mapped[date] = mapped_column(Date)
     teams: Mapped[List["TeamTournament"]] = relationship(back_populates="tournament")

@@ -14,8 +14,8 @@ export default function Team(props) {
         <div className="max-h-[350px] px-4 flex flex-col gap-2 items-center bg-white drop-shadow-xl py-2">
             <button className='absolute top-1 left-1 text-yellow-500' onClick={() => setFavorite(!favorite)}>{!favorite && <RiStarLine size={25} />}{favorite && <RiStarFill size={25} />}</button>
             <div className="w-full flex flex-col items-center gap-4">
-                {props.logo !== "" && <img src={props.logo}></img>}
-                {!props.logo && <img src="https://placehold.co/100x100"></img>}
+                {props.image && <img className="size-[100px]" src={props.image}></img>}
+                {!props.image && <img className="size-[100px]" src="https://placehold.co/100x100"></img>}
                 <h3 className="text-xl font-semibold">{props.name}</h3>
             </div>
             <hr className="border-t-2 w-full"></hr>

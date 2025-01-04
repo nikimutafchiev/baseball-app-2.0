@@ -9,7 +9,7 @@ route_bp = Blueprint("routes",__name__)
 @route_bp.route("/player",methods=['POST'])
 def add_player():
     data = request.json
-    new_player = Player(first_name=data['firstName'],last_name=data['lastName'],date_of_birth= date(int(data['dateOfBirth']["year"]),int(data['dateOfBirth']["month"]),int(data['dateOfBirth']["day"])), height=data['height'],weigth = data['weigth'], throwing_arm = data['throwingArm'], batting_side=data["battingSide"], gender=data['gender'],country=data['country'])
+    new_player = Player(first_name=data['firstName'],last_name=data['lastName'],date_of_birth= date(int(data['dateOfBirth']["year"]),int(data['dateOfBirth']["month"]),int(data['dateOfBirth']["day"])), height=data['height'],weigth = data['weigth'], throwing_arm = data['throwingArm'], batting_side=data["battingSide"], gender=data['gender'],country=data['country'],image=data['image'])
     db.session.add(new_player)
     db.session.commit()
     return "Successfully added player",200
@@ -25,10 +25,11 @@ def get_players():
         'dateOfBirth': player.date_of_birth,
         'height': player.height,
         'weigth': player.weigth,
-        'throwingArm':player.throwing_arm.value,
-        'battingSide':player.batting_side.value,
-        "gender":player.gender.value,
-        "country":player.country
+        'throwingArm':player.throwing_arm.value if player.throwing_arm else "",
+        'battingSide':player.batting_side.value if player.batting_side else "",
+        "gender":player.gender.value if player.gender else "",
+        "country":player.country,
+        "image":player.image
     } for player in players]
     return res,200
 
@@ -42,16 +43,17 @@ def get_player_by_id(player_id):
         'dateOfBirth': player.date_of_birth,
         'height': player.height,
         'weigth': player.weigth,
-        'throwingArm':player.throwing_arm.value,
-        'battingSide':player.batting_side.value,
-        "gender":player.gender.value,
-        "country":player.country
+        'throwingArm':player.throwing_arm.value if player.throwing_arm else "",
+        'battingSide':player.batting_side.value if player.batting_side else "",
+        "gender":player.gender.value if player.gender else "",
+        "country":player.country,
+        "image":player.image
     }
 
 @route_bp.route("/team",methods=['POST'])
 def add_team():
     data = request.json
-    new_team = Team(name=data['name'],tlc=data['tlc'],address=data['address'],contact=data['contact'],social_media=data['socialMedia'],manager=data['manager'],head_coach=data['headCoach'])
+    new_team = Team(name=data['name'],tlc=data['tlc'],address=data['address'],contact=data['contact'],social_media=data['socialMedia'],manager=data['manager'],head_coach=data['headCoach'],image=data["image"])
     db.session.add(new_team)
     db.session.commit()
     return "Successfully added team",200
@@ -63,12 +65,12 @@ def get_teams():
         'id':team.id,
         'name': team.name,
         "tlc":team.tlc,
-        'logo': team.logo,
         'address':team.address,
         "contact":team.contact,
         "socialMedia": team.social_media,
         "manager":team.manager,
-        "headCoach":team.head_coach
+        "headCoach":team.head_coach,
+        "image":team.image
     } for team in teams]
     return res,200
 
@@ -80,19 +82,19 @@ def get_team_by_id(team_id):
         'id':team.id,
         'name': team.name,
         "tlc":team.tlc,
-        'logo': team.logo,
         'address':team.address,
         "contact":team.contact,
         "socialMedia": team.social_media,
         "manager":team.manager,
-        "headCoach":team.head_coach
+        "headCoach":team.head_coach,
+        "image":team.image
     }
 
 
 @route_bp.route("/tournament",methods=['POST'])
 def add_tournament():
     data = request.json
-    new_tournament = Tournament(name=data['name'],place=data['place'],start_date=date(data['startDate']['year'], data['startDate']['month'],data['startDate']['date'] ),end_date=date(data['endDate']['year'],data['endDate']['month'],data['endDate']['date']))
+    new_tournament = Tournament(name=data['name'],place=data['place'],start_date=date(data['startDate']['year'], data['startDate']['month'],data['startDate']['date'] ),end_date=date(data['endDate']['year'],data['endDate']['month'],data['endDate']['date']),image=data['image'])
     db.session.add(new_tournament)
     db.session.commit()
     return "Successfully added tournament",200
@@ -106,7 +108,8 @@ def get_tournaments():
         'name': tournament.name,
         "startDate":tournament.start_date,
         'endDate': tournament.end_date,
-        "place": tournament.place
+        "place": tournament.place,
+        "image":tournament.image
     } for tournament in tournaments]
     return res,200
 
@@ -119,7 +122,8 @@ def get_tournament_by_id(tournament_id):
         'name': tournament.name,
         "startDate":tournament.start_date,
         'endDate': tournament.end_date,
-        "place": tournament.place
+        "place": tournament.place,
+        "image":tournament.image
     } 
 
 
@@ -152,6 +156,8 @@ def get_games_by_tournament():
 'homeTeam': home_team.team_tournament.team.name,
         "awayTeam":away_team.team_tournament.team.name,
         "startTime": game.start_time,
+        "awayTeamImage":away_team.team_tournament.team.image,
+        "homeTeamImage":home_team.team_tournament.team.image,
         "status": game.status.value,
         "homeResult":home_team.result,
         "awayResult": away_team.result,
@@ -206,7 +212,7 @@ def get_teams_by_tournament():
         'id':association.id,
         'name': association.team.name,
         "tlc":association.team.tlc,
-        'logo': association.team.logo,
+        'image': association.team.image,
         'address':association.team.address,
         "contact":association.team.contact,
         "socialMedia": association.team.social_media,
@@ -230,7 +236,7 @@ def get_liked_games():
     query = request.args.to_dict()
     user = User.query.get(query["user_id"])
     res=[]
-    for association in user.favoriteGames:
+    for association in user.favorite_games:
         game_teams = GameTeam.query.filter_by(game_id = association.game.id).all();
         home_team = list(filter(lambda x: x.home_away.value == "home",game_teams))[0]
         away_team = list(filter(lambda x: x.home_away.value == "away",game_teams))[0]
@@ -238,6 +244,8 @@ def get_liked_games():
         'id':association.game.id,
         'homeTeam': home_team.team_tournament.team.name,
         "awayTeam":away_team.team_tournament.team.name,
+        "homeTeamImage": home_team.team_tournament.team.image,
+        "awayTeamImage": away_team.team_tournament.team.image,
         "startTime": association.game.start_time,
         "status": association.game.status.value,
         "homeResult":home_team.result,
@@ -264,11 +272,13 @@ def get_game_by_id(game_id):
         'homeTeam': {
             "id": home_team.team_tournament.team.id,
             "name":home_team.team_tournament.team.name,
-            "tlc": home_team.team_tournament.team.tlc},
+            "tlc": home_team.team_tournament.team.tlc,
+            "image": home_team.team_tournament.team.image},
         "awayTeam":{
             "id": away_team.team_tournament.team.id,
             "name":away_team.team_tournament.team.name,
-                    "tlc":away_team.team_tournament.team.tlc},
+                    "tlc":away_team.team_tournament.team.tlc,
+                    "image": away_team.team_tournament.team.image,},
         "startTime": game.start_time,
         "status": game.status.value,
         "homeResult":home_team.result,
@@ -305,7 +315,8 @@ def get_players_by_team_tournament():
             "lastName": player.last_name,
             "uniformNumber": association.uniform_number,
             "dateOfBirth": player.date_of_birth,
-            "country":player.country
+            "country":player.country,
+            "image":player.image
         })
     return res
 
@@ -326,8 +337,7 @@ def get_games_by_date():
     games = Game.query.all()
     res = []
     for game in games:
-        print(game.startTime.day)
-        if game.startTime.year == int(year) and game.startTime.month == int(month) and game.startTime.day == int(day):
+        if game.start_time.year == int(year) and game.start_time.month == int(month) and game.start_time.day == int(day):
             game_teams = GameTeam.query.filter_by(game_id = game.id).all();
             home_team = list(filter(lambda x: x.home_away.value == "home",game_teams))[0]
             away_team = list(filter(lambda x: x.home_away.value == "away",game_teams))[0]
@@ -335,6 +345,8 @@ def get_games_by_date():
             'id':game.id,
             'homeTeam': home_team.team_tournament.team.name,
             "awayTeam":away_team.team_tournament.team.name,
+            "homeTeamImage": home_team.team_tournament.team.image,
+            "awayTeamImage": away_team.team_tournament.team.image,
             "startTime": game.start_time,
             "status": game.status.value,
             "homeResult":home_team.result,

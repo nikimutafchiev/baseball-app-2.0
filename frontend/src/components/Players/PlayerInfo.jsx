@@ -25,7 +25,7 @@ export default function PlayerInfo() {
                             <h3 className="text-xl font-semibold">
                                 {player.data.firstName} {player.data.lastName}
                             </h3>
-                            <img src="https://placehold.co/150x200" />
+                            <img className="w-[180px] h-[200px]" src={player.data.image} />
                             <div className="flex flex-col gap-0.5 items-center w-full">
                                 <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50" ><div>Height:</div> <div className="w-fit flex flex-row gap-1"><div>{player.data.height}</div><div> cm</div></div></div>
                                 <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Weigth:</div> <div>{player.data.weigth} kg</div></div>

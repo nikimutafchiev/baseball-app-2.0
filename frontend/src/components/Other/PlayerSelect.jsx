@@ -22,7 +22,7 @@ export default function PlayerSelect(props) {
             }}>
 
             <div className="flex flex-row items-center gap-6">
-                <img src="https://placehold.co/100x100" />
+                <img className="size-1" src={props.player.image ? props.player.image : "https://placehold.co/100x100"} />
                 <TextField
                     className="w-[120px]"
                     size="small"

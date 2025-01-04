@@ -19,7 +19,7 @@ export default function TournamentInfo() {
                             <IoReorderThree size={20} />
                         </button>
                         <div className="w-full flex flex-col items-center gap-4">
-                            <img src="https://placehold.co/150x150"></img>
+                            <img className="size-[150px]" src={tournament.data.image ? tournament.data.image : "https://placehold.co/150x150"}></img>
                             <h3 className="text-xl font-semibold">{tournament.data.name}</h3>
                         </div>
                         <div className="text-sm text-gray-500 font-semibold flex flex-col items-center">
@@ -52,7 +52,7 @@ export default function TournamentInfo() {
                 <div className=" flex-1">
                     <Outlet />
                 </div>
-            </div>
+            </div >
         }
     </>)
 

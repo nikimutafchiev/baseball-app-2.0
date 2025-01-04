@@ -26,7 +26,7 @@ export default function RosterPlayerPicker(props) {
                     }).map((player) =>
                         <button className={`${props.takenPlayers.includes(player.id) ? "bg-primary_1 text-gray-400 pointer-events-none" : "bg-primary_2 hover:bg-primary_2_hover"} flex flex-row py-2 px-4 my-2 rounded items-center gap-6 `}
                             onClick={() => { props.nextPage(); props.setter({ id: player.id, uniformNumber: player.uniformNumber, firstName: player.firstName, lastName: player.lastName }); }}>
-                            <img src="https://placehold.co/100x100" />
+                            <img className="size-[100px]" src={player.image ? player.image : "https://placehold.co/100x100"} />
                             <div className="flex flex-row items-center gap-6">
                                 <div className="font-bold text-lg w-12">#{player.uniformNumber}</div>
                                 <div className="text-2xl">{player.firstName} {player.lastName}</div>

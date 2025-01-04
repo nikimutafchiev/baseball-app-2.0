@@ -3,7 +3,8 @@ export default function Tournament(props) {
 
     return (
         <div className="bg-white drop-shadow-lg items-center rounded flex lg:flex-row  flex-col gap-6 md:gap-8 p-2">
-            <img src="https://placehold.co/100x100" />
+            {!props.image && <img className="size-[100px]" src="https://placehold.co/100x100" />}
+            {props.image && <img className="size-[100px]" src={props.image} />}
             <div className="text-sm font-semibold text-center text-gray-700">
                 {props.place}
             </div>
