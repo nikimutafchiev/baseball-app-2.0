@@ -7,6 +7,7 @@ import { useState, useEffect } from "react"
 import { Autocomplete } from "@mui/material"
 import dayjs from "dayjs"
 import { useParams } from "react-router-dom"
+import validator from "validator"
 export default function InputFormGame(props) {
     const { id } = useParams();
     const [isSubmitted, setIsSubmitted] = useState(false);
@@ -15,7 +16,7 @@ export default function InputFormGame(props) {
     const [datetime, setDatetime] = useState(dayjs());
     const [venue, setVenue] = useState("");
     const [venueLink, setVenueLink] = useState("");
-    const errorSubmit = homeTeam.id == -1 || awayTeam.id == -1 || venue.length == 0;
+    const errorSubmit = homeTeam.id == -1 || awayTeam.id == -1 || venue.length == 0 || (venueLink.length != 0 && !validator.isURL(venueLink));
     const teams = props.teams ? props.teams : [{ id: -1, name: "" }];
     useEffect(() => {
         if (isSubmitted) {
@@ -87,6 +88,7 @@ export default function InputFormGame(props) {
                         label={<div>Venue link</div>}
                         onChange={(e) => { setVenueLink(e.target.value); }}
                         value={venueLink}
+                        helperText={venueLink.length != 0 && !validator.isURL(venueLink) ? "Not valid link" : ""}
                     />
                 </div>
                 <button className={`bg-primary_2 w-1/2 self-center px-2 py-1 align-middle  text-lg font-semibold rounded ${errorSubmit ? "cursor-not-allowed bg-primary_1 text-gray-400" : "hover:bg-primary_3 text-white"}`} onClick={() => {

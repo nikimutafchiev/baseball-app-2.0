@@ -1,4 +1,4 @@
-from models.models import Player, Team, TeamTournament,TeamTournamentPlayer, Tournament, Game, User, UserFavoriteGame, GameTeam,GameTeamTeamTournamentPlayer
+from models.models import Player, Team, TeamTournament,TeamTournamentPlayer, Tournament, Game, User, UserGame, GameTeam,GameTeamTeamTournamentPlayer
 from models.enums import HomeAway
 from flask import request, Blueprint
 from flask_jwt_extended import  create_access_token
@@ -209,7 +209,7 @@ def get_teams_by_tournament():
     query = request.args.to_dict()
     tournament = Tournament.query.get(query["tournament_id"])
     return [ {
-        'id':association.id,
+        'id':association.team.id,
         'name': association.team.name,
         "tlc":association.team.tlc,
         'image': association.team.image,
@@ -225,41 +225,46 @@ def like_game():
     query = request.args.to_dict()
     game = Game.query.get(query["game_id"])
     user = User.query.get(query["user_id"])
-
-    team_tournament_association = UserFavoriteGame(game=game,user=user)
-    db.session.add(team_tournament_association)
-    db.session.commit()
-    return "Succefully liked game"
+    gameUser = UserGame.query.filter_by(game_id = query["game_id"],user_id = query["user_id"]).first()
+    if gameUser:
+        gameUser.is_liked =  not gameUser.is_liked
+        db.session.commit()
+    else:
+        user_game_association = UserGame(game=game,user=user,is_liked=True)
+        db.session.add(user_game_association)
+        db.session.commit()
+    return "Succefully liked/disliked game"
 
 @route_bp.route("/liked_games/",methods=["GET"])
 def get_liked_games():
     query = request.args.to_dict()
-    user = User.query.get(query["user_id"])
+    userGames = UserGame.query.filter_by(user_id = query["user_id"]).all()
     res=[]
-    for association in user.favorite_games:
-        game_teams = GameTeam.query.filter_by(game_id = association.game.id).all();
-        home_team = list(filter(lambda x: x.home_away.value == "home",game_teams))[0]
-        away_team = list(filter(lambda x: x.home_away.value == "away",game_teams))[0]
-        res.append({
-        'id':association.game.id,
-        'homeTeam': home_team.team_tournament.team.name,
-        "awayTeam":away_team.team_tournament.team.name,
-        "homeTeamImage": home_team.team_tournament.team.image,
-        "awayTeamImage": away_team.team_tournament.team.image,
-        "startTime": association.game.start_time,
-        "status": association.game.status.value,
-        "homeResult":home_team.result,
-        "awayResult": away_team.result,
-        "venue": association.game.venue,
-        "venueLink": association.game.venue_link
-        })
+    for userGame in userGames:
+        if userGame.is_liked:
+            game_teams = GameTeam.query.filter_by(game_id = userGame.game.id).all();
+            home_team = list(filter(lambda x: x.home_away.value == "home",game_teams))[0]
+            away_team = list(filter(lambda x: x.home_away.value == "away",game_teams))[0]
+            res.append({
+            'id':userGame.game.id,
+            'homeTeam': home_team.team_tournament.team.name,
+            "awayTeam":away_team.team_tournament.team.name,
+            "homeTeamImage": home_team.team_tournament.team.image,
+            "awayTeamImage": away_team.team_tournament.team.image,
+            "startTime": userGame.game.start_time,
+            "status": userGame.game.status.value,
+            "homeResult":home_team.result,
+            "awayResult": away_team.result,
+            "venue": userGame.game.venue,
+            "venueLink": userGame.game.venue_link
+            })
     return res,200
 
 @route_bp.route("/game/liked/", methods=["GET"])
 def is_game_liked():
     query = request.args.to_dict()
-    liked_game = UserFavoriteGame.query.filter_by(game_id = query["game_id"],user_id = query["user_id"]).first()
-    return {"isLiked": liked_game != None}
+    liked_game = UserGame.query.filter_by(game_id = query["game_id"],user_id = query["user_id"]).first()
+    return {"isLiked": liked_game.is_liked  if liked_game else False}
 
 @route_bp.route("/game/<int:game_id>",methods=["GET"])
 def get_game_by_id(game_id):

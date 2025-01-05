@@ -32,9 +32,7 @@ export default function NavBar() {
                             pages.map((page) => <Link className=" rounded cursor-pointer content-center px-4 py-2 hover:bg-white hover:text-primary_2 duration-200 ease-in-out font-semibold" to={page.path}>{page.name}</Link>)
 
                         }
-                        {token && <><button className="hover:bg-white hover:text-primary_2 px-2 rounded  duration-200 ease-in-out">
-                            <IoNotificationsOutline size={27} />
-                        </button>
+                        {token && <>
                             <button onClick={() => logout()} className="hover:bg-white hover:text-primary_2 p-2 rounded  duration-200 ease-in-out">
                                 <FiLogOut size={27} />
                             </button></>}
@@ -66,9 +64,7 @@ export default function NavBar() {
                             pages.map((page) => <Link onClick={() => setIsExtendClicked(false)} className="flex flex-row rounded cursor-pointer items-center px-3 py-2 hover:bg-white justify-between hover:text-primary_2 duration-200 ease-in-out " to={page.path}>{page.name}{page.logo}</Link>)
                         }
                         {token && <>
-                            <button onClick={() => setIsExtendClicked(false)} className="flex flex-row justify-between items-center hover:bg-white px-3 py-2 hover:text-primary_2  rounded  duration-200 ease-in-out">
-                                Notifications <IoNotificationsOutline size={27} />
-                            </button>
+
                             <button onClick={() => { setIsExtendClicked(false); logout() }} className="flex flex-row justify-between items-center px-3 py-2 hover:bg-white hover:text-primary_2 p-2 rounded  duration-200 ease-in-out">
                                 Log out <FiLogOut size={27} />
                             </button></>}

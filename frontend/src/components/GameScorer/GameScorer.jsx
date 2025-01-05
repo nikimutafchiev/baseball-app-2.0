@@ -37,6 +37,7 @@ export default function GameScorer() {
     const [battingTurn, setBattingTurn] = useState(1);
     const [oldBattingTurn, setOldBattingTurn] = useState(1);
     const [roster, setRoster] = useState([]);
+    const game = useSWR(`http://localhost:6363/game/${id}`, (url) => fetch(url).then((res) => res.json()));
     const homeRosterData = useSWR(`http://localhost:6363/game/team/roster/?game_id=${id}&home_away=HOME`, (url) => fetch(url).then((res) => res.json()));
     const awayRosterData = useSWR(`http://localhost:6363/game/team/roster/?game_id=${id}&home_away=AWAY`, (url) => fetch(url).then((res) => res.json()));
     const [homeRoster, setHomeRoster] = useState([
@@ -605,10 +606,10 @@ export default function GameScorer() {
                     <div className="h-fit w-full flex flex-row p-2 shadow-md">
                         <div className="w-1/5 flex flex-col bg-gray-100">
                             <div className="h-1/2 flex flex-row items-center justify-between p-2">
-                                <div className="flex flex-row items-center font-semibold  gap-2">
-                                    <img src="https://placehold.co/25x25">
+                                <div className="flex flex-row items-center font-semibold gap-2">
+                                    {game.data && <> <img className="size-[25px]" src={game.data.awayTeam.image ? game.data.awayTeam.image : " https://placehold.co/25x25"}>
                                     </img>
-                                    <div>AKA</div>
+                                        <div>{game.data.awayTeam.tlc}</div></>}
                                 </div>
                                 <div className="font-semibold text-lg">
                                     {awayPoints}
@@ -616,9 +617,9 @@ export default function GameScorer() {
                             </div>
                             <div className="h-1/2 flex flex-row items-center justify-between p-2">
                                 <div className="flex flex-row items-center font-semibold gap-2">
-                                    <img src="https://placehold.co/25x25">
+                                    {game.data && <> <img className="size-[25px]" src={game.data.homeTeam.image ? game.data.homeTeam.image : " https://placehold.co/25x25"}>
                                     </img>
-                                    <div>BLU</div>
+                                        <div>{game.data.homeTeam.tlc}</div></>}
                                 </div>
                                 <div className="font-semibold text-lg">
                                     {homePoints}
@@ -679,12 +680,14 @@ export default function GameScorer() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            {["AKA", ...points.away, awayPoints, awayHits, awayErrors, awayLOB].map((value) => <td className="text-center font-semibold text-2xs">{value}</td>)}
-                                        </tr>
-                                        <tr>
-                                            {["BLU", ...points.home, homePoints, homeHits, homeErrors, homeLOB].map((value) => <td className="text-center font-semibold text-2xs">{value}</td>)}
-                                        </tr>
+                                        {game.data && <>
+                                            <tr>
+                                                {[game.data.awayTeam.tlc, ...points.away, awayPoints, awayHits, awayErrors, awayLOB].map((value) => <td className="text-center font-semibold text-2xs">{value}</td>)}
+                                            </tr>
+                                            <tr>
+                                                {[game.data.homeTeam.tlc, ...points.home, homePoints, homeHits, homeErrors, homeLOB].map((value) => <td className="text-center font-semibold text-2xs">{value}</td>)}
+                                            </tr></>
+                                        }
                                     </tbody>
                                 </table>
                             </div>
@@ -899,15 +902,17 @@ export default function GameScorer() {
                 </div>
                 <div className="border-l-[1.5px] border-black w-5/12 flex flex-col  bg-gray-100">
                     <div className="flex flex-row justify-between gap-2 text-white font-semibold text-xl mx-2 my-2 ">
-                        <Link to={"roster"} className="w-2/5 bg-cyan-600 hover:bg-cyan-500 text-center content-center rounded  py-1">
+                        <Link to={"roster"} className="w-1/3 bg-cyan-600 hover:bg-cyan-500 text-center content-center rounded  py-1">
                             ROSTERS
                         </Link>
-                        <button className="w-2/5 bg-cyan-600 hover:bg-cyan-500 text-center content-center rounded py-1" onClick={() => setMenuOption(menuOption == 0 ? 1 : 0)}>
+                        <button className="w-1/3 bg-cyan-600 hover:bg-cyan-500 text-center content-center rounded py-1" onClick={() => setMenuOption(menuOption == 0 ? 1 : 0)}>
                             {!menuOption ? "PLAY BY PLAY" : "SCORE MENU"}
                         </button>
-                        <button className=" bg-cyan-600 hover:bg-cyan-500  text-center content-center rounded  p-2" onClick={() => setMenuOption(2)}>
+
+                        <button className="px-2 py-1 bg-cyan-600 hover:bg-cyan-500  text-center content-center rounded " onClick={() => setMenuOption(2)}>
                             <FiSettings size={20} />
                         </button>
+                        <button className=" flex-1 text-center content-center rounded p-1 bg-fuchsia-600 hover:bg-fuchsia-700">SAVE</button>
                     </div>
                     {menuOption == 0 && <>
                         <div className="flex flex-row border-2 min-h-[70px] max-h-[90px] justify-between items-center border-gray-300 rounded mx-2 p-3 bg-white drop-shadow-sm text-xs font-semibold ">
@@ -1008,6 +1013,7 @@ export default function GameScorer() {
                     {menuOption == 2 && <GameScorerSettings />}
                 </div>
             </div >
-            {situationOption !== "" && situationComponents[situationOption]}
+            {situationOption !== "" && situationComponents[situationOption]
+            }
         </>)
 }

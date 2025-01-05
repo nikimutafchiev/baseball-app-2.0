@@ -195,9 +195,9 @@ export default function GameInfo() {
                         </tbody>
                     </table>
                 </div>
-                <div className="text-xs font-semibold">
+                {game.data.venueLink && <div className="text-xs font-semibold">
                     Field location - <a className="text-blue-500 underline" href={game.data.venueLink} target="_blank">{game.data.venueLink}</a>
-                </div>
+                </div>}
                 <Link to={`/score/${game.data.id}`} className={`w-2/5 px-1 py-2 bg-orange-400 font-semibold rounded text-white text-nowrap hover:bg-orange-300 flex flex-row items-center gap-1 justify-center ${user && user.role == "admin" ? "" : "hidden"}`}><div>Score game</div><RiArrowRightCircleLine size={15} /></Link>
 
             </div>

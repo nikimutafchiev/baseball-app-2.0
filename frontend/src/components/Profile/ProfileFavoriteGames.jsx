@@ -18,7 +18,7 @@ export default function ProfileFavoriteGames() {
                 </div>
                 <div className="grid grid-cols-3  w-10/12">
                     <div className="flex flex-col items-center gap-2 text-3xs font-semibold text-nowrap">
-                        <img src="https://placehold.co/40x40"></img>
+                        <img className='size-[40px]' src={game.homeTeamImage ? game.homeTeamImage : "https://placehold.co/40x40"}></img>
                         {game.homeTeam}
                     </div>
                     <div className="flex flex-row gap-2 items-center justify-center text-lg font-semibold">
@@ -30,8 +30,9 @@ export default function ProfileFavoriteGames() {
                             {game.awayResult}
                         </h3>
                     </div>
+
                     <div className="flex flex-col items-center gap-2 text-3xs font-semibold text-nowrap">
-                        <img src="https://placehold.co/40x40"></img>
+                        <img className="size-[40px]" src={game.awayTeamImage ? game.awayTeamImage : "https://placehold.co/40x40"}></img>
                         {game.awayTeam}
                     </div>
                 </div>
