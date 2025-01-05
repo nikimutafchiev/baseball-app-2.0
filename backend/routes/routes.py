@@ -220,6 +220,89 @@ def get_teams_by_tournament():
         "headCoach":association.team.head_coach
     } for association in tournament.teams]
 
+@route_bp.route("/game/assign/", methods=["POST"])
+def assign_game():
+    query = request.args.to_dict()
+    game = Game.query.get(query["game_id"])
+    user = User.query.filter_by(username=query["username"]).first()
+    gameUser = UserGame.query.filter_by(game_id = query["game_id"],user_id = user.id).first()
+    if gameUser:
+        gameUser.is_assigned =  not gameUser.is_assigned
+        db.session.commit()
+    else:
+        user_game_association = UserGame(game=game,user=user,is_assigned=True,assigner_id=query["assigner_id"])
+        db.session.add(user_game_association)
+        db.session.commit()
+    return "Succefully assigned/unassigned game"
+
+@route_bp.route("/assigned_games/",methods=["GET"])
+def get_assigned_games():
+    query = request.args.to_dict()
+    userGames = UserGame.query.filter_by(user_id = query["user_id"]).all()
+    res=[]
+    for userGame in userGames:
+        if userGame.is_assigned:
+            game_teams = GameTeam.query.filter_by(game_id = userGame.game.id).all();
+            home_team = list(filter(lambda x: x.home_away.value == "home",game_teams))[0]
+            away_team = list(filter(lambda x: x.home_away.value == "away",game_teams))[0]
+            assigner = User.query.get(userGame.assigner_id)
+            res.append({
+            'id':userGame.game.id,
+            'homeTeam': home_team.team_tournament.team.name,
+            "awayTeam":away_team.team_tournament.team.name,
+            "homeTeamImage": home_team.team_tournament.team.image,
+            "awayTeamImage": away_team.team_tournament.team.image,
+            "startTime": userGame.game.start_time,
+            "status": userGame.game.status.value,
+            "homeResult":home_team.result,
+            "awayResult": away_team.result,
+            "venue": userGame.game.venue,
+            "venueLink": userGame.game.venue_link,
+            "assigner": assigner.first_name+" "+ assigner.last_name
+            })
+    return res,200
+
+@route_bp.route("/game/to_do/", methods=["POST"])
+def to_do_game():
+    query = request.args.to_dict()
+    game = Game.query.get(query["game_id"])
+    user = User.query.get(query["user_id"])
+    gameUser = UserGame.query.filter_by(game_id = query["game_id"],user_id = query["user_id"]).first()
+    if gameUser:
+        gameUser.is_to_do =  not gameUser.is_to_do
+        gameUser.is_assigned = False
+        db.session.commit()
+    else:
+        user_game_association = UserGame(game=game,user=user,is_assigned=True)
+        db.session.add(user_game_association)
+        db.session.commit()
+    return ""
+
+@route_bp.route("/to_do_games/",methods=["GET"])
+def get_to_do_games():
+    query = request.args.to_dict()
+    userGames = UserGame.query.filter_by(user_id = query["user_id"]).all()
+    res=[]
+    for userGame in userGames:
+        if userGame.is_to_do:
+            game_teams = GameTeam.query.filter_by(game_id = userGame.game.id).all();
+            home_team = list(filter(lambda x: x.home_away.value == "home",game_teams))[0]
+            away_team = list(filter(lambda x: x.home_away.value == "away",game_teams))[0]
+            res.append({
+            'id':userGame.game.id,
+            'homeTeam': home_team.team_tournament.team.name,
+            "awayTeam":away_team.team_tournament.team.name,
+            "homeTeamImage": home_team.team_tournament.team.image,
+            "awayTeamImage": away_team.team_tournament.team.image,
+            "startTime": userGame.game.start_time,
+            "status": userGame.game.status.value,
+            "homeResult":home_team.result,
+            "awayResult": away_team.result,
+            "venue": userGame.game.venue,
+            "venueLink": userGame.game.venue_link
+            })
+    return res,200
+
 @route_bp.route("/game/like/",methods=["POST"])
 def like_game():
     query = request.args.to_dict()

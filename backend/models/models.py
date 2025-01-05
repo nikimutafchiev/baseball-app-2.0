@@ -126,7 +126,13 @@ class UserGame(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey("User.id"))
     is_liked: Mapped[bool] = mapped_column(Boolean,default=False)
     is_assigned: Mapped[bool] = mapped_column(Boolean,default=False)
+    assigner_id: Mapped[Optional[int]] = mapped_column(Integer)
     is_to_do: Mapped[bool] = mapped_column(Boolean, default=False)
     
     game: Mapped["Game"] = relationship(back_populates="user_likes")
     user: Mapped["User"] = relationship()
+
+class Situation(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    game_id: Mapped[int] = mapped_column(ForeignKey("Game.id"))
+    data: Mapped[dict] = mapped_column(JSON)

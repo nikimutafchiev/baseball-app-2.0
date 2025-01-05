@@ -1,5 +1,5 @@
 import { RiLiveLine } from "react-icons/ri"
-import { ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { TextField, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -11,7 +11,7 @@ import { useParams, Link } from "react-router-dom";
 import { RiArrowRightCircleLine } from "react-icons/ri";
 import { useAuth } from "../../AuthContext";
 import { useEffect, useState } from "react";
-
+import validator from "validator"
 export default function GameInfo() {
     const { user } = useAuth();
     const stats = [
@@ -137,9 +137,26 @@ export default function GameInfo() {
             setRoster(awayRoster.data);
 
     }, [homeAway, homeRoster, awayRoster]);
+    const [assignee, setAssignee] = useState(user.username);
     return (<>{
         game.data && <div className="flex flex-row gap-8">
-            <div className="flex flex-col bg-white rounded-2xl drop-shadow-lg min-h-[80vh] max-h-[85vh] w-1/3 p-10 items-center justify-between">
+            <div className="flex flex-col bg-white rounded-2xl drop-shadow-lg min-h-[82vh] max-h-[88vh] w-1/3 p-10 items-center justify-between">
+                {user && <div className="flex flex-row  justify-center gap-4 mb-2">
+                    <TextField label={<div className="text-sm">Username</div>} variant="outlined" value={assignee} onChange={(e) => setAssignee(e.target.value)} className="w-1/2" size="small" helperText={!validator.isURL(assignee) && assignee.length != 0 ? "Invalid username" : ""}></TextField>
+                    <button className="p-2 py-3 h-fit text-white bg-blue-500 hover:bg-blue-600 text-xs rounded drop-shadow-md font-semibold"
+                        onClick={() => {
+                            fetch(`http://localhost:6363/game/assign/?username=${assignee}&game_id=${game.data.id}&assigner_id=${user.id}`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+
+                            });
+                            alert("Succefully assigned game!")
+                        }}>
+                        Assign for scoring
+                    </button>
+                </div>}
                 <div className="flex flex-col text-gray-500 text-xs font-semibold ">
                     <div className="text-center">
                         {game.data.venue}
@@ -198,7 +215,7 @@ export default function GameInfo() {
                 {game.data.venueLink && <div className="text-xs font-semibold">
                     Field location - <a className="text-blue-500 underline" href={game.data.venueLink} target="_blank">{game.data.venueLink}</a>
                 </div>}
-                <Link to={`/score/${game.data.id}`} className={`w-2/5 px-1 py-2 bg-orange-400 font-semibold rounded text-white text-nowrap hover:bg-orange-300 flex flex-row items-center gap-1 justify-center ${user && user.role == "admin" ? "" : "hidden"}`}><div>Score game</div><RiArrowRightCircleLine size={15} /></Link>
+                <Link to={`/score/${game.data.id}`} className={`w-2/5 px-1 py-2 bg-orange-400 font-semibold  text-sm rounded text-white text-nowrap hover:bg-orange-300 flex flex-row items-center gap-1 justify-center drop-shadow-lg ${user && user.role == "admin" ? "" : "hidden"}`}><div>Score game</div><RiArrowRightCircleLine size={15} /></Link>
 
             </div>
             <div className="flex flex-col p-2 flex-1 bg-white rounded-2xl drop-shadow-lg min-h-[80vh]">
