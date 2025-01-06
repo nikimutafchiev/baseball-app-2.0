@@ -5,7 +5,7 @@ export default function ProfileToDoGames() {
     const toDoGames = useSWR(`http://localhost:6363/to_do_games/?user_id=${user.id}`, (url) => fetch(url).then((res) => res.json()));
     return (<div className="w-full flex flex-col ">
         <h2 className="text-2xl font-semibold">To do list</h2>
-        <div className="grid grid-cols-3 gap-4 py-5 ">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 py-5 ">
             {toDoGames.data && toDoGames.data.map((game) => <div className=" h-[240px] flex flex-col justify-around py-2 rounded items-center text-gray-500 bg-white  font-semibold drop-shadow-md">
                 <div className="flex flex-col text-gray-500 text-2xs font-semibold ">
                     <div className="text-center">

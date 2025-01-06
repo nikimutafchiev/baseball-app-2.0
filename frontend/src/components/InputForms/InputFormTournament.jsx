@@ -46,10 +46,10 @@ export default function InputFormTournament(props) {
         }
     }), [isSubmitted]);
     return (
-        <div className="top-10 fixed self-center z-20 w-7/12 p-2 px-4 bg-white rounded border-black border-[1px] drop-shadow-xl">
+        <div className="top-10 fixed self-center z-20 md:w-7/12 w-11/12 p-2 px-4 bg-white rounded border-black border-[1px] drop-shadow-xl">
             <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
             <div className="flex flex-col items-center gap-12 mt-12">
-                <div className="flex flex-row w-full gap-12">
+                <div className="flex flex-col md:flex-row w-full gap-12">
                     <div className='flex flex-col min-w-[200px] self-center items-center gap-4'>
                         <img src={imageURL} className='size-[200px] rounded'></img>
                         <label for="input-image-player" className="w-[120px] h-fit bg-blue-400 rounded p-3 text-white text-sm font-semibold text-center">Upload photo</label>

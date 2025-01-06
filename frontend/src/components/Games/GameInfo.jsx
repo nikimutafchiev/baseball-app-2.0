@@ -139,8 +139,8 @@ export default function GameInfo() {
     }, [homeAway, homeRoster, awayRoster]);
     const [assignee, setAssignee] = useState(user.username);
     return (<>{
-        game.data && <div className="flex flex-row gap-8">
-            <div className="flex flex-col bg-white rounded-2xl drop-shadow-lg min-h-[82vh] max-h-[88vh] w-1/3 p-10 items-center justify-between">
+        game.data && <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex flex-col bg-white rounded-2xl drop-shadow-lg min-h-[82vh] max-h-[88vh] md:w-1/3 p-10 items-center justify-between">
                 {user && <div className="flex flex-row  justify-center gap-4 mb-2">
                     <TextField label={<div className="text-sm">Username</div>} variant="outlined" value={assignee} onChange={(e) => setAssignee(e.target.value)} className="w-1/2" size="small" helperText={!validator.isURL(assignee) && assignee.length != 0 ? "Invalid username" : ""}></TextField>
                     <button className="p-2 py-3 h-fit text-white bg-blue-500 hover:bg-blue-600 text-xs rounded drop-shadow-md font-semibold"

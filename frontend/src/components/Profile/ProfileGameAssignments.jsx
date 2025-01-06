@@ -6,7 +6,7 @@ export default function ProfileGameAssignments() {
     const assignedGames = useSWR(`http://localhost:6363/assigned_games/?user_id=${user.id}`, (url) => fetch(url).then((res) => res.json()));
     return (<div className="w-full flex flex-col">
         <h2 className="text-2xl font-semibold">Scoresheet assignments</h2>
-        <div className="grid grid-cols-3 gap-4 py-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-5">
             {assignedGames.data && assignedGames.data.map((game) => <div className=" h-[260px] flex flex-col justify-around py-2 rounded items-center text-gray-500 bg-white  font-semibold drop-shadow-md">
                 <div className="text-sm">
                     Assigned by: {game.assigner}
@@ -48,6 +48,7 @@ export default function ProfileGameAssignments() {
                             },
 
                         });
+                        alert("Succefully rejected assignment")
                         assignedGames.mutate();
                     }}>
                         <MdClose size={20} />  Reject
@@ -60,6 +61,7 @@ export default function ProfileGameAssignments() {
                             },
 
                         });
+                        alert("Succefully accepted assignment")
                         assignedGames.mutate();
                     }}>
                         <MdCheck size={20} />  Accept

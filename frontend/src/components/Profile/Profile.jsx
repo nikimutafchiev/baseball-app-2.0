@@ -22,7 +22,7 @@ export default function Profile() {
             {
                 !isShrinked
                 &&
-                <div className="relative md:w-1/4 h-fit flex flex-col items-center gap-4 p-5 shadow-xl rounded-md bg-white">
+                <div className="relative md:w-1/3 lg:w-1/4 h-fit flex flex-col items-center gap-4 p-5 shadow-xl rounded-md bg-white">
                     <button className="absolute text-black left-2 top-2 rounded-full hover:bg-gray-300 bg-gray-200 p-1" onClick={() => setIsShrinked(!isShrinked)}>
                         <IoReorderThree size={20} />
                     </button>
