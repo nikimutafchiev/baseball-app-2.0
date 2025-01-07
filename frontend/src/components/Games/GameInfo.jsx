@@ -14,6 +14,7 @@ import { GoDotFill } from "react-icons/go";
 import { useAuth } from "../../AuthContext";
 import { useEffect, useState } from "react";
 import validator from "validator"
+import GameScorerPlayByPlay from "../GameScorer/GameScorerPlayByPlay";
 
 export default function GameInfo() {
     const { user } = useAuth();
@@ -27,6 +28,7 @@ export default function GameInfo() {
     const [homeAway, setHomeAway] = useState("Home");
     const homeRoster = useSWR(`http://localhost:6363/game/team/roster/?game_id=${id}&home_away=HOME`, (url) => fetch(url).then((res) => res.json()));
     const awayRoster = useSWR(`http://localhost:6363/game/team/roster/?game_id=${id}&home_away=AWAY`, (url) => fetch(url).then((res) => res.json()));
+    const situations = useSWR(`http://localhost:6363/game/${id}/situations`, (url) => fetch(url).then((res) => res.json()));
     const [roster, setRoster] = useState([]);
     useEffect(() => {
         if (homeAway == "Home" && homeRoster.data)
@@ -88,29 +90,31 @@ export default function GameInfo() {
                     <div className="flex flex-row gap-1 items-center">{statusIcons[game.data.status]}<div className=" uppercase">{game.data.status}</div></div>
                 </div>
 
-                <div className=" px-2 py-1 rounded flex flex-row items-center w-full">
-                    <div className="relative  flex-1">
+                <div className=" px-2 py-1 rounded flex flex-row items-center justify-center w-full">
+                    {game.data.status === "live" &&
+                        <div className="relative  flex-1">
 
-                        <div className="flex flex-row items-center gap-3">
-                            <div className="flex flex-col items-center text-center">
-                                {game.data.status === "live" && <div className="text-black flex flex-row font-semibold items-center ">{game.data.inning} {game.data.inningHalf == "UP" ? <FaCaretUp /> : <FaCaretDown />}</div>}
-                                <div className="flex flex-row justify-center text-yellow-400">
-                                    <GoDotFill size={10} className={`${game.data.outs > 0 ? "visible" : "invisible"}`} />
-                                    <GoDotFill size={10} className={`${game.data.outs > 1 ? "visible" : "invisible"}`} />
+                            <div className="flex flex-row items-center gap-3">
+                                <div className="flex flex-col items-center text-center">
+                                    <div className="text-black flex flex-row font-semibold items-center ">{game.data.inning} {game.data.inningHalf == "UP" ? <FaCaretUp /> : <FaCaretDown />}</div>
+                                    <div className="flex flex-row justify-center text-yellow-400">
+                                        <GoDotFill size={10} className={`${game.data.outs > 0 ? "visible" : "invisible"}`} />
+                                        <GoDotFill size={10} className={`${game.data.outs > 1 ? "visible" : "invisible"}`} />
+                                    </div>
+                                </div>
+                                <div className="flex flex-row  items-center">
+                                    <div className={`${true ? "bg-yellow-400" : "border-2 border-yellow-400"} size-3 rotate-45 items-center justify-center`}>
+                                    </div>
+                                    <div className={`${false ? "bg-yellow-400" : "border-2 border-yellow-400"} mb-6 size-3 rotate-45 items-center justify-center`}>
+                                    </div>
+                                    <div className={`${true ? "bg-yellow-400" : "border-2 border-yellow-400"} size-3 rotate-45 items-center justify-center`}>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="flex flex-row  items-center">
-                                <div className={`${true ? "bg-yellow-400" : "border-2 border-yellow-400"} size-3 rotate-45 items-center justify-center`}>
-                                </div>
-                                <div className={`${false ? "bg-yellow-400" : "border-2 border-yellow-400"} mb-6 size-3 rotate-45 items-center justify-center`}>
-                                </div>
-                                <div className={`${true ? "bg-yellow-400" : "border-2 border-yellow-400"} size-3 rotate-45 items-center justify-center`}>
-                                </div>
-                            </div>
+
+
                         </div>
-
-
-                    </div>
+                    }
                     <table className="table-auto">
                         <thead className="border-b-[1px] text-xs border-gray-500 ">
                             <tr>
@@ -174,52 +178,56 @@ export default function GameInfo() {
                         </div>
                     }
                 </div>
-                <div>
-                    <TableContainer>
-                        <Table sx={{ minWidth: 650 }}>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>#</TableCell>
-                                    <TableCell>Player name</TableCell>
-                                    <TableCell>Position</TableCell>
-                                    <TableCell>AB</TableCell>
-                                    <TableCell>R</TableCell>
-                                    <TableCell>H</TableCell>
-                                    <TableCell>RBI</TableCell>
-                                    <TableCell>BB</TableCell>
-                                    <TableCell>SO</TableCell>
-                                    <TableCell>AVG</TableCell>
-                                    <TableCell>OPS</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>{
-
-                                roster.map((row) => (
-                                    <TableRow
-
-                                        key={row.battingOrder}
-
-                                    >
-
-                                        <TableCell component="th" scope="row">
-                                            {row.battingOrder}
-                                        </TableCell>
-                                        <TableCell ><div className={row.battingOrder == 8 ? "ml-8" : ""}>{row.player.firstName} {row.player.lastName}</div></TableCell>
-                                        <TableCell><div>{row.position}</div></TableCell>
-                                        <TableCell>{row.AB}</TableCell>
-                                        <TableCell>{row.R}</TableCell>
-                                        <TableCell>{row.H}</TableCell>
-                                        <TableCell>{row.RBI}</TableCell>
-                                        <TableCell>{row.BB}</TableCell>
-                                        <TableCell>{row.SO}</TableCell>
-                                        <TableCell>{row.AVG}</TableCell>
-                                        <TableCell>{row.OPS}</TableCell>
+                {menuOption === "Stats" &&
+                    <div>
+                        <TableContainer>
+                            <Table sx={{ minWidth: 650 }}>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>#</TableCell>
+                                        <TableCell>Player name</TableCell>
+                                        <TableCell>Position</TableCell>
+                                        <TableCell>AB</TableCell>
+                                        <TableCell>R</TableCell>
+                                        <TableCell>H</TableCell>
+                                        <TableCell>RBI</TableCell>
+                                        <TableCell>BB</TableCell>
+                                        <TableCell>SO</TableCell>
+                                        <TableCell>AVG</TableCell>
+                                        <TableCell>OPS</TableCell>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </div>
+                                </TableHead>
+                                <TableBody>{
+
+                                    roster.map((row) => (
+                                        <TableRow
+
+                                            key={row.battingOrder}
+
+                                        >
+
+                                            <TableCell component="th" scope="row">
+                                                {row.battingOrder}
+                                            </TableCell>
+                                            <TableCell ><div className={row.battingOrder == 8 ? "ml-8" : ""}>{row.player.firstName} {row.player.lastName}</div></TableCell>
+                                            <TableCell><div>{row.position}</div></TableCell>
+                                            <TableCell>{row.AB}</TableCell>
+                                            <TableCell>{row.R}</TableCell>
+                                            <TableCell>{row.H}</TableCell>
+                                            <TableCell>{row.RBI}</TableCell>
+                                            <TableCell>{row.BB}</TableCell>
+                                            <TableCell>{row.SO}</TableCell>
+                                            <TableCell>{row.AVG}</TableCell>
+                                            <TableCell>{row.OPS}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </div>
+                }
+                {menuOption === "Play by play" && <div className="max-h-[75vh]"><GameScorerPlayByPlay situations={situations.data ? situations.data.sort((a, b) => b.id - a.id) : []} /></div>
+                }
             </div>
         </div >
     }</>)
