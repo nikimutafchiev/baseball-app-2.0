@@ -17,9 +17,9 @@ export default function NavBar() {
     const { logout, token } = useAuth();
     const [isExtendClicked, setIsExtendClicked] = useState(false);
     return (
-        <header className={`w-full sticky z-10 top-0 ${isExtendClicked ? "h-screen" : "h-[10vh]"} bg-gradient-to-r from-primary_1 to-primary_3 drop-shadow-2xl`}>
+        <header className={`w-screen sticky z-10 top-0 ${isExtendClicked ? "h-screen" : "h-[10vh]"} bg-gradient-to-r from-primary_1 to-primary_3 drop-shadow-2xl`}>
 
-            {!isExtendClicked && <nav className="w-full h-full flex flex-row justify-between justify-self-center items-center px-12">
+            {!isExtendClicked && <nav className="w-full h-full flex flex-row justify-between items-center px-12">
                 <Link class='flex flex-row gap-2 items-center' to="/">
                     <BiBaseball size={32} color="white" />
                     <div className="text-base lg:text-xl text-white font-semibold">

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import useSWR from "swr";
 
 export default function Player(props) {
     const stats = props.stats ? props.stats : {

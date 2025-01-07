@@ -550,7 +550,7 @@ def change_batting_order(game_id):
 def change_outs(game_id):
     data = request.json
     game = Game.query.get(game_id)
-    
+
     game.outs = data["outs"]
     db.session.commit()
     return ""
@@ -569,3 +569,14 @@ def start_game(game_id):
     game.status = GameStatuses.LIVE
     db.session.commit()
     return ""
+    
+@route_bp.route("/stats/PA/<int:player_id>",methods=["GET"])
+def get_player_plate_appearance(player_id):
+    player = Player.query.get(player_id)
+    res = 0
+    for team_tournament in player.teams_tournaments:
+        for gameTeam in team_tournament.team_tournament.games:
+            for situation in gameTeam.game.situations:
+                if situation.data["batter"]["player"]["id"] == player_id:
+                    res +=1
+    return {"PA":res}

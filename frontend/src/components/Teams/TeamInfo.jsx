@@ -43,7 +43,8 @@ export default function TeamInfo() {
                             <div>Head Coach: {team.data.headCoach}</div>
                         </div>
                         <div className="w-10/12  flex flex-row justify-around mt-2">
-                            {Object.entries(team.data.socialMedia).map(([media, page]) => <a href={page} target="_blank">{icons[media]}</a>)}
+                            {Object.entries(team.data.socialMedia).filter(([media, page]) => page !== "").map(([media, page]) => <a href={page} target="_blank">{icons[media]}</a>)}
+
                         </div>
                         <button className={`flex items-center gap-2 px-4 py-2 text-sm bg-white font-medium rounded border-2 transition ${isEdit
                             ? "border-green-500 text-green-600 hover:bg-green-50"

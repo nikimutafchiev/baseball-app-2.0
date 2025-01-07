@@ -9,6 +9,7 @@ export default function PlayerInfo() {
     const [isEdit, setIsEdit] = useState(false);
     const { id } = useParams();
     const player = useSWR(`http://localhost:6363/player/${id}`, (url) => fetch(url).then((res) => res.json()));
+    const pa = useSWR(`http://localhost:6363/stats/PA/${id}`, (url) => fetch(url).then((res) => res.json()));
     const years = ["2021", '2022', '2023', "2024"];
     const teams = ["Lions", "Blues", "Akademik", "Coyotes", "Buffaloes", "Yunak"];
     const tournaments = ["Bulgarian Cup", "Champions League", "World cup"];
@@ -25,7 +26,7 @@ export default function PlayerInfo() {
                             <h3 className="text-xl font-semibold">
                                 {player.data.firstName} {player.data.lastName}
                             </h3>
-                            <img className="w-[180px] h-[200px]" src={player.data.image} />
+                            <img className="w-[180px] h-[200px]" src={player.data.image ? player.data.image : "http://placehold.co/180x200"} />
                             <div className="flex flex-col gap-0.5 items-center w-full">
                                 <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50" ><div>Height:</div> <div className="w-fit flex flex-row gap-1"><div>{player.data.height}</div><div> cm</div></div></div>
                                 <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Weigth:</div> <div>{player.data.weigth} kg</div></div>
@@ -119,6 +120,7 @@ export default function PlayerInfo() {
                                 { label: "SO", value: "235", rank: "#3" },
                                 { label: "BB", value: "78", rank: "#5" },
                                 { label: "H", value: "189", rank: "#6" },
+                                { label: "PA", value: pa.data ? pa.data.PA : 0, rank: "#11" }
                             ].map((stat, index) => (
                                 <div
                                     key={index}
