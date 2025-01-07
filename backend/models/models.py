@@ -61,7 +61,7 @@ class TeamTournament(db.Model):
     )
     players: Mapped[List["TeamTournamentPlayer"]] = relationship(back_populates="team_tournament")
     games: Mapped[List["GameTeam"]] = relationship(back_populates="team_tournament")
-#TODO ADD unique constraint for player_id, team_tournament_id
+
 class TeamTournamentPlayer(db.Model):
     __tablename__ = "TeamTournamentPlayer"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -85,8 +85,25 @@ class Game(db.Model):
     scoring_status: Mapped[Optional[str]] = mapped_column(String(10))
     venue: Mapped[str] = mapped_column(String(60), nullable=False)
     venue_link: Mapped[Optional[str]] = mapped_column(String(100))
+
+    inning: Mapped[int] = mapped_column(Integer,default=1)
+    inning_half: Mapped[str] = mapped_column(String(10),default="UP")
+    home_batting_order: Mapped[int] = mapped_column(Integer,default = 1)
+    away_batting_order: Mapped[int] = mapped_column(Integer,default = 1)
+    outs: Mapped[int] = mapped_column(Integer,default=0)
+
+    runners: Mapped[JSON] = mapped_column(JSON,default={
+        "firstBaseRunner": None,
+        "secondBaseRunner": None,
+        "thirdBaseRunner": None})
+    pointsByInning: Mapped[JSON] = mapped_column(JSON,default=
+    {
+        "home": [0 for i in range(0,9)], "away": [0 for i in range(0,9)]
+    })
+
     teams: Mapped[List["GameTeam"]] = relationship(back_populates="game")
-    user_likes: Mapped[List["UserGame"]] = relationship(back_populates="game")
+    user_associations: Mapped[List["UserGame"]] = relationship(back_populates="game")
+    situations: Mapped[List["Situation"]] = relationship(back_populates="game")
 
 class GameTeam(db.Model):
     __tablename__ = "GameTeam"
@@ -110,6 +127,7 @@ class GameTeamTeamTournamentPlayer(db.Model):
     team_tournament_player: Mapped["TeamTournamentPlayer"] = relationship(back_populates = "games")
     position: Mapped[str] = mapped_column(String(60))
     batting_order: Mapped[int] = mapped_column(Integer)
+    is_playing: Mapped[bool] = mapped_column(Boolean, default=True)
 
 class User(db.Model):
     __tablename__="User"
@@ -129,10 +147,11 @@ class UserGame(db.Model):
     assigner_id: Mapped[Optional[int]] = mapped_column(Integer)
     is_to_do: Mapped[bool] = mapped_column(Boolean, default=False)
     
-    game: Mapped["Game"] = relationship(back_populates="user_likes")
+    game: Mapped["Game"] = relationship(back_populates="user_associations")
     user: Mapped["User"] = relationship()
 
 class Situation(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     game_id: Mapped[int] = mapped_column(ForeignKey("Game.id"))
-    data: Mapped[dict] = mapped_column(JSON)
+    game: Mapped["Game"] = relationship(back_populates="situations")
+    data: Mapped[dict] = mapped_column(JSON,nullable=False)

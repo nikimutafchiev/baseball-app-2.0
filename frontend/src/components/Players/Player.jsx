@@ -16,7 +16,7 @@ export default function Player(props) {
                     <h3 className="text-lg font-semibold">
                         {props.firstName} {props.lastName}
                     </h3>
-                    <img className="w-[180px] h-[200px]" src={props.image} />
+                    {props.image && <img className="w-[180px] h-[200px]" src={props.image} />}
                 </div >
                 <div className='rounded max-h-full absolute inset-0 h-full w-full px-1 text-white [transform:rotateY(180deg)] [backface-visibility:hidden] flex flex-col justify-around bg-gradient-to-br from-accent_3 via-accent_2 to-accent_1 items-center border-gray-400 border-2  drop-shadow-xl'>
                     <h3 className="text-lg font-semibold">

@@ -1,5 +1,5 @@
-from models.models import Player, Team, TeamTournament,TeamTournamentPlayer, Tournament, Game, User, UserGame, GameTeam,GameTeamTeamTournamentPlayer
-from models.enums import HomeAway
+from models.models import Player, Team, TeamTournament,TeamTournamentPlayer, Tournament, Game, User, UserGame, GameTeam,GameTeamTeamTournamentPlayer, Situation
+from models.enums import HomeAway, GameStatuses
 from flask import request, Blueprint
 from flask_jwt_extended import  create_access_token
 from datetime import date,datetime,timezone
@@ -153,7 +153,7 @@ def get_games_by_tournament():
         away_team = list(filter(lambda x: x.home_away.value == "away",game_teams))[0]
         res.append({
         'id':game.id,
-'homeTeam': home_team.team_tournament.team.name,
+        'homeTeam': home_team.team_tournament.team.name,
         "awayTeam":away_team.team_tournament.team.name,
         "startTime": game.start_time,
         "awayTeamImage":away_team.team_tournament.team.image,
@@ -227,7 +227,10 @@ def assign_game():
     user = User.query.filter_by(username=query["username"]).first()
     gameUser = UserGame.query.filter_by(game_id = query["game_id"],user_id = user.id).first()
     if gameUser:
-        gameUser.is_assigned =  not gameUser.is_assigned
+        if not game.is_assigned and not game.is_to_do:
+            gameUser.is_assigned =  True
+        elif game.is_assigned:
+            gameUser.is_assigned = False
         db.session.commit()
     else:
         user_game_association = UserGame(game=game,user=user,is_assigned=True,assigner_id=query["assigner_id"])
@@ -376,7 +379,14 @@ def get_game_by_id(game_id):
         "tournament":{
                 "id":game.tournament_id,
                 "name":game.tournament.name
-            }
+            },
+        "inning": game.inning,
+        "inningHalf": game.inning_half,
+        "homeBattingTurn":game.home_batting_order,
+        "awayBattingTurn":game.away_batting_order,
+        "outs": game.outs,
+        "runners":game.runners,
+        "pointsByInning":game.pointsByInning
     }
 @route_bp.route("/team_tournament/player/",methods=["POST"])
 def add_player_to_team_tournament():
@@ -471,7 +481,6 @@ def get_game_team_roster():
 @route_bp.route("/game/team/roster/player", methods=["POST"])
 def add_player_to_game_roster():
     data = request.json
-    print(data)
     gameTeam = GameTeam.query.filter_by(game_id=data["game_id"],home_away=data["home_away"]).first()
     teamTournament = TeamTournament.query.filter_by(team_id=data["team_id"],tournament_id = data["tournament_id"]).first()
     teamTournamentPlayer = TeamTournamentPlayer.query.filter_by(team_tournament_id = teamTournament.id, player_id = data["player_id"]).first()
@@ -480,4 +489,83 @@ def add_player_to_game_roster():
     db.session.add(association)
     db.session.commit()
 
+    return ""
+
+@route_bp.route("/game/<int:game_id>/situation",methods=["POST"])
+def add_game_situation(game_id):
+    data = request.json
+    situation = Situation(data = data["data"],game_id = game_id)
+    db.session.add(situation)
+    db.session.commit()
+
+    return "Succefully added situation"
+
+@route_bp.route("/game/<int:game_id>/situations", methods=["GET"])
+def get_game_situations(game_id):
+    game = Game.query.get(game_id)
+    res = []
+    for situation in game.situations:
+        res.append({
+            "id":situation.id,
+            "data":situation.data
+            })
+    return res
+
+@route_bp.route("/game/<int:game_id>/change_inning", methods=["POST"])
+def change_inning(game_id):
+    game = Game.query.get(game_id)
+    if game.inning_half == "UP":
+        game.inning_half = "DOWN"
+    elif game.inning < 9:
+        game.inning_half = "UP"
+        game.inning += 1
+    else:
+        game.status = GameStatuses.ENDED
+    db.session.commit()
+    return ""
+
+
+@route_bp.route("/game_team/change_score/", methods=["POST"])
+def change_score():
+    data = request.json
+    query = request.args.to_dict()
+    game_team = GameTeam.query.filter_by(game_id=query["game_id"],home_away=query["home_away"]).first()
+    game_team.result += data["points"]
+    db.session.commit()
+    return ""
+
+@route_bp.route("/game/<int:game_id>/change_batting_turn",methods=["POST"])
+def change_batting_order(game_id):
+    data = request.json
+    home_away = data["homeAway"]
+    game = Game.query.get(game_id)
+    if home_away == "HOME":
+        game.home_batting_order = data["battingTurn"]
+    else:
+        game.away_batting_order = data["battingTurn"]
+    db.session.commit()
+    return ""
+
+@route_bp.route("/game/<int:game_id>/change_outs", methods=["POST"])
+def change_outs(game_id):
+    data = request.json
+    game = Game.query.get(game_id)
+    
+    game.outs = data["outs"]
+    db.session.commit()
+    return ""
+
+@route_bp.route("/game/<int:game_id>/change_points_by_inning", methods=["POST"])
+def change_points_by_inning(game_id):
+    data = request.json
+    game = Game.query.get(game_id)
+    game.pointsByInning = data["points"]
+    db.session.commit()
+    return ""
+
+@route_bp.route("/game/<int:game_id>/start",methods=["POST"])
+def start_game(game_id):
+    game = Game.query.get(game_id)
+    game.status = GameStatuses.LIVE
+    db.session.commit()
     return ""

@@ -22,7 +22,7 @@ export default function GameScorerRunnerOptions(props) {
                     {props.runner && <>
                         {
                             props.runner.player && <div className="text-black text-center">
-                                What happened to #{props.runner.player.uniformNumber} {props.runner.player.lastName}
+                                What happened to #{props.runner.player.uniformNumber} {props.runner.player.player.lastName}
                             </div>
                         }
                         < div className="justify-self-center">

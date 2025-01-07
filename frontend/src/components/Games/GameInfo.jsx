@@ -1,5 +1,5 @@
 import { RiLiveLine } from "react-icons/ri"
-import { TextField, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { TextField, ToggleButton, ToggleButtonGroup, MenuItem } from "@mui/material";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -8,122 +8,20 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import useSWR from "swr";
 import { useParams, Link } from "react-router-dom";
-import { RiArrowRightCircleLine } from "react-icons/ri";
+import { RiArrowRightCircleLine, RiCalendarScheduleLine, RiCheckDoubleLine } from "react-icons/ri";
+import { FaCaretDown, FaCaretUp } from "react-icons/fa";
+import { GoDotFill } from "react-icons/go";
 import { useAuth } from "../../AuthContext";
 import { useEffect, useState } from "react";
 import validator from "validator"
+
 export default function GameInfo() {
     const { user } = useAuth();
-    const stats = [
-        {
-            "Order": 1,
-            "Name": "Andersson, Erik CF",
-            "AB": 4,
-            "R": 1,
-            "H": 2,
-            "RBI": 1,
-            "BB": 0,
-            "SO": 0,
-            "AVG": 0.500,
-            "OPS": 1.200
-        },
-        {
-            "Order": 2,
-            "Name": "Karlsson, Johan LF",
-            "AB": 3,
-            "R": 0,
-            "H": 0,
-            "RBI": 0,
-            "BB": 1,
-            "SO": 2,
-            "AVG": 0.000,
-            "OPS": 0.333
-        },
-        {
-            "Order": 3,
-            "Name": "Svensson, Lars SS",
-            "AB": 5,
-            "R": 2,
-            "H": 3,
-            "RBI": 2,
-            "BB": 0,
-            "SO": 1,
-            "AVG": 0.600,
-            "OPS": 1.500
-        },
-        {
-            "Order": 4,
-            "Name": "Nilsson, Mats 1B",
-            "AB": 4,
-            "R": 1,
-            "H": 1,
-            "RBI": 0,
-            "BB": 1,
-            "SO": 1,
-            "AVG": 0.250,
-            "OPS": 0.850
-        },
-        {
-            "Order": 5,
-            "Name": "Johansson, Fredrik DH",
-            "AB": 3,
-            "R": 0,
-            "H": 1,
-            "RBI": 0,
-            "BB": 0,
-            "SO": 2,
-            "AVG": 0.333,
-            "OPS": 0.600
-        },
-        {
-            "Order": 6,
-            "Name": "Olsson, Peter C",
-            "AB": 4,
-            "R": 2,
-            "H": 2,
-            "RBI": 3,
-            "BB": 0,
-            "SO": 0,
-            "AVG": 0.500,
-            "OPS": 1.800
-        },
-        {
-            "Order": 7,
-            "Name": "Pettersson, Oskar 3B",
-            "AB": 2,
-            "R": 0,
-            "H": 0,
-            "RBI": 0,
-            "BB": 1,
-            "SO": 1,
-            "AVG": 0.000,
-            "OPS": 0.250
-        },
-        {
-            "Order": 8,
-            "Name": "Lindberg, Henrik RF",
-            "AB": 3,
-            "R": 1,
-            "H": 1,
-            "RBI": 1,
-            "BB": 0,
-            "SO": 0,
-            "AVG": 0.333,
-            "OPS": 0.900
-        },
-        {
-            "Order": 9,
-            "Name": "Berg, Thomas 2B",
-            "AB": 4,
-            "R": 0,
-            "H": 2,
-            "RBI": 0,
-            "BB": 0,
-            "SO": 1,
-            "AVG": 0.500,
-            "OPS": 1.100
-        }
-    ];
+    const statusIcons = {
+        live: <RiLiveLine size={25} />,
+        scheduled: <RiCalendarScheduleLine size={25} />,
+        ended: <RiCheckDoubleLine size={25} />
+    };
     const { id } = useParams();
     const game = useSWR(`http://localhost:6363/game/${id}`, (url) => fetch(url).then((res) => res.json()));
     const [homeAway, setHomeAway] = useState("Home");
@@ -138,9 +36,10 @@ export default function GameInfo() {
 
     }, [homeAway, homeRoster, awayRoster]);
     const [assignee, setAssignee] = useState(user.username);
+    const [menuOption, setMenuOption] = useState("Stats");
     return (<>{
         game.data && <div className="flex flex-col md:flex-row gap-8">
-            <div className="flex flex-col bg-white rounded-2xl drop-shadow-lg min-h-[82vh] max-h-[88vh] md:w-1/3 p-10 items-center justify-between">
+            <div className="flex flex-col bg-white rounded-2xl drop-shadow-lg min-h-[82vh] max-h-[85vh] md:w-1/3 p-10 items-center justify-between">
                 {user && <div className="flex flex-row  justify-center gap-4 mb-2">
                     <TextField label={<div className="text-sm">Username</div>} variant="outlined" value={assignee} onChange={(e) => setAssignee(e.target.value)} className="w-1/2" size="small" helperText={!validator.isURL(assignee) && assignee.length != 0 ? "Invalid username" : ""}></TextField>
                     <button className="p-2 py-3 h-fit text-white bg-blue-500 hover:bg-blue-600 text-xs rounded drop-shadow-md font-semibold"
@@ -184,8 +83,49 @@ export default function GameInfo() {
                         {game.data.awayTeam.name}
                     </div>
                 </div>
-                <div className="text-xl font-semibold text-accent_2 flex flex-row gap-1 items-center">
-                    <RiLiveLine size={25} /><div>{game.data.status}</div>
+                <div className="text-xl font-semibold text-accent_2 gap-4">
+
+                    <div className="flex flex-row gap-1 items-center">{statusIcons[game.data.status]}<div className=" uppercase">{game.data.status}</div></div>
+                </div>
+
+                <div className=" px-2 py-1 rounded flex flex-row items-center w-full">
+                    <div className="relative  flex-1">
+
+                        <div className="flex flex-row items-center gap-3">
+                            <div className="flex flex-col items-center text-center">
+                                {game.data.status === "live" && <div className="text-black flex flex-row font-semibold items-center ">{game.data.inning} {game.data.inningHalf == "UP" ? <FaCaretUp /> : <FaCaretDown />}</div>}
+                                <div className="flex flex-row justify-center text-yellow-400">
+                                    <GoDotFill size={10} className={`${game.data.outs > 0 ? "visible" : "invisible"}`} />
+                                    <GoDotFill size={10} className={`${game.data.outs > 1 ? "visible" : "invisible"}`} />
+                                </div>
+                            </div>
+                            <div className="flex flex-row  items-center">
+                                <div className={`${true ? "bg-yellow-400" : "border-2 border-yellow-400"} size-3 rotate-45 items-center justify-center`}>
+                                </div>
+                                <div className={`${false ? "bg-yellow-400" : "border-2 border-yellow-400"} mb-6 size-3 rotate-45 items-center justify-center`}>
+                                </div>
+                                <div className={`${true ? "bg-yellow-400" : "border-2 border-yellow-400"} size-3 rotate-45 items-center justify-center`}>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <table className="table-auto">
+                        <thead className="border-b-[1px] text-xs border-gray-500 ">
+                            <tr>
+                                {["Team", 1, 2, 3, 4, 5, 6, 7, 8, 9, "R", "H", "E"].map((value) => <th className="p-1 font-bold">{value}</th>)}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {[game.data.awayTeam.tlc, ...game.data.pointsByInning.away, 11, 13, 2].map((value) => <td className="text-center font-semibold text-2xs p-1">{value}</td>)}
+                            </tr>
+                            <tr>
+                                {[game.data.homeTeam.tlc, ...game.data.pointsByInning.home, 11, 13, 2].map((value) => <td className="text-center font-semibold text-2xs p-1">{value}</td>)}
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
                 <div className="w-full flex flex-row text-xs font-semibold">
                     <div className="w-1/2 text-center">
@@ -195,23 +135,6 @@ export default function GameInfo() {
                         L - Evgenii Chernozemsky
                     </div>
                 </div>
-                <div className=" px-2 py-1 rounded">
-                    <table className="table-auto">
-                        <thead className="border-b-[1px] border-gray-500 ">
-                            <tr>
-                                {["Team", 1, 2, 3, 4, 5, 6, 7, 8, 9, "R", "H", "E"].map((value) => <th className="p-1 font-bold">{value}</th>)}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                {[game.data.awayTeam.tlc, 0, 1, 3, 0, 1, 2, 0, 1, 2, 11, 13, 2].map((value) => <td className="text-center font-semibold text-sm p-1">{value}</td>)}
-                            </tr>
-                            <tr>
-                                {[game.data.homeTeam.tlc, 0, 1, 3, 0, 1, 2, 0, 1, 2, 11, 13, 2].map((value) => <td className="text-center font-semibold text-sm p-1">{value}</td>)}
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
                 {game.data.venueLink && <div className="text-xs font-semibold">
                     Field location - <a className="text-blue-500 underline" href={game.data.venueLink} target="_blank">{game.data.venueLink}</a>
                 </div>}
@@ -219,22 +142,37 @@ export default function GameInfo() {
 
             </div>
             <div className="flex flex-col p-2 flex-1 bg-white rounded-2xl drop-shadow-lg min-h-[80vh]">
-
-                <div className="w-1/2 self-center">
-                    <ToggleButtonGroup
-                        exclusive
-                        size="small"
-                        className="w-full"
-                        value={homeAway}
-                        onChange={(e, newValue) => {
-                            if (newValue) {
-                                setHomeAway(newValue);
-                            }
-                        }}
+                <div className="flex flex-row gap-6">
+                    <TextField
+                        size="small" className="w-1/6"
+                        select
+                        onChange={(e) => { setMenuOption(e.target.value) }}
+                        value={menuOption}
                     >
-                        <ToggleButton className="w-1/2" value="Home" ><div>Home</div></ToggleButton>
-                        <ToggleButton className="w-1/2" value="Away" >Away</ToggleButton>
-                    </ToggleButtonGroup>
+                        {["Stats", "Play by play"].map((option) => (
+                            <MenuItem key={option} value={option}>
+                                {<div className="text-sm">{option}</div>}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                    {menuOption === "Stats" &&
+                        <div className="w-1/2">
+                            <ToggleButtonGroup
+                                exclusive
+                                size="small"
+                                className="w-full"
+                                value={homeAway}
+                                onChange={(e, newValue) => {
+                                    if (newValue) {
+                                        setHomeAway(newValue);
+                                    }
+                                }}
+                            >
+                                <ToggleButton className="w-1/2" value="Home" ><div>Home</div></ToggleButton>
+                                <ToggleButton className="w-1/2" value="Away" >Away</ToggleButton>
+                            </ToggleButtonGroup>
+                        </div>
+                    }
                 </div>
                 <div>
                     <TableContainer>

@@ -38,7 +38,6 @@ export const AuthProvider = ({ children }) => {
             console.error(err);
         }
     };
-    useEffect(() => { if (user) login({ "username": user.username, "password": user.password }) }, []);
     const logout = () => {
         setUser(null);
         setToken("");

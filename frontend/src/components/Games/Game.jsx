@@ -36,7 +36,7 @@ export default function Game(props) {
                 <div className={`col-span-2 ${props.size == "normal" ? "text-xs" : "text-2xs"} flex flex-row gap-4 items-center`}><div className='w-1/2 text-center'>{props.awayTeam}</div><img className="size-[40px]" src={props.awayTeamImage ? props.awayTeamImage : "https://placehold.co/40x40"}></img></div>
             </div>
             <Link className={`w-2/5 md:w-full ${props.size == "normal" ? "text-xs" : "text-2xs"} ${user ? "" : "md:col-span-2"} py-2 rounded bg-blue-500 hover:bg-blue-400 text-white  ease-in-out text-center duration-150`} to={`/games/${props.id}`}>More Info</Link>
-            <Link to={`/score/${props.id}`} className={`w-2/5  px-1 py-2 bg-orange-400 rounded text-white text-nowrap ${props.size == "normal" ? "text-xs" : "text-2xs"} hover:bg-orange-300 flex flex-row items-center gap-1 justify-center ${user && user.role == "admin" ? "md:w-full md:col-span-2" : "hidden "}`}><div>Score game</div><RiArrowRightCircleLine size={15} /></Link>
+            <Link to={props.status === "scheduled" ? `/score/${props.id}/roster` : `/score/${props.id}`} className={`w-2/5  px-1 py-2 bg-orange-400 rounded text-white text-nowrap ${props.size == "normal" ? "text-xs" : "text-2xs"} hover:bg-orange-300 flex flex-row items-center gap-1 justify-center ${user && user.role == "admin" ? "md:w-full md:col-span-2" : "hidden "}`}><div>Score game</div><RiArrowRightCircleLine size={15} /></Link>
         </div>
     )
 }

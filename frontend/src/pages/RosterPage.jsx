@@ -9,7 +9,12 @@ export default function RosterPage() {
             <Link className="rounded font-semibold bg-accent_2 hover:bg-accent_3 text-white drop-shadow-lg h-fit p-2" to={".."} relative="path">Back</Link>
             <Roster team={game.data.homeTeam} tournament={game.data.tournament} homeAway="HOME" />
             <Roster team={game.data.awayTeam} tournament={game.data.tournament} homeAway="AWAY" />
-            <Link className="rounded font-semibold bg-blue-500 hover:bg-blue-400 text-white drop-shadow-lg h-fit p-2" to={".."} relative="path">Save</Link>
+            <Link onClick={() => {
+                fetch(`http://localhost:6363/game/${id}/start`, {
+                    method: "POST"
+
+                });
+            }} className={`${game.data.status === "scheduled" ? "" : "hidden"} rounded font-semibold bg-blue-500 hover:bg-blue-400 text-white drop-shadow-lg h-fit p-2`} to={".."} relative="path">{game.data.status == "scheduled" ? "Start" : ""}</Link>
         </div>
     }</>)
 }

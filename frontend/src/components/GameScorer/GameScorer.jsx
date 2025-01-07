@@ -23,7 +23,7 @@ export default function GameScorer() {
     const { id } = useParams();
     const [situationOption, setSituationOption] = useState("");
     const [points, setPoints] = useState({
-        home: Array(9).fill("X"), away: Array(9).fill("X")
+        home: [], away: []
     });
     const [menuOption, setMenuOption] = useState(0);
     const clearOption = () => {
@@ -35,11 +35,13 @@ export default function GameScorer() {
         }
     };
     const [battingTurn, setBattingTurn] = useState(1);
-    const [oldBattingTurn, setOldBattingTurn] = useState(1);
+    const [homeBattingTurn, setHomeBattingTurn] = useState(1);
+    const [awayBattingTurn, setAwayBattingTurn] = useState(1);
     const [roster, setRoster] = useState([]);
     const game = useSWR(`http://localhost:6363/game/${id}`, (url) => fetch(url).then((res) => res.json()));
     const homeRosterData = useSWR(`http://localhost:6363/game/team/roster/?game_id=${id}&home_away=HOME`, (url) => fetch(url).then((res) => res.json()));
     const awayRosterData = useSWR(`http://localhost:6363/game/team/roster/?game_id=${id}&home_away=AWAY`, (url) => fetch(url).then((res) => res.json()));
+    const situationsData = useSWR(`http://localhost:6363/game/${id}/situations`, (url) => fetch(url).then((res) => res.json()));
     const [homeRoster, setHomeRoster] = useState([
         // { id: 121, battingOrder: 5, uniformNumber: 55, firstName: "Nikolay", lastName: "Mutafchiev", position: "CF" },
         // { id: 122, battingOrder: 2, uniformNumber: 12, firstName: "Ivan", lastName: "Petrov", position: "1B" },
@@ -81,6 +83,21 @@ export default function GameScorer() {
     const [isSituationReady, setIsSituationReady] = useState(null);
     const nextBatter = () => {
         const newBatterTurn = battingTurn >= 9 ? 1 : battingTurn + 1;
+        if (inningHalf == "UP")
+            setAwayBattingTurn(newBatterTurn);
+        else
+            setHomeBattingTurn(newBatterTurn);
+        fetch(`http://localhost:6363/game/${id}/change_batting_turn`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                homeAway: inningHalf == "UP" ? "AWAY" : "HOME",
+                battingTurn: newBatterTurn
+            })
+
+        });
         setBattingTurn(newBatterTurn);
         setOffense({ batter: roster.filter((player) => player.battingOrder == newBatterTurn)[0], firstBaseRunner: offense.firstBaseRunner, secondBaseRunner: offense.secondBaseRunner, thirdBaseRunner: offense.thirdBaseRunner })
     };
@@ -119,8 +136,8 @@ export default function GameScorer() {
         "9": "RF"
     }
     //TODO fix roster fetch
-    const [inning, setInning] = useState(1);
-    const [inningHalf, setInningHalf] = useState("UP");
+    const [inning, setInning] = useState(null);
+    const [inningHalf, setInningHalf] = useState(null);
     const [offense, setOffense] = useState({
         batter: null,
         firstBaseRunner: null,
@@ -134,6 +151,33 @@ export default function GameScorer() {
             setAwayRoster(awayRosterData.data);
         console.log(homeRosterData.data)
     }, [homeRosterData.data, awayRosterData.data]);
+    useEffect(() => {
+        if (situationsData.data) {
+            let newSituations = situationsData.data;
+            newSituations = newSituations.sort((a, b) => b.id - a.id);
+            console.log(newSituations)
+            setSituations(newSituations);
+        }
+        console.log(situationsData.data)
+    }, [situationsData.data]);
+    useEffect(() => {
+        if (game.data) {
+            setInning(game.data.inning);
+            setInningHalf(game.data.inningHalf);
+
+            setHomeBattingTurn(game.data.homeBattingTurn);
+            setAwayBattingTurn(game.data.awayBattingTurn);
+            if (game.data.inningHalf == "UP")
+                setBattingTurn(game.data.awayBattingTurn);
+            else
+                setBattingTurn(game.data.homeBattingTurn);
+            setOuts(game.data.outs);
+            setHomePoints(game.data.homeResult);
+            setAwayPoints(game.data.awayResult);
+            setPoints(game.data.pointsByInning);
+        }
+
+    }, [game.data])
     const [defense, setDefense] = useState(
         {
             pitcher: {
@@ -174,16 +218,56 @@ export default function GameScorer() {
     const incrementOuts = () => {
         if (outs + 1 == 3) {
             setOuts(3);
+            fetch(`http://localhost:6363/game/${id}/change_outs`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    outs: 0
+                })
+
+            });
             if (inningHalf == "DOWN")
                 setInning(inning + 1);
             setInningHalf(inningHalf == "UP" ? "DOWN" : "UP");
+            fetch(`http://localhost:6363/game/${id}/change_inning`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+
+            });
         }
-        else
+        else {
+            fetch(`http://localhost:6363/game/${id}/change_outs`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    outs: outs + 1
+                })
+
+            });
             setOuts(outs + 1);
+        }
     }
     const situationAdder = () => {
         const newOuts = outs;
-        setSituations([{ batter: currentSituation.batter, inning: currentSituation.inning, inningHalf: currentSituation.inningHalf, outs: newOuts, situation: currentSituation.situation, runners: runnersSituations, runs: runnersSituations.filter((runner) => runner.finalBase == "Home").length }, ...situations]);
+        setSituations([{ id: Infinity, data: { batter: currentSituation.batter, inning: currentSituation.inning, inningHalf: currentSituation.inningHalf, outs: newOuts, situation: currentSituation.situation, defense: { assists: [], outs: [], errors: [] }, runners: runnersSituations, runs: runnersSituations.filter((runner) => runner.finalBase == "Home").length } }, ...situations]);
+        fetch(`http://localhost:6363/game/${id}/situation`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                data: { batter: currentSituation.batter, inning: currentSituation.inning, inningHalf: currentSituation.inningHalf, outs: newOuts, situation: currentSituation.situation, defense: { assists: [], outs: [], errors: [] }, runners: runnersSituations, runs: runnersSituations.filter((runner) => runner.finalBase == "Home").length }
+            })
+
+        });
+        if (newOuts === 3)
+            setOuts(0);
         setRunnersSituations([]);
         setCurrentSituation({});
 
@@ -300,47 +384,17 @@ export default function GameScorer() {
     };
 
     const switchTeams = () => {
-        setOuts(0);
-        clearCount();
-        const oldBatterTurn = oldBattingTurn;
-        let defenseRoster, attackRoster;
-        setOldBattingTurn(battingTurn);
-        if (inningHalf == "UP") {
-            const newPoints = points.away;
-            newPoints[inning - 1] = 0;
-            setPoints({ home: points.home, away: newPoints })
-            setHomeLOB(homeLOB + Object.entries(offense).filter(([position, player]) => position !== "batter" && player !== null).length);
 
-            setRoster(awayRoster);
-            attackRoster = awayRoster;
-            defenseRoster = homeRoster;
-        } else {
-            const newPoints = points.home;
-            newPoints[inning - 1] = 0;
-            setPoints({ home: newPoints, away: points.away })
-            setAwayLOB(awayLOB + Object.entries(offense).filter(([position, player]) => position != "batter" && player != null).length);
-            setRoster(homeRoster);
-            attackRoster = homeRoster;
-            defenseRoster = awayRoster;
+        clearCount();
+
+        if (inningHalf == "UP") {
+            setHomeLOB(homeLOB + Object.entries(offense).filter(([position, player]) => position !== "batter" && player !== null).length);
+            setBattingTurn(awayBattingTurn)
         }
-        const newDefense = {};
-        Object.keys(defense).forEach((position) => {
-            var newPositionPlayer = defenseRoster.filter((player) => player.position === positionTextToAbbreviations[position]);
-            if (newPositionPlayer.length == 0)
-                newDefense[position] = {};
-            else
-                newDefense[position] = newPositionPlayer[0];
-        });
-        console.log(newDefense);
-        setDefense(newDefense);
-        const newOffense = {
-            batter: attackRoster.filter((player) => player.battingOrder == oldBatterTurn)[0],
-            firstBaseRunner: null,
-            secondBaseRunner: null,
-            thirdBaseRunner: null
-        };
-        setBattingTurn(oldBatterTurn);
-        setOffense(newOffense);
+        else {
+            setAwayLOB(awayLOB + Object.entries(offense).filter(([position, player]) => position != "batter" && player != null).length);
+            setBattingTurn(homeBattingTurn)
+        }
     }
     //No update on fetched rosters
     const loadDefenseOffense = () => {
@@ -378,9 +432,9 @@ export default function GameScorer() {
         console.log(newOffense);
         setOffense(newOffense);
     }
-    useEffect(() => loadDefenseOffense(), [homeRoster, awayRoster])
-    useEffect((() => switchTeams()), [inningHalf]);
-
+    useEffect(() => loadDefenseOffense(), [homeRoster, awayRoster, battingTurn])
+    useEffect((() => { switchTeams(); loadDefenseOffense() }), [inningHalf]);
+    //TODO Fix the bug, when runner window is no opened, to delete all the runners, when changing batting turns 424-433
     const situationComponents = {
         "Hit": <GameScorerHitOptions close={clearOption} situationFunction={(bases, hitType) => {
             setRunnersSituations([...runnersSituations, { player: offense.batter, situation: hitType }])
@@ -530,12 +584,55 @@ export default function GameScorer() {
                     if (inningHalf == "UP") {
                         const newPoints = points.away;
                         newPoints[inning - 1] = points.away[inning - 1] + 1;
+
+                        fetch(`http://localhost:6363/game/${id}/change_points_by_inning`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                points: { home: points.home, away: newPoints }
+                            })
+
+                        });
                         setPoints({ home: points.home, away: newPoints })
+                        fetch(`http://localhost:6363/game_team/change_score/?game_id=${id}&home_away=AWAY`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                homeAway: "AWAY",
+                                points: 1
+                            })
+
+                        });
                         setAwayPoints(awayPoints + 1);
                     } else {
                         const newPoints = points.home;
                         newPoints[inning - 1] = points.home[inning - 1] + 1;
+                        fetch(`http://localhost:6363/game/${id}/change_points_by_inning`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                points: { home: newPoints, away: points.away }
+                            })
+
+                        });
                         setPoints({ home: newPoints, away: points.away })
+                        fetch(`http://localhost:6363/game_team/change_score/?game_id=${id}&home_away=HOME`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                homeAway: "HOME",
+                                points: 1
+                            })
+
+                        });
                         setHomePoints(homePoints + 1);
 
                     }
@@ -559,14 +656,43 @@ export default function GameScorer() {
             incrementOuts={() => {
                 if (outs + 1 == 3) {
                     setOuts(3);
+                    fetch(`http://localhost:6363/game/${id}/change_outs`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            outs: 0
+                        })
+
+                    });
+                    addSituation("");
                     setSituationOption("");
                     setIsSituationReady(true);
-                    if (inningHalf == "DOWN")
+                    if (inningHalf == "DOWN") {
                         setInning(inning + 1);
+                    }
                     setInningHalf(inningHalf == "UP" ? "DOWN" : "UP");
+                    fetch(`http://localhost:6363/game/${id}/change_inning`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        }
+                    });
                 }
-                else
+                else {
                     setOuts(outs + 1);
+                    fetch(`http://localhost:6363/game/${id}/change_outs`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            outs: outs + 1
+                        })
+
+                    });
+                }
             }
             } />,
         "More": <GameScorerMoreOptions close={clearOption}
@@ -601,289 +727,290 @@ export default function GameScorer() {
     }
     return (
         <>
-            <div className="w-full h-full flex flex-row">
-                <div className="w-7/12 h-full flex flex-col bg-white">
-                    <div className="h-fit w-full flex flex-row p-2 shadow-md">
-                        <div className="w-1/5 flex flex-col bg-gray-100">
-                            <div className="h-1/2 flex flex-row items-center justify-between p-2">
-                                <div className="flex flex-row items-center font-semibold gap-2">
-                                    {game.data && <> <img className="size-[25px]" src={game.data.awayTeam.image ? game.data.awayTeam.image : " https://placehold.co/25x25"}>
-                                    </img>
-                                        <div>{game.data.awayTeam.tlc}</div></>}
-                                </div>
-                                <div className="font-semibold text-lg">
-                                    {awayPoints}
-                                </div>
-                            </div>
-                            <div className="h-1/2 flex flex-row items-center justify-between p-2">
-                                <div className="flex flex-row items-center font-semibold gap-2">
-                                    {game.data && <> <img className="size-[25px]" src={game.data.homeTeam.image ? game.data.homeTeam.image : " https://placehold.co/25x25"}>
-                                    </img>
-                                        <div>{game.data.homeTeam.tlc}</div></>}
-                                </div>
-                                <div className="font-semibold text-lg">
-                                    {homePoints}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="bg-gray-200 flex flex-col w-1/4 text-sm font-semibold">
-                            {Object.keys(defense.pitcher).length != 0 &&
-                                < div className="h-1/2 flex flex-row items-center justify-between p-2">
-                                    {defense.pitcher.player && <div>
-                                        {defense.pitcher.player.lastName}
-                                    </div>}
-                                    <div>
-                                        P: 12
-                                    </div>
-                                </div>
-                            }
-                            {offense.batter &&
+            {game.data && game.data.status === "live" &&
+                <div className="w-full md:max-h-[90vh]  min-h-[90vh] flex flex-col md:flex-row">
+                    <div className="md:w-7/12  flex flex-col bg-white">
+                        <div className="h-fit w-full flex flex-row p-2 shadow-md">
+                            <div className="w-1/5 flex flex-col bg-gray-100">
                                 <div className="h-1/2 flex flex-row items-center justify-between p-2">
-
-                                    <div>
-                                        {battingTurn}. {offense.batter.player ? offense.batter.player.lastName : ""}
+                                    <div className="flex flex-row items-center font-semibold gap-2">
+                                        {game.data && <> <img className="size-[25px]" src={game.data.awayTeam.image ? game.data.awayTeam.image : " https://placehold.co/25x25"}>
+                                        </img>
+                                            <div>{game.data.awayTeam.tlc}</div></>}
                                     </div>
-                                    <div>
-                                        1 for 1
-                                    </div>
-                                </div>}
-                        </div>
-                        <div className="flex-1 h-full flex flex-row">
-                            <div className="relative bg-gray-400 w-1/5 ">
-                                <div className="mt-4 flex flex-row  items-center justify-center">
-                                    <div className={`${offense.thirdBaseRunner ? "bg-yellow-400" : "border-2 border-yellow-400"} size-4 rotate-45 items-center justify-center`}>
-                                    </div>
-                                    <div className={`${offense.secondBaseRunner ? "bg-yellow-400" : "border-2 border-yellow-400"} mb-8 size-4 rotate-45 items-center justify-center`}>
-                                    </div>
-                                    <div className={`${offense.firstBaseRunner ? "bg-yellow-400" : "border-2 border-yellow-400"} size-4 rotate-45 items-center justify-center`}>
+                                    <div className="font-semibold text-lg">
+                                        {awayPoints}
                                     </div>
                                 </div>
-                                <div className="flex flex-row justify-center text-yellow-400">
-                                    <GoDotFill size={15} className={`${outs > 0 ? "visible" : "invisible"}`} />
-                                    <GoDotFill size={15} className={`${outs > 1 ? "visible" : "invisible"}`} />
-                                </div>
-
-                            </div>
-                            <div className="w-[12%] bg-blue-400 text-white flex flex-col items-center justify-around font-semibold">
-                                <div className=" flex flex-row items-center">
-                                    {inning} {inningHalf == "UP" ? <FaCaretUp /> : <FaCaretDown />}
-                                </div>
-                                <div className="flex flex-row">
-                                    {ballCount}-{strikeCount}
+                                <div className="h-1/2 flex flex-row items-center justify-between p-2">
+                                    <div className="flex flex-row items-center font-semibold gap-2">
+                                        {game.data && <> <img className="size-[25px]" src={game.data.homeTeam.image ? game.data.homeTeam.image : " https://placehold.co/25x25"}>
+                                        </img>
+                                            <div>{game.data.homeTeam.tlc}</div></>}
+                                    </div>
+                                    <div className="font-semibold text-lg">
+                                        {homePoints}
+                                    </div>
                                 </div>
                             </div>
-                            <div className="flex flex-1 px-2">
-                                <table className="w-full table-auto  text-xs">
-                                    <thead className="border-b-[1px] border-gray-500">
-                                        <tr>
-                                            {["Team", 1, 2, 3, 4, 5, 6, 7, 8, 9, "R", "H", "E", "LOB"].map((value) => <th className="p-1 font-bold">{value}</th>)}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {game.data && <>
+                            <div className="bg-gray-200 flex flex-col w-1/4 text-sm font-semibold">
+                                {Object.keys(defense.pitcher).length != 0 &&
+                                    < div className="h-1/2 flex flex-row items-center justify-between p-2">
+                                        {defense.pitcher.player && <div>
+                                            {defense.pitcher.player.lastName}
+                                        </div>}
+                                        <div>
+                                            P: 12
+                                        </div>
+                                    </div>
+                                }
+                                {offense.batter &&
+                                    <div className="h-1/2 flex flex-row items-center justify-between p-2">
+
+                                        <div>
+                                            {battingTurn}. {offense.batter.player ? offense.batter.player.lastName : ""}
+                                        </div>
+                                        <div>
+                                            1 for 1
+                                        </div>
+                                    </div>}
+                            </div>
+                            <div className="flex-1 h-full flex flex-row">
+                                <div className="relative bg-gray-400 w-1/5 ">
+                                    <div className="mt-4 flex flex-row  items-center justify-center">
+                                        <div className={`${offense.thirdBaseRunner ? "bg-yellow-400" : "border-2 border-yellow-400"} size-4 rotate-45 items-center justify-center`}>
+                                        </div>
+                                        <div className={`${offense.secondBaseRunner ? "bg-yellow-400" : "border-2 border-yellow-400"} mb-8 size-4 rotate-45 items-center justify-center`}>
+                                        </div>
+                                        <div className={`${offense.firstBaseRunner ? "bg-yellow-400" : "border-2 border-yellow-400"} size-4 rotate-45 items-center justify-center`}>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-row justify-center text-yellow-400">
+                                        <GoDotFill size={15} className={`${outs > 0 ? "visible" : "invisible"}`} />
+                                        <GoDotFill size={15} className={`${outs > 1 ? "visible" : "invisible"}`} />
+                                    </div>
+
+                                </div>
+                                <div className="w-[12%] bg-blue-400 text-white flex flex-col items-center justify-around font-semibold">
+                                    <div className=" flex flex-row items-center">
+                                        {inning} {inningHalf == "UP" ? <FaCaretUp /> : <FaCaretDown />}
+                                    </div>
+                                    <div className="flex flex-row">
+                                        {ballCount}-{strikeCount}
+                                    </div>
+                                </div>
+                                <div className="flex flex-1 px-2">
+                                    <table className="w-full table-auto  text-xs">
+                                        <thead className="border-b-[1px] border-gray-500">
                                             <tr>
-                                                {[game.data.awayTeam.tlc, ...points.away, awayPoints, awayHits, awayErrors, awayLOB].map((value) => <td className="text-center font-semibold text-2xs">{value}</td>)}
+                                                {["Team", 1, 2, 3, 4, 5, 6, 7, 8, 9, "R", "H", "E", "LOB"].map((value) => <th className="p-1 font-bold">{value}</th>)}
                                             </tr>
-                                            <tr>
-                                                {[game.data.homeTeam.tlc, ...points.home, homePoints, homeHits, homeErrors, homeLOB].map((value) => <td className="text-center font-semibold text-2xs">{value}</td>)}
-                                            </tr></>
-                                        }
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {game.data && <>
+                                                <tr>
+                                                    {[game.data.awayTeam.tlc, ...points.away, awayPoints, awayHits, awayErrors, awayLOB].map((value) => <td className="text-center font-semibold text-2xs">{value}</td>)}
+                                                </tr>
+                                                <tr>
+                                                    {[game.data.homeTeam.tlc, ...points.home, homePoints, homeHits, homeErrors, homeLOB].map((value) => <td className="text-center font-semibold text-2xs">{value}</td>)}
+                                                </tr></>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="flex-1 flex flex-row  items-center justify-center ">
-                        <div className="w-[71%]  grid grid-cols-[repeat(30,minmax(0,1fr))] text-white font-semibold">
-                            <div style={{ gridColumn: "span 14/ span 14" }}></div>
-                            <FieldCell player={defense.centerFielder} takenPlayers={takenPlayers}
-                                setPlayer={(oldValue, newValue) => {
-                                    let updatedTakenPlayers = takenPlayers;
-                                    //асинхронен проблем с useState
-                                    if (oldValue !== -1) {
-                                        updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
-                                        setTakenPlayers(updatedTakenPlayers);
+                        <div className="flex-1 flex flex-row  items-center justify-center ">
+                            <div className="w-[71%]  grid grid-cols-[repeat(30,minmax(0,1fr))] text-white font-semibold">
+                                <div style={{ gridColumn: "span 14/ span 14" }}></div>
+                                <FieldCell player={defense.centerFielder} takenPlayers={takenPlayers}
+                                    setPlayer={(oldValue, newValue) => {
+                                        let updatedTakenPlayers = takenPlayers;
+                                        //асинхронен проблем с useState
+                                        if (oldValue !== -1) {
+                                            updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
+                                            setTakenPlayers(updatedTakenPlayers);
+                                        }
+                                        if (newValue !== -1)
+                                            setTakenPlayers([...updatedTakenPlayers, newValue]);
                                     }
-                                    if (newValue !== -1)
-                                        setTakenPlayers([...updatedTakenPlayers, newValue]);
-                                }
-                                } />
-                            <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
-                            <div style={{ gridColumn: "span 2/ span 2" }}></div>
-                            <FieldCell player={defense.leftFielder} takenPlayers={takenPlayers}
-                                setPlayer={(oldValue, newValue) => {
-                                    let updatedTakenPlayers = takenPlayers;
-                                    //асинхронен проблем с useState
-                                    if (oldValue !== -1) {
-                                        updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
-                                        setTakenPlayers(updatedTakenPlayers);
+                                    } />
+                                <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
+                                <div style={{ gridColumn: "span 2/ span 2" }}></div>
+                                <FieldCell player={defense.leftFielder} takenPlayers={takenPlayers}
+                                    setPlayer={(oldValue, newValue) => {
+                                        let updatedTakenPlayers = takenPlayers;
+                                        //асинхронен проблем с useState
+                                        if (oldValue !== -1) {
+                                            updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
+                                            setTakenPlayers(updatedTakenPlayers);
+                                        }
+                                        if (newValue !== -1)
+                                            setTakenPlayers([...updatedTakenPlayers, newValue]);
                                     }
-                                    if (newValue !== -1)
-                                        setTakenPlayers([...updatedTakenPlayers, newValue]);
-                                }
-                                } />
-                            <div style={{ gridColumn: "span 22/ span 2" }}></div>
-                            <FieldCell player={defense.rightFielder} takenPlayers={takenPlayers}
-                                setPlayer={(oldValue, newValue) => {
-                                    let updatedTakenPlayers = takenPlayers;
-                                    //асинхронен проблем с useState
-                                    if (oldValue !== -1) {
-                                        updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
-                                        setTakenPlayers(updatedTakenPlayers);
+                                    } />
+                                <div style={{ gridColumn: "span 22/ span 2" }}></div>
+                                <FieldCell player={defense.rightFielder} takenPlayers={takenPlayers}
+                                    setPlayer={(oldValue, newValue) => {
+                                        let updatedTakenPlayers = takenPlayers;
+                                        //асинхронен проблем с useState
+                                        if (oldValue !== -1) {
+                                            updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
+                                            setTakenPlayers(updatedTakenPlayers);
+                                        }
+                                        if (newValue !== -1)
+                                            setTakenPlayers([...updatedTakenPlayers, newValue]);
                                     }
-                                    if (newValue !== -1)
-                                        setTakenPlayers([...updatedTakenPlayers, newValue]);
-                                }
-                                } />
-                            <div style={{ gridColumn: "span 2/ span 2" }}></div>
+                                    } />
+                                <div style={{ gridColumn: "span 2/ span 2" }}></div>
 
-                            <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
-                            <div style={{ gridColumn: "span 10/ span 10" }}></div>
-                            <FieldCell player={defense.shortstop} takenPlayers={takenPlayers}
-                                setPlayer={(oldValue, newValue) => {
-                                    let updatedTakenPlayers = takenPlayers;
-                                    //асинхронен проблем с useState
-                                    if (oldValue !== -1) {
-                                        updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
-                                        setTakenPlayers(updatedTakenPlayers);
+                                <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
+                                <div style={{ gridColumn: "span 10/ span 10" }}></div>
+                                <FieldCell player={defense.shortstop} takenPlayers={takenPlayers}
+                                    setPlayer={(oldValue, newValue) => {
+                                        let updatedTakenPlayers = takenPlayers;
+                                        //асинхронен проблем с useState
+                                        if (oldValue !== -1) {
+                                            updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
+                                            setTakenPlayers(updatedTakenPlayers);
+                                        }
+                                        if (newValue !== -1)
+                                            setTakenPlayers([...updatedTakenPlayers, newValue]);
                                     }
-                                    if (newValue !== -1)
-                                        setTakenPlayers([...updatedTakenPlayers, newValue]);
-                                }
-                                } />
-                            <div style={{ gridColumn: "span 2/ span 2" }}></div>
-                            <div onClick={() => { if (offense.secondBaseRunner) { setRunnerWindowCount(1); setRunnersToMove([{ oldBasePosition: "2B", newBasePosition: "2B", player: offense.secondBaseRunner }]); setSituationOption("Runner"); } }} className={`${offense.secondBaseRunner ? "bg-accent_1" : "border-4 border-accent_1"} col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md`}>
-                                {offense.secondBaseRunner && <Tooltip
-                                    title={<div className="text-xs">{offense.secondBaseRunner.player.firstName} {offense.secondBaseRunner.player.lastName}</div>}
-                                    arrow
-                                    placement='top'
-                                    slots={{
-                                        transition: Zoom,
-                                    }}
+                                    } />
+                                <div style={{ gridColumn: "span 2/ span 2" }}></div>
+                                <div onClick={() => { if (offense.secondBaseRunner) { setRunnerWindowCount(1); setRunnersToMove([{ oldBasePosition: "2B", newBasePosition: "2B", player: offense.secondBaseRunner }]); setSituationOption("Runner"); } }} className={`${offense.secondBaseRunner ? "bg-accent_1" : "border-4 border-accent_1"} col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md`}>
+                                    {offense.secondBaseRunner && <Tooltip
+                                        title={<div className="text-xs">{offense.secondBaseRunner.player.firstName} {offense.secondBaseRunner.player.lastName}</div>}
+                                        arrow
+                                        placement='top'
+                                        slots={{
+                                            transition: Zoom,
+                                        }}
 
-                                >
-                                    {offense.secondBaseRunner.uniformNumber}
-                                </Tooltip>
-                                }
-                            </div>
-                            <div style={{ gridColumn: "span 2/ span 2" }}></div>
-                            <FieldCell player={defense.secondBaseman} takenPlayers={takenPlayers}
-                                setPlayer={(oldValue, newValue) => {
-                                    let updatedTakenPlayers = takenPlayers;
-                                    //асинхронен проблем с useState
-                                    if (oldValue !== -1) {
-                                        updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
-                                        setTakenPlayers(updatedTakenPlayers);
+                                    >
+                                        {offense.secondBaseRunner.uniformNumber}
+                                    </Tooltip>
                                     }
-                                    if (newValue !== -1)
-                                        setTakenPlayers([...updatedTakenPlayers, newValue]);
-                                }
-                                } />
-                            <div style={{ gridColumn: "span 10/ span 10" }}></div>
+                                </div>
+                                <div style={{ gridColumn: "span 2/ span 2" }}></div>
+                                <FieldCell player={defense.secondBaseman} takenPlayers={takenPlayers}
+                                    setPlayer={(oldValue, newValue) => {
+                                        let updatedTakenPlayers = takenPlayers;
+                                        //асинхронен проблем с useState
+                                        if (oldValue !== -1) {
+                                            updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
+                                            setTakenPlayers(updatedTakenPlayers);
+                                        }
+                                        if (newValue !== -1)
+                                            setTakenPlayers([...updatedTakenPlayers, newValue]);
+                                    }
+                                    } />
+                                <div style={{ gridColumn: "span 10/ span 10" }}></div>
 
-                            <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
-                            <div style={{ gridColumn: "span 7/ span 7" }}></div>
-                            <FieldCell player={defense.thirdBaseman} takenPlayers={takenPlayers}
-                                setPlayer={(oldValue, newValue) => {
-                                    let updatedTakenPlayers = takenPlayers;
-                                    //асинхронен проблем с useState
-                                    if (oldValue !== -1) {
-                                        updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
-                                        setTakenPlayers(updatedTakenPlayers);
+                                <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
+                                <div style={{ gridColumn: "span 7/ span 7" }}></div>
+                                <FieldCell player={defense.thirdBaseman} takenPlayers={takenPlayers}
+                                    setPlayer={(oldValue, newValue) => {
+                                        let updatedTakenPlayers = takenPlayers;
+                                        //асинхронен проблем с useState
+                                        if (oldValue !== -1) {
+                                            updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
+                                            setTakenPlayers(updatedTakenPlayers);
+                                        }
+                                        if (newValue !== -1)
+                                            setTakenPlayers([...updatedTakenPlayers, newValue]);
                                     }
-                                    if (newValue !== -1)
-                                        setTakenPlayers([...updatedTakenPlayers, newValue]);
-                                }
-                                } />
-                            <div style={{ gridColumn: "span 12/ span 12" }}></div>
-                            <FieldCell player={defense.firstBaseman} takenPlayers={takenPlayers}
-                                setPlayer={(oldValue, newValue) => {
-                                    let updatedTakenPlayers = takenPlayers;
-                                    //асинхронен проблем с useState
-                                    if (oldValue !== -1) {
-                                        updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
-                                        setTakenPlayers(updatedTakenPlayers);
+                                    } />
+                                <div style={{ gridColumn: "span 12/ span 12" }}></div>
+                                <FieldCell player={defense.firstBaseman} takenPlayers={takenPlayers}
+                                    setPlayer={(oldValue, newValue) => {
+                                        let updatedTakenPlayers = takenPlayers;
+                                        //асинхронен проблем с useState
+                                        if (oldValue !== -1) {
+                                            updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
+                                            setTakenPlayers(updatedTakenPlayers);
+                                        }
+                                        if (newValue !== -1)
+                                            setTakenPlayers([...updatedTakenPlayers, newValue]);
                                     }
-                                    if (newValue !== -1)
-                                        setTakenPlayers([...updatedTakenPlayers, newValue]);
-                                }
-                                } />
-                            <div style={{ gridColumn: "span 7/ span 7" }}></div>
+                                    } />
+                                <div style={{ gridColumn: "span 7/ span 7" }}></div>
 
-                            <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
-                            <div style={{ gridColumn: "span 6/ span 6" }}></div>
-                            <div onClick={() => {
-                                if (offense.thirdBaseRunner) { setRunnerWindowCount(1); setRunnersToMove([{ oldBasePosition: "3B", newBasePosition: "3B", player: offense.thirdBaseRunner }]); setSituationOption("Runner"); }
-                            }} className={`${offense.thirdBaseRunner ? "bg-accent_1" : "border-4 border-accent_1"} col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md`}>
-                                {offense.thirdBaseRunner && <Tooltip
-                                    title={<div className="text-xs">{offense.thirdBaseRunner.player.firstName} {offense.thirdBaseRunner.player.lastName}</div>}
-                                    arrow
-                                    placement='top'
-                                    slots={{
-                                        transition: Zoom,
-                                    }}
-                                >
-                                    {offense.thirdBaseRunner.uniformNumber}
-                                </Tooltip>}</div>
-                            <div style={{ gridColumn: "span 6/ span 6" }}></div>
-                            <FieldCell player={defense.pitcher} takenPlayers={takenPlayers}
-                                setPlayer={(oldValue, newValue) => {
-                                    let updatedTakenPlayers = takenPlayers;
-                                    //асинхронен проблем с useState
-                                    if (oldValue !== -1) {
-                                        updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
-                                        setTakenPlayers(updatedTakenPlayers);
+                                <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
+                                <div style={{ gridColumn: "span 6/ span 6" }}></div>
+                                <div onClick={() => {
+                                    if (offense.thirdBaseRunner) { setRunnerWindowCount(1); setRunnersToMove([{ oldBasePosition: "3B", newBasePosition: "3B", player: offense.thirdBaseRunner }]); setSituationOption("Runner"); }
+                                }} className={`${offense.thirdBaseRunner ? "bg-accent_1" : "border-4 border-accent_1"} col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md`}>
+                                    {offense.thirdBaseRunner && <Tooltip
+                                        title={<div className="text-xs">{offense.thirdBaseRunner.player.firstName} {offense.thirdBaseRunner.player.lastName}</div>}
+                                        arrow
+                                        placement='top'
+                                        slots={{
+                                            transition: Zoom,
+                                        }}
+                                    >
+                                        {offense.thirdBaseRunner.uniformNumber}
+                                    </Tooltip>}</div>
+                                <div style={{ gridColumn: "span 6/ span 6" }}></div>
+                                <FieldCell player={defense.pitcher} takenPlayers={takenPlayers}
+                                    setPlayer={(oldValue, newValue) => {
+                                        let updatedTakenPlayers = takenPlayers;
+                                        //асинхронен проблем с useState
+                                        if (oldValue !== -1) {
+                                            updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
+                                            setTakenPlayers(updatedTakenPlayers);
+                                        }
+                                        if (newValue !== -1)
+                                            setTakenPlayers([...updatedTakenPlayers, newValue]);
                                     }
-                                    if (newValue !== -1)
-                                        setTakenPlayers([...updatedTakenPlayers, newValue]);
-                                }
-                                } />
-                            <div style={{ gridColumn: "span 6/ span 6" }}></div>
-                            <div onClick={() => { if (offense.firstBaseRunner) { setRunnerWindowCount(1); setRunnersToMove([{ oldBasePosition: "1B", newBasePosition: "1B", player: offense.firstBaseRunner }]); setSituationOption("Runner"); } }} className={`${offense.firstBaseRunner ? "bg-accent_1" : "border-4 border-accent_1"} col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md`}>
-                                {offense.firstBaseRunner && <Tooltip
-                                    title={<div className="text-xs">{offense.firstBaseRunner.player.firstName} {offense.firstBaseRunner.player.lastName}</div>}
-                                    arrow
-                                    placement='top'
-                                    slots={{
-                                        transition: Zoom,
-                                    }}
-                                >
-                                    {offense.firstBaseRunner.uniformNumber}
-                                </Tooltip>}</div>
-                            <div style={{ gridColumn: "span 6/ span 6" }}></div>
+                                    } />
+                                <div style={{ gridColumn: "span 6/ span 6" }}></div>
+                                <div onClick={() => { if (offense.firstBaseRunner) { setRunnerWindowCount(1); setRunnersToMove([{ oldBasePosition: "1B", newBasePosition: "1B", player: offense.firstBaseRunner }]); setSituationOption("Runner"); } }} className={`${offense.firstBaseRunner ? "bg-accent_1" : "border-4 border-accent_1"} col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md`}>
+                                    {offense.firstBaseRunner && <Tooltip
+                                        title={<div className="text-xs">{offense.firstBaseRunner.player.firstName} {offense.firstBaseRunner.player.lastName}</div>}
+                                        arrow
+                                        placement='top'
+                                        slots={{
+                                            transition: Zoom,
+                                        }}
+                                    >
+                                        {offense.firstBaseRunner.uniformNumber}
+                                    </Tooltip>}</div>
+                                <div style={{ gridColumn: "span 6/ span 6" }}></div>
 
-                            <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
-                            <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
-                            <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
-                            <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
+                                <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
+                                <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
+                                <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
+                                <div className="size-4" style={{ gridColumn: "span 30/ span 30" }}></div>
 
-                            <div style={{ gridColumn: "span 11/ span 11" }}></div>
-                            <div className={`${offense.batter ? "bg-accent_1" : "border-4 border-accent_1"} col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md`}>
-                                {offense.batter && <Tooltip
-                                    title={<div className="text-xs">{offense.batter.player.firstName} {offense.batter.player.lastName}</div>}
-                                    arrow
-                                    placement='top'
-                                    slots={{
-                                        transition: Zoom,
-                                    }}
-                                >
-                                    {offense.batter.uniformNumber}
-                                </Tooltip>}</div>
-                            <div style={{ gridColumn: "span 1/ span 1" }}></div>
-                            <FieldCell player={defense.catcher} takenPlayers={takenPlayers}
-                                setPlayer={(oldValue, newValue) => {
-                                    let updatedTakenPlayers = takenPlayers;
-                                    //асинхронен проблем с useState
-                                    if (oldValue !== -1) {
-                                        updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
-                                        setTakenPlayers(updatedTakenPlayers);
+                                <div style={{ gridColumn: "span 11/ span 11" }}></div>
+                                <div className={`${offense.batter ? "bg-accent_1" : "border-4 border-accent_1"} col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md`}>
+                                    {offense.batter && <Tooltip
+                                        title={<div className="text-xs">{offense.batter.player.firstName} {offense.batter.player.lastName}</div>}
+                                        arrow
+                                        placement='top'
+                                        slots={{
+                                            transition: Zoom,
+                                        }}
+                                    >
+                                        {offense.batter.uniformNumber}
+                                    </Tooltip>}</div>
+                                <div style={{ gridColumn: "span 1/ span 1" }}></div>
+                                <FieldCell player={defense.catcher} takenPlayers={takenPlayers}
+                                    setPlayer={(oldValue, newValue) => {
+                                        let updatedTakenPlayers = takenPlayers;
+                                        //асинхронен проблем с useState
+                                        if (oldValue !== -1) {
+                                            updatedTakenPlayers = takenPlayers.filter((value) => value != oldValue);
+                                            setTakenPlayers(updatedTakenPlayers);
+                                        }
+                                        if (newValue !== -1)
+                                            setTakenPlayers([...updatedTakenPlayers, newValue]);
                                     }
-                                    if (newValue !== -1)
-                                        setTakenPlayers([...updatedTakenPlayers, newValue]);
-                                }
-                                } />
-                            <div style={{ gridColumn: "span 1/ span 1" }}></div>
-                            {/* <div className="bg-accent_1 col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md"><Tooltip
+                                    } />
+                                <div style={{ gridColumn: "span 1/ span 1" }}></div>
+                                {/* <div className="bg-accent_1 col-span-2 size-10 cursor-pointer content-center text-center rounded drop-shadow-md"><Tooltip
                                 title={<div className="text-xs">Nikolay Mutafchiev</div>}
                                 arrow
                                 placement='top'
@@ -893,127 +1020,133 @@ export default function GameScorer() {
                             >
                                 31
                             </Tooltip></div> */}
-                            <div style={{ gridColumn: "span 11/ span 11" }}></div>
+                                <div style={{ gridColumn: "span 11/ span 11" }}></div>
 
+                            </div>
                         </div>
+
+
                     </div>
+                    <div className="md:border-l-[1.5px] border-t-[1.5px] md:border-t-0  border-black md:w-5/12 flex flex-col  bg-gray-100">
+                        <div className="flex flex-row justify-between gap-2 text-white font-semibold text-xl mx-2 my-2 ">
+                            <Link to={"roster"} className="w-1/3 bg-cyan-600 hover:bg-cyan-500 text-center content-center rounded  py-1">
+                                ROSTERS
+                            </Link>
+                            <button className="w-1/3 bg-cyan-600 hover:bg-cyan-500 text-center content-center rounded py-1" onClick={() => setMenuOption(menuOption == 0 ? 1 : 0)}>
+                                {!menuOption ? "PLAY BY PLAY" : "SCORE MENU"}
+                            </button>
 
+                            <button className="px-2 py-1 bg-cyan-600 hover:bg-cyan-500  text-center content-center rounded " onClick={() => setMenuOption(2)}>
+                                <FiSettings size={20} />
+                            </button>
+                            <button className=" flex-1 text-center content-center rounded p-1 bg-fuchsia-600 hover:bg-fuchsia-700">SAVE</button>
+                        </div>
+                        {menuOption == 0 && <>
+                            <div className="flex flex-row border-2 min-h-[70px] max-h-[90px] justify-between items-center border-gray-300 rounded mx-2 p-3 bg-white drop-shadow-sm text-xs font-semibold ">
+                                {situations[0] && situations[0].data && <> <div className="flex flex-col w-4/5 gap-2">
+                                    <div className="flex flex-row  gap-6 ">
+                                        {situations[0].data.batter && <div>
+                                            Batter: #{situations[0].data.batter.uniformNumber} {situations[0].data.batter.player.firstName} {situations[0].data.batter.player.lastName}
+                                        </div>
+                                        }
+                                    </div>
+                                    <div className="text-2xs flex flex-row flex-wrap gap-x-1">
+                                        {situations[0].data.runners.map((runner) => <div>#{runner.player.uniformNumber} {runner.player.player.lastName} {runner.situation} {runner.finalBase}</div>)}
+                                    </div>
+                                </div>
+                                    <div className="flex flex-col gap-2 w-1/5">
+                                        <div className="flex flex-row justify-center">
+                                            {situations[0].data.inning} {situations[0].data.inningHalf == "UP" ? <FaCaretUp className="text-green-500" size={15} /> : <FaCaretDown className="text-red-500" size={15} />}
+                                        </div>
+                                        <div className="flex flex-row gap-2">
+                                            <div>
+                                                Runs: {situations[0].data.runs}
+                                            </div>
+                                            <div>
+                                                Outs: {situations[0].data.outs}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                                }
+                            </div>
+                            <div className="w-full h-full grid grid-cols-2 grid-rows-8 px-2 py-4 gap-x-3 gap-y-3 text-xl font-semibold text-white">
+                                <button className="bg-primary_2 hover:bg-primary_2_hover flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Hit")}><div>H</div><div>Hit</div></button>
+                                <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Groundout")}><div></div><div>Groundout</div></button>
+                                <button className="bg-primary_2 hover:bg-primary_2_hover  flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded"
+                                    onClick={() => {
+                                        setSituationOption("Walk")
+                                    }}
+                                ><div>BB</div><div>Walk</div></button>
+                                <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Flyout")}><div>F</div><div>Flyout</div></button>
+                                <button className="bg-primary_2 hover:bg-primary_2_hover  flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => {
+                                    setRunnersSituations([...runnersSituations, { player: offense.batter, situation: "Hit by pitch" }]);
+                                    addSituation("Hit by pitch");
+                                    moveRunners(1);
+                                    nextBatter();
+                                }}><div>HBP</div><div>Hit by pitch</div></button>
+                                <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Strikeout")}><div>K</div><div>Strikeout</div></button>
+                                <button className={`${!offense.firstBaseRunner || (!!offense.firstBaseRunner && outs == 2) ? "bg-primary_2 hover:bg-primary_2_hover" : "bg-primary_1 text-gray-400 pointer-events-none"}  flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded`} onClick={() => setSituationOption("Dropped 3rd")}><div></div><div>Dropped 3rd strike</div></button>
+                                <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Sac flyout")}><div>SF</div><div>Sacrifice fly</div></button>
+                                <button className="bg-yellow-500 hover:bg-yellow-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Fielder's choice")}><div>FC</div><div>Fielder's choice</div></button>
+                                <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Linedrive")}><div>L</div><div>Linedrive</div></button>
+                                <button className="bg-yellow-500 hover:bg-yellow-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded " onClick={() => setSituationOption("Error")}><div>E</div><div>Error</div></button>
+                                <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("GDP")}><div></div><div>GDP</div></button>
+                                <button className="bg-blue-500 hover:bg-blue-400 text-center place-content-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Quick")}>Quick</button>
 
-                </div>
-                <div className="border-l-[1.5px] border-black w-5/12 flex flex-col  bg-gray-100">
-                    <div className="flex flex-row justify-between gap-2 text-white font-semibold text-xl mx-2 my-2 ">
-                        <Link to={"roster"} className="w-1/3 bg-cyan-600 hover:bg-cyan-500 text-center content-center rounded  py-1">
-                            ROSTERS
-                        </Link>
-                        <button className="w-1/3 bg-cyan-600 hover:bg-cyan-500 text-center content-center rounded py-1" onClick={() => setMenuOption(menuOption == 0 ? 1 : 0)}>
-                            {!menuOption ? "PLAY BY PLAY" : "SCORE MENU"}
-                        </button>
-
-                        <button className="px-2 py-1 bg-cyan-600 hover:bg-cyan-500  text-center content-center rounded " onClick={() => setMenuOption(2)}>
-                            <FiSettings size={20} />
-                        </button>
-                        <button className=" flex-1 text-center content-center rounded p-1 bg-fuchsia-600 hover:bg-fuchsia-700">SAVE</button>
+                                <button className="bg-slate-500 hover:bg-slate-400 text-center place-content-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("More")}>More...</button>
+                                <div className="grid grid-cols-2 gap-x-1">
+                                    <button className="bg-primary_2 hover:bg-primary_2_hover  py-1 text-center place-content-center rounded text-base" onClick={() => {
+                                        if (ballCount == 3) {
+                                            setRunnersSituations([...runnersSituations, { player: offense.batter, situation: "Walk" }]);
+                                            addSituation("Walk");
+                                            moveRunners(1);
+                                            nextBatter();
+                                            clearCount();
+                                        }
+                                        else
+                                            setBallCount(ballCount + 1)
+                                    }}>Ball</button>
+                                    <button className="bg-yellow-500 hover:bg-yellow-400 py-1 text-center place-content-center rounded text-base" onClick={() => { if (strikeCount < 2) setStrikeCount(strikeCount + 1) }}>Foulball</button>
+                                </div>
+                                <div className="grid grid-cols-2 gap-x-1">
+                                    <button className="bg-red-500 hover:bg-red-400 py-1 text-center place-content-center rounded text-base" onClick={() => {
+                                        if (strikeCount == 2) {
+                                            setIsSituationReady(false);
+                                            setRunnersSituations([...runnersSituations, { player: offense.batter, situation: "Strikeout looking" }])
+                                            addSituation("Strikeout looking", true);
+                                            nextBatter();
+                                            incrementOuts();
+                                            clearCount();
+                                            setIsSituationReady(true);
+                                        }
+                                        else
+                                            setStrikeCount(strikeCount + 1)
+                                    }}>Called strike</button>
+                                    <button className="bg-red-500 hover:bg-red-400 py-1 text-center place-content-center rounded text-base" onClick={() => {
+                                        if (strikeCount == 2) {
+                                            setIsSituationReady(false);
+                                            setRunnersSituations([...runnersSituations, { player: offense.batter, situation: "Strikeout swinging" }])
+                                            addSituation("Strikeout swinging", true);
+                                            nextBatter();
+                                            incrementOuts();
+                                            clearCount();
+                                            setIsSituationReady(true);
+                                        }
+                                        else
+                                            setStrikeCount(strikeCount + 1)
+                                    }}>Swinging strike</button>
+                                </div>
+                            </div>
+                        </>}
+                        {menuOption == 1 && <GameScorerPlayByPlay situations={situations} />}
+                        {menuOption == 2 && <GameScorerSettings />}
                     </div>
-                    {menuOption == 0 && <>
-                        <div className="flex flex-row border-2 min-h-[70px] max-h-[90px] justify-between items-center border-gray-300 rounded mx-2 p-3 bg-white drop-shadow-sm text-xs font-semibold ">
-                            {situations[0] && <> <div className="flex flex-col w-4/5 gap-2">
-                                <div className="flex flex-row  gap-6 ">
-                                    {situations[0].batter && <div>
-                                        Batter: #{situations[0].batter.uniformNumber} {situations[0].batter.player.firstName} {situations[0].batter.player.lastName}
-                                    </div>
-                                    }
-                                </div>
-                                <div className="text-2xs flex flex-row flex-wrap gap-x-1">
-                                    {situations[0].runners.map((runner) => <div>#{runner.player.uniformNumber} {runner.player.player.lastName} {runner.situation} {runner.finalBase}</div>)}
-                                </div>
-                            </div>
-                                <div className="flex flex-col gap-2 w-1/5">
-                                    <div className="flex flex-row justify-center">
-                                        {situations[0].inning} {situations[0].inningHalf == "UP" ? <FaCaretUp className="text-green-500" size={15} /> : <FaCaretDown className="text-red-500" size={15} />}
-                                    </div>
-                                    <div className="flex flex-row gap-2">
-                                        <div>
-                                            Runs: {situations[0].runs}
-                                        </div>
-                                        <div>
-                                            Outs: {situations[0].outs}
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                            }
-                        </div>
-                        <div className="w-full h-full grid grid-cols-2 grid-rows-8 px-2 py-4 gap-x-3 gap-y-3 text-xl font-semibold text-white">
-                            <button className="bg-primary_2 hover:bg-primary_2_hover flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Hit")}><div>H</div><div>Hit</div></button>
-                            <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Groundout")}><div></div><div>Groundout</div></button>
-                            <button className="bg-primary_2 hover:bg-primary_2_hover  flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded"
-                                onClick={() => {
-                                    setSituationOption("Walk")
-                                }}
-                            ><div>BB</div><div>Walk</div></button>
-                            <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Flyout")}><div>F</div><div>Flyout</div></button>
-                            <button className="bg-primary_2 hover:bg-primary_2_hover  flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => {
-                                setRunnersSituations([...runnersSituations, { player: offense.batter, situation: "Hit by pitch" }]);
-                                addSituation("Hit by pitch");
-                                moveRunners(1);
-                            }}><div>HBP</div><div>Hit by pitch</div></button>
-                            <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Strikeout")}><div>K</div><div>Strikeout</div></button>
-                            <button className={`${!offense.firstBaseRunner || (!!offense.firstBaseRunner && outs == 2) ? "bg-primary_2 hover:bg-primary_2_hover" : "bg-primary_1 text-gray-400 pointer-events-none"}  flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded`} onClick={() => setSituationOption("Dropped 3rd")}><div></div><div>Dropped 3rd strike</div></button>
-                            <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Sac flyout")}><div>SF</div><div>Sacrifice fly</div></button>
-                            <button className="bg-yellow-500 hover:bg-yellow-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Fielder's choice")}><div>FC</div><div>Fielder's choice</div></button>
-                            <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Linedrive")}><div>L</div><div>Linedrive</div></button>
-                            <button className="bg-yellow-500 hover:bg-yellow-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded " onClick={() => setSituationOption("Error")}><div>E</div><div>Error</div></button>
-                            <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("GDP")}><div></div><div>GDP</div></button>
-                            <button className="bg-blue-500 hover:bg-blue-400 text-center place-content-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Quick")}>Quick</button>
-
-                            <button className="bg-slate-500 hover:bg-slate-400 text-center place-content-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("More")}>More...</button>
-                            <div className="grid grid-cols-2 gap-x-1">
-                                <button className="bg-primary_2 hover:bg-primary_2_hover  py-1 text-center place-content-center rounded text-base" onClick={() => {
-                                    if (ballCount == 3) {
-                                        setRunnersSituations([...runnersSituations, { player: offense.batter, situation: "Walk" }]);
-                                        addSituation("Walk");
-                                        moveRunners(1);
-                                    }
-                                    else
-                                        setBallCount(ballCount + 1)
-                                }}>Ball</button>
-                                <button className="bg-yellow-500 hover:bg-yellow-400 py-1 text-center place-content-center rounded text-base" onClick={() => { if (strikeCount < 2) setStrikeCount(strikeCount + 1) }}>Foulball</button>
-                            </div>
-                            <div className="grid grid-cols-2 gap-x-1">
-                                <button className="bg-red-500 hover:bg-red-400 py-1 text-center place-content-center rounded text-base" onClick={() => {
-                                    if (strikeCount == 2) {
-                                        setIsSituationReady(false);
-                                        setRunnersSituations([...runnersSituations, { player: offense.batter, situation: "Strikeout looking" }])
-                                        addSituation("Strikeout looking", true);
-                                        nextBatter();
-                                        incrementOuts();
-                                        clearCount();
-                                        setIsSituationReady(true);
-                                    }
-                                    else
-                                        setStrikeCount(strikeCount + 1)
-                                }}>Called strike</button>
-                                <button className="bg-red-500 hover:bg-red-400 py-1 text-center place-content-center rounded text-base" onClick={() => {
-                                    if (strikeCount == 2) {
-                                        setIsSituationReady(false);
-                                        setRunnersSituations([...runnersSituations, { player: offense.batter, situation: "Strikeout swinging" }])
-                                        addSituation("Strikeout swinging", true);
-                                        nextBatter();
-                                        incrementOuts();
-                                        clearCount();
-                                        setIsSituationReady(true);
-                                    }
-                                    else
-                                        setStrikeCount(strikeCount + 1)
-                                }}>Swinging strike</button>
-                            </div>
-                        </div>
-                    </>}
-                    {menuOption == 1 && <GameScorerPlayByPlay situations={situations} />}
-                    {menuOption == 2 && <GameScorerSettings />}
-                </div>
-            </div >
+                </div >
+            }
+            {game.data && game.data.status !== "live" && <div className="w-screen h-[60vh] text-4xl content-center text-center">Cannot score not started game!</div>}
             {situationOption !== "" && situationComponents[situationOption]
             }
+
         </>)
 }
