@@ -81,13 +81,13 @@ export default function GameScorer() {
     const [runnersSituations, setRunnersSituations] = useState([]);
     const [currentSituation, setCurrentSituation] = useState({});
     const [isSituationReady, setIsSituationReady] = useState(null);
-    const nextBatter = () => {
+    const nextBatter = async () => {
         const newBatterTurn = battingTurn >= 9 ? 1 : battingTurn + 1;
         if (inningHalf == "UP")
             setAwayBattingTurn(newBatterTurn);
         else
             setHomeBattingTurn(newBatterTurn);
-        fetch(`http://localhost:6363/game/${id}/change_batting_turn`, {
+        await fetch(`http://localhost:6363/game/${id}/change_batting_turn`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -99,7 +99,6 @@ export default function GameScorer() {
 
         });
         setBattingTurn(newBatterTurn);
-        setOffense({ batter: roster.filter((player) => player.battingOrder == newBatterTurn)[0], firstBaseRunner: offense.firstBaseRunner, secondBaseRunner: offense.secondBaseRunner, thirdBaseRunner: offense.thirdBaseRunner })
     };
 
     const positionTextToAbbreviations = {
@@ -175,6 +174,13 @@ export default function GameScorer() {
             setHomePoints(game.data.homeResult);
             setAwayPoints(game.data.awayResult);
             setPoints(game.data.pointsByInning);
+            const newOffense = {
+                batter: offense.batter,
+                firstBaseRunner: game.data.runners.firstBaseRunner,
+                secondBaseRunner: game.data.runners.secondBaseRunner,
+                thirdBaseRunner: game.data.runners.thirdBaseRunner
+            };
+            setOffense(newOffense);
         }
 
     }, [game.data])
@@ -215,10 +221,10 @@ export default function GameScorer() {
         setStrikeCount(0);
         setBallCount(0);
     }
-    const incrementOuts = () => {
+    const incrementOuts = async () => {
         if (outs + 1 == 3) {
             setOuts(3);
-            fetch(`http://localhost:6363/game/${id}/change_outs`, {
+            await fetch(`http://localhost:6363/game/${id}/change_outs`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -228,10 +234,26 @@ export default function GameScorer() {
                 })
 
             });
+            fetch(`http://localhost:6363/game/${id}/change_runners`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    runners: { "firstBaseRunner": null, "secondBaseRunner": null, "thirdBaseRunner": null }
+                })
+
+            });
+            setOffense({
+                batter: offense.batter,
+                firstBaseRunner: null,
+                secondBaseRunner: null,
+                thirdBaseRunner: null
+            });
             if (inningHalf == "DOWN")
                 setInning(inning + 1);
             setInningHalf(inningHalf == "UP" ? "DOWN" : "UP");
-            fetch(`http://localhost:6363/game/${id}/change_inning`, {
+            await fetch(`http://localhost:6363/game/${id}/change_inning`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -266,8 +288,9 @@ export default function GameScorer() {
             })
 
         });
-        if (newOuts === 3)
+        if (newOuts === 3) {
             setOuts(0);
+        }
         setRunnersSituations([]);
         setCurrentSituation({});
 
@@ -425,9 +448,9 @@ export default function GameScorer() {
         setDefense(newDefense);
         const newOffense = {
             batter: attackRoster.filter((player) => player.battingOrder == battingTurn)[0],
-            firstBaseRunner: null,
-            secondBaseRunner: null,
-            thirdBaseRunner: null
+            firstBaseRunner: offense.firstBaseRunner,
+            secondBaseRunner: offense.secondBaseRunner,
+            thirdBaseRunner: offense.thirdBaseRunner
         };
         console.log(newOffense);
         setOffense(newOffense);
@@ -449,6 +472,8 @@ export default function GameScorer() {
 
         }} />,
         "Quick": <GameScorerQuickOptions close={clearOption}
+            nextBatter={() => nextBatter()}
+            clearCount={() => clearCount()}
             incrementOuts={() => incrementOuts()}
             moveRunners={(bases) => moveRunners(bases)}
             addSituation={(situationCategory, situation) => { setRunnersSituations([...runnersSituations, { player: offense.batter, situation: situation, situationCategory: situationCategory }]); addSituation(situationCategory, situation, true) }} />,
@@ -572,7 +597,7 @@ export default function GameScorer() {
                 setIsSituationReady(true);
             }
         }} runner={runnersToMove[runnerWindowCount - 1]}
-            situationFunction={(player, situation, situationCategory, startBase, finalBase, isOut = false) => {
+            situationFunction={(player, situationCategory, situation, startBase, finalBase, isOut = false) => {
                 if (situation != "")
                     setRunnersSituations([...runnersSituations, { player: player, situationCategory: situationCategory, situation: situation, finalBase: finalBase, isOut: isOut }]);
                 const newOffense = { ...offense };
@@ -642,6 +667,16 @@ export default function GameScorer() {
                 }
 
                 setOffense(newOffense);
+                fetch(`http://localhost:6363/game/${id}/change_runners`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        runners: { "firstBaseRunner": newOffense.firstBaseRunner, "secondBaseRunner": newOffense.secondBaseRunner, "thirdBaseRunner": newOffense.thirdBaseRunner }
+                    })
+
+                });
             }
 
             }
@@ -665,6 +700,22 @@ export default function GameScorer() {
                             outs: 0
                         })
 
+                    });
+                    fetch(`http://localhost:6363/game/${id}/change_runners`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            runners: { "firstBaseRunner": null, "secondBaseRunner": null, "thirdBaseRunner": null }
+                        })
+
+                    });
+                    setOffense({
+                        batter: offense.batter,
+                        firstBaseRunner: null,
+                        secondBaseRunner: null,
+                        thirdBaseRunner: null
                     });
                     addSituation("", "");
                     setSituationOption("");
@@ -1090,7 +1141,7 @@ export default function GameScorer() {
                                 <button className="bg-yellow-500 hover:bg-yellow-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Fielder's choice")}><div>FC</div><div>Fielder's choice</div></button>
                                 <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Linedrive")}><div>L</div><div>Linedrive</div></button>
                                 <button className="bg-yellow-500 hover:bg-yellow-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded " onClick={() => setSituationOption("Error")}><div>E</div><div>Error</div></button>
-                                <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("GDP")}><div></div><div>GDP</div></button>
+                                <button className={`${outs < 2 ? "bg-red-500 hover:bg-red-400 transform transition-transform hover:scale-105" : "bg-red-700 text-gray-400 pointer-events-none"} flex flex-row px-2 justify-between items-center  rounded`} onClick={() => setSituationOption("GDP")}><div></div><div>GDP</div></button>
                                 <button className="bg-blue-500 hover:bg-blue-400 text-center place-content-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Quick")}>Quick</button>
 
                                 <button className="bg-slate-500 hover:bg-slate-400 text-center place-content-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("More")}>More...</button>

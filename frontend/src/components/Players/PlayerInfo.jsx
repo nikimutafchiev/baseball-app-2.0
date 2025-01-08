@@ -4,16 +4,18 @@ import { useEffect, useState } from "react";
 import { BiEdit } from "react-icons/bi";
 import { RiSaveLine } from "react-icons/ri";
 import { IoReorderThree } from "react-icons/io5";
+import { CircularProgress } from "@mui/material";
 import useSWR from "swr";
 export default function PlayerInfo() {
     const [isEdit, setIsEdit] = useState(false);
     const { id } = useParams();
     const [teamIDs, setTeamIDs] = useState([]);
     const [tournamentIDs, setTournamentIDs] = useState([]);
-    const query_params = tournamentIDs.length != 0 ? `?tournament_ids=[${tournamentIDs}]` : "" + teamIDs.length != 0 ? `${tournamentIDs.length != 0 ? "&" : "?"}team_ids=[${teamIDs}]` : ""
+    const [yearsSelect, setYearsSelect] = useState([]);
+    const query_params = tournamentIDs.length != 0 ? `?tournament_ids=[${tournamentIDs}]` : "" + teamIDs.length != 0 ? `${tournamentIDs.length != 0 ? "&" : "?"}team_ids=[${teamIDs}]` : "" + yearsSelect.length != 0 ? `${tournamentIDs.length != 0 || teamIDs.length != 0 ? "&" : "?"}years=[${yearsSelect}]` : ""
     const player = useSWR(`http://localhost:6363/player/${id}`, (url) => fetch(url).then((res) => res.json()));
     const stats = useSWR(`http://localhost:6363/player/${id}/stats/${query_params}`, (url) => fetch(url).then((res) => res.json()));
-    const years = ["2021", '2022', '2023', "2024"];
+    const years = useSWR(`http://localhost:6363/player/${id}/years`, (url) => fetch(url).then((res) => res.json()));
     const teams = useSWR(`http://localhost:6363/player/${id}/teams`, (url) => fetch(url).then((res) => res.json()));
     const tournaments = useSWR(`http://localhost:6363/player/${id}/tournaments`, (url) => fetch(url).then((res) => res.json()));
 
@@ -79,9 +81,10 @@ export default function PlayerInfo() {
                                     limitTags={1}
                                     className="absolute inset-0"
                                     size="small"
-                                    options={years}
+                                    options={years.data ? years.data : []}
                                     disableCloseOnSelect
                                     getOptionLabel={(option) => option}
+                                    onChange={(e, newValues) => setYearsSelect(newValues)}
                                     renderInput={(params) => (
                                         <TextField label="Year" className="bg-white rounded"{...params} />
                                     )}
@@ -121,13 +124,14 @@ export default function PlayerInfo() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {[
-                                { label: "AVG", value: stats.data ? stats.data.AVG.toFixed(3) : 0.000, rank: "#4 in Leaderboard" },
-                                { label: "AB", value: stats.data ? stats.data.AB : 0, rank: "#4 in Leaderboard" },
-                                { label: "OBP", value: stats.data ? stats.data.OBP.toFixed(3) : 0.000, rank: "#2" },
-                                { label: "SO", value: stats.data ? stats.data.SO : 0, rank: "#3" },
-                                { label: "BB", value: stats.data ? stats.data.BB : 0, rank: "#5" },
-                                { label: "H", value: stats.data ? stats.data.H : 0, rank: "#6" },
-                                { label: "PA", value: stats.data ? stats.data.PA : 0, rank: "#11" }
+                                { label: "AVG", value: stats.data ? stats.data.AVG.toFixed(3) : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0.000, rank: "#4 in Leaderboard" },
+                                { label: "AB", value: stats.data ? stats.data.AB : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0, rank: "#4 in Leaderboard" },
+                                { label: "OBP", value: stats.data ? stats.data.OBP.toFixed(3) : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0.000, rank: "#2" },
+                                { label: "SO", value: stats.data ? stats.data.SO : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0, rank: "#3" },
+                                { label: "BB", value: stats.data ? stats.data.BB : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0, rank: "#5" },
+                                { label: "H", value: stats.data ? stats.data.H : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0, rank: "#6" },
+                                { label: "PA", value: stats.data ? stats.data.PA : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0, rank: "#11" },
+                                { label: "SLG", value: stats.data ? stats.data.SLG.toFixed(3) : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0.000, rank: "#11" }
                             ].map((stat, index) => (
                                 <div
                                     key={index}
@@ -143,7 +147,7 @@ export default function PlayerInfo() {
                         </div>
                         <hr className="border-t-2 border-line"></hr>
                         <h3 className="text-3xl font-semibold">Detailed stats</h3>
-                        <div className="flex flex-col md:flex-row justify-around mb-4 h-40 md:h-12">
+                        {/* <div className="flex flex-col md:flex-row justify-around mb-4 h-40 md:h-12">
                             <div className="md:w-1/4 rounded drop-shadow-lg">
                                 <Autocomplete
                                     multiple
@@ -186,7 +190,7 @@ export default function PlayerInfo() {
                                     )}
                                 />
                             </div>
-                        </div>
+                        </div> */}
                         <div className="bg-white rounded self-center drop-shadow-lg">
                             <ToggleButtonGroup
                                 color="primary"

@@ -68,7 +68,7 @@ export default function GameInfo() {
                 </div>
                 <div className="grid grid-cols-3  w-full">
                     <div className="flex flex-col items-center text-center gap-2 text-xs font-semibold">
-                        <img src="https://placehold.co/80x80"></img>
+                        <img className="size-[80px]" src={game.data.homeTeam.image ? game.data.homeTeam.image : "https://placehold.co/80x80"}></img>
                         {game.data.homeTeam.name}
                     </div>
                     <div className="flex flex-row gap-2 items-center justify-center text-2xl font-semibold">
@@ -81,7 +81,7 @@ export default function GameInfo() {
                         </h3>
                     </div>
                     <div className="flex flex-col items-center gap-2 text-xs font-semibold text-center">
-                        <img src="https://placehold.co/80x80"></img>
+                        <img className="size-[80px]" src={game.data.awayTeam.image ? game.data.awayTeam.image : "https://placehold.co/80x80"}></img>
                         {game.data.awayTeam.name}
                     </div>
                 </div>
@@ -103,11 +103,11 @@ export default function GameInfo() {
                                     </div>
                                 </div>
                                 <div className="flex flex-row  items-center">
-                                    <div className={`${true ? "bg-yellow-400" : "border-2 border-yellow-400"} size-3 rotate-45 items-center justify-center`}>
+                                    <div className={`${game.data.runners.firstBaseRunner ? "bg-yellow-400" : "border-2 border-yellow-400"} size-3 rotate-45 items-center justify-center`}>
                                     </div>
-                                    <div className={`${false ? "bg-yellow-400" : "border-2 border-yellow-400"} mb-6 size-3 rotate-45 items-center justify-center`}>
+                                    <div className={`${game.data.runners.secondBaseRunner ? "bg-yellow-400" : "border-2 border-yellow-400"} mb-6 size-3 rotate-45 items-center justify-center`}>
                                     </div>
-                                    <div className={`${true ? "bg-yellow-400" : "border-2 border-yellow-400"} size-3 rotate-45 items-center justify-center`}>
+                                    <div className={`${game.data.runners.thirdBaseRunner ? "bg-yellow-400" : "border-2 border-yellow-400"} size-3 rotate-45 items-center justify-center`}>
                                     </div>
                                 </div>
                             </div>

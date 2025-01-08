@@ -570,6 +570,13 @@ def start_game(game_id):
     db.session.commit()
     return ""
     
+@route_bp.route("/game/<int:game_id>/change_runners", methods=["POST"])
+def change_runners(game_id):
+    data = request.json
+    game = Game.query.get(game_id)
+    game.runners = data["runners"]
+    db.session.commit()
+    return ""
 
 @route_bp.route("/player/<int:player_id>/teams",methods=["GET"])
 def get_player_teams(player_id):
@@ -592,6 +599,15 @@ def get_player_tournaments(player_id):
         'name': team_tournament.team_tournament.tournament.name,
         })
     return res
+
+@route_bp.route("/player/<int:player_id>/years",methods=["GET"])
+def get_player_years(player_id):
+    player = Player.query.get(player_id)
+    res = set()
+    for team_tournament in player.teams_tournaments:
+        for gameTeam in team_tournament.team_tournament.games:
+            res.add(gameTeam.game.start_time.year)
+    return list(res)
          
 @route_bp.route("/player/<int:player_id>/stats/",methods=["GET"])
 def get_player_stats(player_id):
@@ -599,7 +615,9 @@ def get_player_stats(player_id):
     team_ids = eval(str(query.get("team_ids")))
     tournament_ids = eval(str(query.get("tournament_ids")))
     game_id = query.get("game_id")
+    years = eval(str(query.get("years")))
     player = Player.query.get(player_id)
+
     res = {
         "PA":0,
         "H":0,
@@ -608,18 +626,31 @@ def get_player_stats(player_id):
         "BB":0,
         "HBP":0,
         "AVG":0,
+        "SLG":0,
+        "1B":0,
+        "2B":0,
+        "3B":0,
+        "HR":0
 
     }
     for team_tournament in player.teams_tournaments:
         if (team_ids and team_tournament.team_tournament.team_id in team_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids) or (not team_ids and not tournament_ids):
             for gameTeam in team_tournament.team_tournament.games:
-                if game_id and gameTeam.game_id == game_id or not game_id:
+                if game_id and gameTeam.game_id == game_id or not game_id or years and gameTeam.game.start_time.year in years:
                     for situation in gameTeam.game.situations:
                         if situation.data["batter"]["player"]["id"] == player_id :
                             if situation.data["situationCategory"] != "":
                                 res["PA"] += 1
                             if situation.data["situationCategory"] == "hit":
                                 res["H"] += 1
+                                if situation.data["situation"] == "Single":
+                                    res["1B"] +=1
+                                elif situation.data["situation"] == "Double":
+                                    res["2B"] +=1
+                                elif situation.data["situation"] == "Triple":
+                                    res["3B"] +=1
+                                elif situation.data["situation"] == "Homerun":
+                                    res["HR"] +=1
                             if situation.data["situationCategory"] == "walk":
                                 res["BB"] +=1
                             if situation.data["situationCategory"] == "hit by pitch":
@@ -628,7 +659,9 @@ def get_player_stats(player_id):
                                 res["SO"] +=1
                             if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
                                 res["AB"] +=1
+                            
                     
     res["AVG"] = res["H"]/res["AB"] if res["AB"] != 0 else 0
     res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
+    res["SLG"] = (res["1B"] + 2*res["2B"] + 3*res["3B"] + 4*res["HR"])/res["AB"] if res["AB"] != 0 else 0
     return res
