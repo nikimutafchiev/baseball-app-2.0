@@ -67,7 +67,7 @@ export default function GameInfo() {
                     </div>
                 </div>
                 <div className="grid grid-cols-3  w-full">
-                    <div className="flex flex-col items-center gap-2 text-sm font-semibold">
+                    <div className="flex flex-col items-center text-center gap-2 text-xs font-semibold">
                         <img src="https://placehold.co/80x80"></img>
                         {game.data.homeTeam.name}
                     </div>
@@ -80,7 +80,7 @@ export default function GameInfo() {
                             {game.data.awayResult}
                         </h3>
                     </div>
-                    <div className="flex flex-col items-center gap-2 text-sm font-semibold">
+                    <div className="flex flex-col items-center gap-2 text-xs font-semibold text-center">
                         <img src="https://placehold.co/80x80"></img>
                         {game.data.awayTeam.name}
                     </div>

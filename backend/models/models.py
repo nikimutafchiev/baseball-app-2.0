@@ -128,6 +128,7 @@ class GameTeamTeamTournamentPlayer(db.Model):
     position: Mapped[str] = mapped_column(String(60))
     batting_order: Mapped[int] = mapped_column(Integer)
     is_playing: Mapped[bool] = mapped_column(Boolean, default=True)
+    game_stats: Mapped[Optional[JSON]] = mapped_column(JSON)
 
 class User(db.Model):
     __tablename__="User"

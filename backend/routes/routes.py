@@ -570,13 +570,32 @@ def start_game(game_id):
     db.session.commit()
     return ""
     
-@route_bp.route("/stats/PA/<int:player_id>",methods=["GET"])
-def get_player_plate_appearance(player_id):
+@route_bp.route("/stats/<int:player_id>",methods=["GET"])
+def get_player_stats(player_id):
     player = Player.query.get(player_id)
-    res = 0
+    res = {
+        "PA":0,
+        "H":0,
+        "AB":0,
+        "SO":0,
+        "BB":0,
+        "AVG":0,
+    }
     for team_tournament in player.teams_tournaments:
         for gameTeam in team_tournament.team_tournament.games:
             for situation in gameTeam.game.situations:
-                if situation.data["batter"]["player"]["id"] == player_id:
-                    res +=1
-    return {"PA":res}
+                if situation.data["batter"]["player"]["id"] == player_id :
+                    print(situation.data)
+                    if situation.data["situationCategory"] != "":
+                        res["PA"] += 1
+                    if situation.data["situationCategory"] == "hit":
+                        res["H"] += 1
+                    if situation.data["situationCategory"] == "walk":
+                        res["BB"] +=1
+                    if situation.data["situationCategory"] == "strikeout":
+                        res["SO"] +=1
+                    if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
+                        res["AB"] +=1
+                
+    res["AVG"] = res["H"]/res["AB"] if res["AB"] != 0 else 0
+    return res

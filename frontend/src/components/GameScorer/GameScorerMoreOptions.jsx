@@ -10,7 +10,7 @@ export default function GameScorerMoreOptions(props) {
 
                     <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer text-lg transform transition-transform hover:scale-105"
                         onClick={() => {
-                            props.addSituation(0, "Catcher's interference");
+                            props.addSituation("Catcher's interference", "Catcher's interference");
                             props.moveRunners(1);
                             props.clearCount();
                             props.nextBatter();
@@ -18,7 +18,7 @@ export default function GameScorerMoreOptions(props) {
                     ><div>CI</div><div>Catcher's interference</div></div>
                     <div className="bg-primary_2 hover:bg-primary_2_hover p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer text-lg transform transition-transform hover:scale-105"
                         onClick={() => {
-                            props.addSituation(0, "Ground rule double");
+                            props.addSituation("hit", "Ground rule double");
                             props.moveRunners(2);
                             props.clearCount();
                             props.nextBatter();
@@ -30,7 +30,7 @@ export default function GameScorerMoreOptions(props) {
                                 props.close();
                             }
                             else {
-                                props.addSituation(0, "Balk");
+                                props.addSituation("balk", "Balk");
                                 props.moveRunners(1, false);
                             }
                         }}>

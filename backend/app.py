@@ -4,6 +4,7 @@ from flask_cors import CORS
 from flask_jwt_extended import  JWTManager
 from models.models import db
 from routes.routes import route_bp
+from sqlalchemy import text
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
@@ -19,6 +20,8 @@ app.register_blueprint(route_bp)
 
 with app.app_context():
     # db.drop_all()
+    # db.session.execute(text("DROP TABLE Situation"))
+    # db.session.commit()
     db.create_all()
     
 

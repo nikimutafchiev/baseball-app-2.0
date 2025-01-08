@@ -9,7 +9,7 @@ export default function PlayerInfo() {
     const [isEdit, setIsEdit] = useState(false);
     const { id } = useParams();
     const player = useSWR(`http://localhost:6363/player/${id}`, (url) => fetch(url).then((res) => res.json()));
-    const pa = useSWR(`http://localhost:6363/stats/PA/${id}`, (url) => fetch(url).then((res) => res.json()));
+    const stats = useSWR(`http://localhost:6363/stats/${id}`, (url) => fetch(url).then((res) => res.json()));
     const years = ["2021", '2022', '2023', "2024"];
     const teams = ["Lions", "Blues", "Akademik", "Coyotes", "Buffaloes", "Yunak"];
     const tournaments = ["Bulgarian Cup", "Champions League", "World cup"];
@@ -114,13 +114,14 @@ export default function PlayerInfo() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {[
-                                { label: "AVG", value: "0.707", rank: "#4 in Leaderboard" },
+                                { label: "AVG", value: stats.data ? stats.data.AVG : 0, rank: "#4 in Leaderboard" },
+                                { label: "AB", value: stats.data ? stats.data.AB : 0, rank: "#4 in Leaderboard" },
                                 { label: "OBP", value: "0.815", rank: "#2" },
                                 { label: "ERA", value: "2.65", rank: "#1" },
-                                { label: "SO", value: "235", rank: "#3" },
-                                { label: "BB", value: "78", rank: "#5" },
-                                { label: "H", value: "189", rank: "#6" },
-                                { label: "PA", value: pa.data ? pa.data.PA : 0, rank: "#11" }
+                                { label: "SO", value: stats.data ? stats.data.SO : 0, rank: "#3" },
+                                { label: "BB", value: stats.data ? stats.data.BB : 0, rank: "#5" },
+                                { label: "H", value: stats.data ? stats.data.H : 0, rank: "#6" },
+                                { label: "PA", value: stats.data ? stats.data.PA : 0, rank: "#11" }
                             ].map((stat, index) => (
                                 <div
                                     key={index}
