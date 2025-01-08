@@ -570,8 +570,35 @@ def start_game(game_id):
     db.session.commit()
     return ""
     
-@route_bp.route("/stats/<int:player_id>",methods=["GET"])
+
+@route_bp.route("/player/<int:player_id>/teams",methods=["GET"])
+def get_player_teams(player_id):
+    player = Player.query.get(player_id)
+    res = []
+    for team_tournament in player.teams_tournaments:
+         res.append({
+        'id':team_tournament.team_tournament.team.id,
+        'name': team_tournament.team_tournament.team.name,
+        })
+    return res
+
+@route_bp.route("/player/<int:player_id>/tournaments",methods=["GET"])
+def get_player_tournaments(player_id):
+    player = Player.query.get(player_id)
+    res = []
+    for team_tournament in player.teams_tournaments:
+         res.append({
+        'id':team_tournament.team_tournament.tournament.id,
+        'name': team_tournament.team_tournament.tournament.name,
+        })
+    return res
+         
+@route_bp.route("/player/<int:player_id>/stats/",methods=["GET"])
 def get_player_stats(player_id):
+    query = request.args.to_dict()
+    team_ids = eval(str(query.get("team_ids")))
+    tournament_ids = eval(str(query.get("tournament_ids")))
+    game_id = query.get("game_id")
     player = Player.query.get(player_id)
     res = {
         "PA":0,
@@ -579,23 +606,29 @@ def get_player_stats(player_id):
         "AB":0,
         "SO":0,
         "BB":0,
+        "HBP":0,
         "AVG":0,
+
     }
     for team_tournament in player.teams_tournaments:
-        for gameTeam in team_tournament.team_tournament.games:
-            for situation in gameTeam.game.situations:
-                if situation.data["batter"]["player"]["id"] == player_id :
-                    print(situation.data)
-                    if situation.data["situationCategory"] != "":
-                        res["PA"] += 1
-                    if situation.data["situationCategory"] == "hit":
-                        res["H"] += 1
-                    if situation.data["situationCategory"] == "walk":
-                        res["BB"] +=1
-                    if situation.data["situationCategory"] == "strikeout":
-                        res["SO"] +=1
-                    if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
-                        res["AB"] +=1
-                
+        if (team_ids and team_tournament.team_tournament.team_id in team_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids) or (not team_ids and not tournament_ids):
+            for gameTeam in team_tournament.team_tournament.games:
+                if game_id and gameTeam.game_id == game_id or not game_id:
+                    for situation in gameTeam.game.situations:
+                        if situation.data["batter"]["player"]["id"] == player_id :
+                            if situation.data["situationCategory"] != "":
+                                res["PA"] += 1
+                            if situation.data["situationCategory"] == "hit":
+                                res["H"] += 1
+                            if situation.data["situationCategory"] == "walk":
+                                res["BB"] +=1
+                            if situation.data["situationCategory"] == "hit by pitch":
+                                res["HBP"] +=1
+                            if situation.data["situationCategory"] == "strikeout":
+                                res["SO"] +=1
+                            if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
+                                res["AB"] +=1
+                    
     res["AVG"] = res["H"]/res["AB"] if res["AB"] != 0 else 0
+    res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
     return res
