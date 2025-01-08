@@ -12,14 +12,23 @@ export default function PlayerInfo() {
     const [teamIDs, setTeamIDs] = useState([]);
     const [tournamentIDs, setTournamentIDs] = useState([]);
     const [yearsSelect, setYearsSelect] = useState([]);
-    const query_params = tournamentIDs.length != 0 ? `?tournament_ids=[${tournamentIDs}]` : "" + teamIDs.length != 0 ? `${tournamentIDs.length != 0 ? "&" : "?"}team_ids=[${teamIDs}]` : "" + yearsSelect.length != 0 ? `${tournamentIDs.length != 0 || teamIDs.length != 0 ? "&" : "?"}years=[${yearsSelect}]` : ""
+    const query_params = { tournament_query: tournamentIDs.length != 0 ? `tournament_ids=[${tournamentIDs}]` : "", team_query: teamIDs.length != 0 ? `team_ids=[${teamIDs}]` : "", year_query: yearsSelect.length != 0 ? `years=[${yearsSelect}]` : "" }
+    const get_query = (tournament, team, year) => {
+        var res = ""
+        if (tournament == true && query_params.tournament_query.length != 0)
+            res += `?${query_params.tournament_query}`
+        if (team == true && query_params.team_query.length != 0)
+            res += `${res.length == 0 ? "?" : "&"}${query_params.team_query}`
+        if (year == true && query_params.year_query.length != 0)
+            res += `${res.length == 0 ? "?" : "&"}${query_params.year_query}`
+        return res
+    }
     const player = useSWR(`http://localhost:6363/player/${id}`, (url) => fetch(url).then((res) => res.json()));
-    const stats = useSWR(`http://localhost:6363/player/${id}/stats/${query_params}`, (url) => fetch(url).then((res) => res.json()));
-    const years = useSWR(`http://localhost:6363/player/${id}/years`, (url) => fetch(url).then((res) => res.json()));
-    const teams = useSWR(`http://localhost:6363/player/${id}/teams`, (url) => fetch(url).then((res) => res.json()));
-    const tournaments = useSWR(`http://localhost:6363/player/${id}/tournaments`, (url) => fetch(url).then((res) => res.json()));
+    const stats = useSWR(`http://localhost:6363/player/${id}/stats/${get_query(true, true, true)}`, (url) => fetch(url).then((res) => res.json()));
+    const years = useSWR(`http://localhost:6363/player/${id}/years/${get_query(true, true, false)}`, (url) => fetch(url).then((res) => res.json()));
+    const teams = useSWR(`http://localhost:6363/player/${id}/teams/${get_query(true, false, true)}`, (url) => fetch(url).then((res) => res.json()));
+    const tournaments = useSWR(`http://localhost:6363/player/${id}/tournaments/${get_query(false, true, true)}`, (url) => fetch(url).then((res) => res.json()));
 
-    useEffect(() => { console.log(tournamentIDs) }, [tournamentIDs]);
     const [isShrinked, setIsShrinked] = useState(false);
     return (
         <>

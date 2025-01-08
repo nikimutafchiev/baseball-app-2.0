@@ -81,13 +81,13 @@ export default function GameScorer() {
     const [runnersSituations, setRunnersSituations] = useState([]);
     const [currentSituation, setCurrentSituation] = useState({});
     const [isSituationReady, setIsSituationReady] = useState(null);
-    const nextBatter = async () => {
+    const nextBatter = () => {
         const newBatterTurn = battingTurn >= 9 ? 1 : battingTurn + 1;
         if (inningHalf == "UP")
             setAwayBattingTurn(newBatterTurn);
         else
             setHomeBattingTurn(newBatterTurn);
-        await fetch(`http://localhost:6363/game/${id}/change_batting_turn`, {
+        fetch(`http://localhost:6363/game/${id}/change_batting_turn`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

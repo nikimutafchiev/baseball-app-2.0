@@ -135,9 +135,11 @@ def add_game_to_tournament():
     new_game = Game(start_time = datetime(year=data['startTime']["year"],month=data['startTime']["month"],day=data['startTime']["day"],hour=data['startTime']["hour"],minute=data['startTime']["minutes"],tzinfo=timezone.utc),tournament_id = int(query["tournament_id"]),venue=data["venue"],venue_link=data['venueLink'])
     db.session.add(new_game)
     tournament.games.append(new_game)
-    home_game_association = GameTeam(game=new_game,team_tournament= TeamTournament.query.filter_by(team_id = data["homeTeam"]["id"]).first(),home_away = HomeAway.HOME)
-    away_game_association = GameTeam(game=new_game,team_tournament= TeamTournament.query.filter_by(team_id = data["awayTeam"]["id"]).first(),home_away = HomeAway.AWAY)
+    home_game_association = GameTeam(game=new_game,team_tournament= TeamTournament.query.filter_by(team_id = data["homeTeam"]["id"],tournament_id = tournament.id).first(),home_away = HomeAway.HOME)
     db.session.add(home_game_association)
+    db.session.commit()
+
+    away_game_association = GameTeam(game=new_game,team_tournament= TeamTournament.query.filter_by(team_id = data["awayTeam"]["id"],tournament_id = tournament.id).first(),home_away = HomeAway.AWAY)
     db.session.add(away_game_association)
     db.session.commit()
     return "Successfully added game",200
@@ -578,35 +580,52 @@ def change_runners(game_id):
     db.session.commit()
     return ""
 
-@route_bp.route("/player/<int:player_id>/teams",methods=["GET"])
+@route_bp.route("/player/<int:player_id>/teams/",methods=["GET"])
 def get_player_teams(player_id):
+    query = request.args.to_dict()
+    #TODO
+    year_ids = eval(str(query.get("team_ids")))
+    tournament_ids = eval(str(query.get("tournament_ids")))
     player = Player.query.get(player_id)
     res = []
     for team_tournament in player.teams_tournaments:
-         res.append({
-        'id':team_tournament.team_tournament.team.id,
-        'name': team_tournament.team_tournament.team.name,
-        })
+        if tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids or not tournament_ids:
+            res.append({
+            'id':team_tournament.team_tournament.team.id,
+            'name': team_tournament.team_tournament.team.name,
+            })
     return res
 
-@route_bp.route("/player/<int:player_id>/tournaments",methods=["GET"])
+@route_bp.route("/player/<int:player_id>/tournaments/",methods=["GET"])
 def get_player_tournaments(player_id):
+    query = request.args.to_dict()
+    #TODO
+    year_ids = eval(str(query.get("year_ids")))
+    team_ids = eval(str(query.get("team_ids")))
     player = Player.query.get(player_id)
     res = []
     for team_tournament in player.teams_tournaments:
-         res.append({
-        'id':team_tournament.team_tournament.tournament.id,
-        'name': team_tournament.team_tournament.tournament.name,
-        })
+         if team_ids and team_tournament.team_tournament.team_id in team_ids or not team_ids:
+            res.append({
+            'id':team_tournament.team_tournament.tournament.id,
+            'name': team_tournament.team_tournament.tournament.name,
+            })
     return res
 
-@route_bp.route("/player/<int:player_id>/years",methods=["GET"])
+@route_bp.route("/player/<int:player_id>/years/",methods=["GET"])
 def get_player_years(player_id):
+    query = request.args.to_dict()
+    team_ids = eval(str(query.get("team_ids")))
+    tournament_ids = eval(str(query.get("tournament_ids")))
     player = Player.query.get(player_id)
     res = set()
     for team_tournament in player.teams_tournaments:
-        for gameTeam in team_tournament.team_tournament.games:
-            res.add(gameTeam.game.start_time.year)
+        if (team_ids and team_tournament.team_tournament.team_id in team_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids) or (not team_ids and not tournament_ids):
+            print("Hello")
+            print(team_tournament.team_tournament.games)
+
+            for gameTeam in team_tournament.team_tournament.games:
+                res.add(gameTeam.game.start_time.year)
     return list(res)
          
 @route_bp.route("/player/<int:player_id>/stats/",methods=["GET"])
