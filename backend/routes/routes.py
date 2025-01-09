@@ -875,7 +875,7 @@ def get_team_stats(team_id):
                 for gameTeam in team_tournament.games:
                     if game_id and gameTeam.game_id == game_id or years and gameTeam.game.start_time.year in years or not game_id and not years:
                         for situation in gameTeam.game.situations:
-                            if situation.data["batter"]["player"]["id"] == player.id :
+                            if situation.data["batter"]["player"]["id"] == player.player.id :
                                 if situation.data["situationCategory"] != "":
                                     res["PA"] += 1
                                 if situation.data["situationCategory"] == "hit":
@@ -902,6 +902,72 @@ def get_team_stats(team_id):
     # res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
     # res["SLG"] = (res["1B"] + 2*res["2B"] + 3*res["3B"] + 4*res["HR"])/res["AB"] if res["AB"] != 0 else 0
     return res
+
+@route_bp.route("/tournament/<int:tournament_id>/stats/",methods=["GET"])
+def get_tournament_stats(tournament_id):
+    query = request.args.to_dict()
+    game_id = query.get("game_id")
+    years = eval(str(query.get("years")))
+    tournament = Tournament.query.get(tournament_id)
+
+    res = []
+    for team_tournament in tournament.teams:
+        #(team_ids and team_tournament.team_id in team_ids)
+            for player in team_tournament.players:
+                player_stats  = {
+                        "PA":0,
+                        "H":0,
+                        "AB":0,
+                        "SO":0,
+                        "BB":0,
+                        "HBP":0,
+                        "AVG":0,
+                        "SLG":0,
+                        "1B":0,
+                        "2B":0,
+                        "3B":0,
+                        "HR":0
+
+                    }
+                for gameTeam in team_tournament.games:
+                    if game_id and gameTeam.game_id == game_id or years and gameTeam.game.start_time.year in years or not game_id and not years:
+                        for situation in gameTeam.game.situations:
+                            if situation.data["batter"]["player"]["id"] == player.player.id :
+                                if situation.data["situationCategory"] != "":
+                                    player_stats["PA"] += 1
+                                if situation.data["situationCategory"] == "hit":
+                                    player_stats["H"] += 1
+                                    if situation.data["situation"] == "Single":
+                                        player_stats["1B"] +=1
+                                    elif situation.data["situation"] == "Double":
+                                        player_stats["2B"] +=1
+                                    elif situation.data["situation"] == "Triple":
+                                        player_stats["3B"] +=1
+                                    elif situation.data["situation"] == "Homerun":
+                                        player_stats["HR"] +=1
+                                if situation.data["situationCategory"] == "walk":
+                                    player_stats["BB"] +=1
+                                if situation.data["situationCategory"] == "hit by pitch":
+                                    player_stats["HBP"] +=1
+                                if situation.data["situationCategory"] == "strikeout":
+                                    player_stats["SO"] +=1
+                                if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
+                                    player_stats["AB"] +=1
+                player_stats["AVG"] = player_stats["H"]/player_stats["AB"] if player_stats["AB"] != 0 else 0
+                res.append({
+                    "id":player.id,
+                    "teamName": team_tournament.team.name,
+                    "teamImage":team_tournament.team.image,
+                    "firstName":player.player.first_name,
+                    "lastName":player.player.last_name,
+                    "stats":player_stats})
+                                
+                    
+    
+    # res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
+    # res["SLG"] = (res["1B"] + 2*res["2B"] + 3*res["3B"] + 4*res["HR"])/res["AB"] if res["AB"] != 0 else 0
+    return res
+
 
 
 
