@@ -378,12 +378,18 @@ def get_game_by_id(game_id):
             "id": home_team.team_tournament.team.id,
             "name":home_team.team_tournament.team.name,
             "tlc": home_team.team_tournament.team.tlc,
-            "image": home_team.team_tournament.team.image},
+            "image": home_team.team_tournament.team.image,
+            "hits":home_team.hits,
+            "errors":home_team.errors,
+            "lob":home_team.lob},
         "awayTeam":{
             "id": away_team.team_tournament.team.id,
             "name":away_team.team_tournament.team.name,
                     "tlc":away_team.team_tournament.team.tlc,
-                    "image": away_team.team_tournament.team.image,},
+                    "image": away_team.team_tournament.team.image,
+                    "hits":away_team.hits,
+            "errors":away_team.errors,
+            "lob":away_team.lob},
         "startTime": game.start_time,
         "status": game.status.value,
         "homeResult":home_team.result,
@@ -578,6 +584,13 @@ def change_inning(game_id):
         game.inning += 1
     else:
         game.status = GameStatuses.ENDED
+        game_teams = GameTeam.query.filter_by(game_id = game_id).all();
+        home_team = list(filter(lambda x: x.home_away.value == "home",game_teams))[0]
+        away_team = list(filter(lambda x: x.home_away.value == "away",game_teams))[0]   
+        if home_team.result > away_team.result:
+            home_team.is_winner = True
+        elif home_team.result < away_team.result:
+            away_team.is_winner = True
     db.session.commit()
     return ""
 
@@ -609,6 +622,36 @@ def change_outs(game_id):
     game = Game.query.get(game_id)
 
     game.outs = data["outs"]
+    db.session.commit()
+    return ""
+
+@route_bp.route("/game_team/change_lob/", methods=["POST"])
+def change_lob():
+    data = request.json
+    query = request.args.to_dict()
+    game_team = GameTeam.query.filter_by(game_id=query["game_id"],home_away=query["home_away"]).first()
+    game_team.lob = data["lob"]
+
+    db.session.commit()
+    return ""
+
+@route_bp.route("/game_team/change_hits/", methods=["POST"])
+def change_hits():
+    data = request.json
+    query = request.args.to_dict()
+    game_team = GameTeam.query.filter_by(game_id=query["game_id"],home_away=query["home_away"]).first()
+    game_team.hits = data["hits"]
+
+    db.session.commit()
+    return ""
+
+@route_bp.route("/game_team/change_errors/", methods=["POST"])
+def change_errors():
+    data = request.json
+    query = request.args.to_dict()
+    game_team = GameTeam.query.filter_by(game_id=query["game_id"],home_away=query["home_away"]).first()
+    game_team.errors = data["errors"]
+
     db.session.commit()
     return ""
 
@@ -872,7 +915,6 @@ def get_player_games_stats(player_id):
 
     res = []
     for team_tournament in player.teams_tournaments:
-        print(team_tournament.team_tournament.tournament_id)
         if (team_ids and team_tournament.team_tournament.team_id in team_ids and not tournament_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids and not team_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids and team_ids and team_tournament.team_tournament.team_id in team_ids)or (not team_ids and not tournament_ids):
             for gameTeam in team_tournament.team_tournament.games:
                 if years and gameTeam.game.start_time.year in years or not years:

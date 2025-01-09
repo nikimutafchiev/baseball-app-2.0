@@ -40,7 +40,7 @@ export default function GameInfo() {
     const [assignee, setAssignee] = useState(user.username);
     const [menuOption, setMenuOption] = useState("Stats");
     return (<>{
-        game.data && <div className="flex flex-col md:flex-row gap-8">
+        game.data && <div className="flex flex-col md:flex-row gap-4">
             <div className="flex flex-col bg-white rounded-2xl drop-shadow-lg min-h-[82vh] max-h-[85vh] md:w-1/3 p-10 items-center justify-between">
                 {user && <div className="flex flex-row  justify-center gap-4 mb-2">
                     <TextField label={<div className="text-sm">Username</div>} variant="outlined" value={assignee} onChange={(e) => setAssignee(e.target.value)} className="w-1/2" size="small" helperText={!validator.isURL(assignee) && assignee.length != 0 ? "Invalid username" : ""}></TextField>
@@ -90,7 +90,7 @@ export default function GameInfo() {
                     <div className="flex flex-row gap-1 items-center">{statusIcons[game.data.status]}<div className=" uppercase">{game.data.status}</div></div>
                 </div>
 
-                <div className=" px-2 py-1 rounded flex flex-row items-center justify-center w-full">
+                <div className=" px-2 py-1 rounded flex flex-row items-center gap-4 justify-center w-full">
                     {game.data.status === "live" &&
                         <div className="relative  flex-1">
 
@@ -118,34 +118,34 @@ export default function GameInfo() {
                     <table className="table-auto">
                         <thead className="border-b-[1px] text-xs border-gray-500 ">
                             <tr>
-                                {["Team", 1, 2, 3, 4, 5, 6, 7, 8, 9, "R", "H", "E"].map((value) => <th className="p-1 font-bold">{value}</th>)}
+                                {["Team", 1, 2, 3, 4, 5, 6, 7, 8, 9, "R", "H", "E", "LOB"].map((value) => <th className="p-1 font-bold">{value}</th>)}
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                {[game.data.awayTeam.tlc, ...game.data.pointsByInning.away, 11, 13, 2].map((value) => <td className="text-center font-semibold text-2xs p-1">{value}</td>)}
+                                {[game.data.awayTeam.tlc, ...game.data.pointsByInning.away, game.data.awayResult, game.data.awayTeam.hits, game.data.awayTeam.errors, game.data.awayTeam.lob].map((value) => <td className="text-center font-semibold text-2xs p-1">{value}</td>)}
                             </tr>
                             <tr>
-                                {[game.data.homeTeam.tlc, ...game.data.pointsByInning.home, 11, 13, 2].map((value) => <td className="text-center font-semibold text-2xs p-1">{value}</td>)}
+                                {[game.data.homeTeam.tlc, ...game.data.pointsByInning.home, game.data.homeResult, game.data.homeTeam.hits, game.data.homeTeam.errors, game.data.homeTeam.lob].map((value) => <td className="text-center font-semibold text-2xs p-1">{value}</td>)}
                             </tr>
                         </tbody>
                     </table>
                 </div>
-                <div className="w-full flex flex-row text-xs font-semibold">
+                {/* <div className="w-full flex flex-row text-xs font-semibold">
                     <div className="w-1/2 text-center">
                         W - Petyo Petkov
                     </div>
                     <div className="w-1/2 text-center">
                         L - Evgenii Chernozemsky
                     </div>
-                </div>
+                </div> */}
                 {game.data.venueLink && <div className="text-xs font-semibold">
                     Field location - <a className="text-blue-500 underline" href={game.data.venueLink} target="_blank">{game.data.venueLink}</a>
                 </div>}
                 <Link to={`/score/${game.data.id}`} className={`w-2/5 px-1 py-2 bg-orange-400 font-semibold  text-sm rounded text-white text-nowrap hover:bg-orange-300 flex flex-row items-center gap-1 justify-center drop-shadow-lg ${user && user.role == "admin" ? "" : "hidden"}`}><div>Score game</div><RiArrowRightCircleLine size={15} /></Link>
 
             </div>
-            <div className="flex flex-col p-2 md:w-2/3 bg-white rounded-2xl drop-shadow-lg h-[85vh]">
+            <div className="flex flex-col p-2 flex-1 bg-white rounded-2xl drop-shadow-lg h-[85vh]">
                 <div className="flex flex-row gap-6">
                     <TextField
                         size="small" className="w-1/6"
@@ -180,7 +180,7 @@ export default function GameInfo() {
                 </div>
                 {menuOption === "Stats" &&
                     <div className="h-[90%]">
-                        <TableContainer style={{ maxWidth: "100%", maxHeight: "100%", overflowY: "auto", overflowX: "auto" }}>
+                        <TableContainer style={{ maxWidth: "98%", maxHeight: "100%", overflowY: "auto", overflowX: "auto" }}>
                             <Table stickyHeader>
                                 <TableHead>
                                     <TableRow>
@@ -217,8 +217,8 @@ export default function GameInfo() {
                                             <TableCell>{row.stats ? row.stats.RBI : 0}</TableCell>
                                             <TableCell>{row.stats ? row.stats.BB : 0}</TableCell>
                                             <TableCell>{row.stats ? row.stats.SO : 0}</TableCell>
-                                            <TableCell>{row.stats ? row.stats.AVG : 0}</TableCell>
-                                            <TableCell>{row.stats ? row.stats.SLG : 0}</TableCell>
+                                            <TableCell>{row.stats ? row.stats.AVG.toFixed(3) : 0}</TableCell>
+                                            <TableCell>{row.stats ? row.stats.SLG.toFixed(3) : 0}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
