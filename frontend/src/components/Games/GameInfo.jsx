@@ -145,7 +145,7 @@ export default function GameInfo() {
                 <Link to={`/score/${game.data.id}`} className={`w-2/5 px-1 py-2 bg-orange-400 font-semibold  text-sm rounded text-white text-nowrap hover:bg-orange-300 flex flex-row items-center gap-1 justify-center drop-shadow-lg ${user && user.role == "admin" ? "" : "hidden"}`}><div>Score game</div><RiArrowRightCircleLine size={15} /></Link>
 
             </div>
-            <div className="flex flex-col p-2 flex-1 bg-white rounded-2xl drop-shadow-lg min-h-[80vh]">
+            <div className="flex flex-col p-2 md:w-2/3 bg-white rounded-2xl drop-shadow-lg h-[85vh]">
                 <div className="flex flex-row gap-6">
                     <TextField
                         size="small" className="w-1/6"
@@ -179,22 +179,22 @@ export default function GameInfo() {
                     }
                 </div>
                 {menuOption === "Stats" &&
-                    <div>
-                        <TableContainer>
-                            <Table sx={{ minWidth: 650 }}>
+                    <div className="h-[90%]">
+                        <TableContainer style={{ maxWidth: "100%", maxHeight: "100%", overflowY: "auto", overflowX: "auto" }}>
+                            <Table stickyHeader>
                                 <TableHead>
                                     <TableRow>
                                         <TableCell>#</TableCell>
-                                        <TableCell>Player name</TableCell>
-                                        <TableCell>Position</TableCell>
-                                        <TableCell>AB</TableCell>
-                                        <TableCell>R</TableCell>
-                                        <TableCell>H</TableCell>
-                                        <TableCell>RBI</TableCell>
-                                        <TableCell>BB</TableCell>
-                                        <TableCell>SO</TableCell>
-                                        <TableCell>AVG</TableCell>
-                                        <TableCell>OPS</TableCell>
+                                        <TableCell sx={{ minWidth: 220 }}><div className="font-semibold">Player name</div></TableCell>
+                                        <TableCell><div className="font-semibold">Position</div></TableCell>
+                                        <TableCell><div className="font-semibold">AB</div></TableCell>
+                                        <TableCell><div className="font-semibold">R</div></TableCell>
+                                        <TableCell><div className="font-semibold">H</div></TableCell>
+                                        <TableCell><div className="font-semibold">RBI</div></TableCell>
+                                        <TableCell><div className="font-semibold">BB</div></TableCell>
+                                        <TableCell><div className="font-semibold">SO</div></TableCell>
+                                        <TableCell><div className="font-semibold">AVG</div></TableCell>
+                                        <TableCell><div className="font-semibold">SLG</div></TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>{
@@ -211,14 +211,14 @@ export default function GameInfo() {
                                             </TableCell>
                                             <TableCell ><div className={row.battingOrder == 8 ? "ml-8" : ""}>{row.player.firstName} {row.player.lastName}</div></TableCell>
                                             <TableCell><div>{row.position}</div></TableCell>
-                                            <TableCell>{row.AB}</TableCell>
-                                            <TableCell>{row.R}</TableCell>
-                                            <TableCell>{row.H}</TableCell>
-                                            <TableCell>{row.RBI}</TableCell>
-                                            <TableCell>{row.BB}</TableCell>
-                                            <TableCell>{row.SO}</TableCell>
-                                            <TableCell>{row.AVG}</TableCell>
-                                            <TableCell>{row.OPS}</TableCell>
+                                            <TableCell>{row.stats ? row.stats.AB : 0}</TableCell>
+                                            <TableCell>{row.stats ? row.stats.R : 0}</TableCell>
+                                            <TableCell>{row.stats ? row.stats.H : 0}</TableCell>
+                                            <TableCell>{row.stats ? row.stats.RBI : 0}</TableCell>
+                                            <TableCell>{row.stats ? row.stats.BB : 0}</TableCell>
+                                            <TableCell>{row.stats ? row.stats.SO : 0}</TableCell>
+                                            <TableCell>{row.stats ? row.stats.AVG : 0}</TableCell>
+                                            <TableCell>{row.stats ? row.stats.SLG : 0}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

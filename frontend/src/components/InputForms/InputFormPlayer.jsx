@@ -126,7 +126,7 @@ export default function InputFormPlayer(props) {
     const [errorHeight, setErrorHeigth] = useState(false);
     const [image, setImage] = useState(null);
     const [imageURL, setImageURL] = useState("http://placehold.co/150x200")
-    const errorSubmit = errorHeight || errorWeigth || firstName === "" || lastName === "";
+    const errorSubmit = errorHeight || errorWeigth || firstName === "" || lastName === "" || date.year() >= dayjs().year() - 1 || date.year() <= 1920;
     const months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     return (
         <div className=" top-2 md:top-6 fixed self-center z-20 w-11/12 md:w-8/12  bg-white rounded border-black border-[1px] drop-shadow-xl">

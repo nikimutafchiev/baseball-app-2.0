@@ -193,6 +193,18 @@ def login():
     else:
         return {},400
     
+@route_bp.route("/is_logged/",methods=["GET"])
+def is_logged():
+    query = request.args.to_dict()
+    username = query['username']
+    password = query['password']
+    user = User.query.filter_by(username=username).first()
+    if user and user.password == password:
+        return "",200
+    else:
+        return "",401
+
+
 
 @route_bp.route("/tournament_teams/",methods=["POST"])
 def add_team_to_tournament():
@@ -467,6 +479,48 @@ def get_game_team_roster():
     game_team = GameTeam.query.filter_by(game_id=query["game_id"],home_away=query["home_away"]).first()
     res=[]
     for player in game_team.players:
+        stats = {
+            "PA":0,
+            "H":0,
+            "AB":0,
+            "SO":0,
+            "BB":0,
+            "HBP":0,
+            "AVG":0,
+            "SLG":0,
+            "1B":0,
+            "2B":0,
+            "3B":0,
+            "HR":0
+
+        }
+        for situation in game_team.game.situations:
+            if situation.data["batter"]["player"]["id"] == player.id :
+                if situation.data["situationCategory"] != "":
+                    stats["PA"] += 1
+                if situation.data["situationCategory"] == "hit":
+                    stats["H"] += 1
+                    if situation.data["situation"] == "Single":
+                        stats["1B"] +=1
+                    elif situation.data["situation"] == "Double":
+                        stats["2B"] +=1
+                    elif situation.data["situation"] == "Triple":
+                        stats["3B"] +=1
+                    elif situation.data["situation"] == "Homerun":
+                        stats["HR"] +=1
+                if situation.data["situationCategory"] == "walk":
+                    stats["BB"] +=1
+                if situation.data["situationCategory"] == "hit by pitch":
+                    stats["HBP"] +=1
+                if situation.data["situationCategory"] == "strikeout":
+                    stats["SO"] +=1
+                if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
+                    stats["AB"] +=1
+                                
+                        
+        stats["AVG"] = stats["H"]/stats["AB"] if stats["AB"] != 0 else 0
+        stats["OBP"] = (stats["H"]+stats["BB"]+stats["HBP"])/stats["PA"] if stats["PA"] != 0 else 0
+        stats["SLG"] = (stats["1B"] + 2*stats["2B"] + 3*stats["3B"] + 4*stats["HR"])/stats["AB"] if stats["AB"] != 0 else 0
         res.append({
             "battingOrder": player.batting_order,
             "position": player.position,
@@ -474,8 +528,9 @@ def get_game_team_roster():
             "player":{
                 "id":player.team_tournament_player.player.id,
                 "firstName":player.team_tournament_player.player.first_name,
-                "lastName":player.team_tournament_player.player.last_name
-            }
+                "lastName":player.team_tournament_player.player.last_name,
+                
+            },"stats":stats
         })
 
     return res
@@ -584,16 +639,22 @@ def change_runners(game_id):
 def get_player_teams(player_id):
     query = request.args.to_dict()
     #TODO
-    year_ids = eval(str(query.get("team_ids")))
+    year_ids = eval(str(query.get("year_ids")))
     tournament_ids = eval(str(query.get("tournament_ids")))
     player = Player.query.get(player_id)
     res = []
+    def id_in_list(id,list):
+        for element in list:
+            if element["id"] == id:
+                return True
+        return False
     for team_tournament in player.teams_tournaments:
         if tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids or not tournament_ids:
-            res.append({
-            'id':team_tournament.team_tournament.team.id,
-            'name': team_tournament.team_tournament.team.name,
-            })
+            if not id_in_list(team_tournament.team_tournament.team.id,res):
+                res.append({
+                'id':team_tournament.team_tournament.team.id,
+                'name': team_tournament.team_tournament.team.name,
+                })
     return res
 
 @route_bp.route("/player/<int:player_id>/tournaments/",methods=["GET"])
@@ -621,8 +682,6 @@ def get_player_years(player_id):
     res = set()
     for team_tournament in player.teams_tournaments:
         if (team_ids and team_tournament.team_tournament.team_id in team_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids) or (not team_ids and not tournament_ids):
-            print("Hello")
-            print(team_tournament.team_tournament.games)
 
             for gameTeam in team_tournament.team_tournament.games:
                 res.add(gameTeam.game.start_time.year)
@@ -653,8 +712,8 @@ def get_player_stats(player_id):
 
     }
     for team_tournament in player.teams_tournaments:
-        if (team_ids and team_tournament.team_tournament.team_id in team_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids) or (not team_ids and not tournament_ids):
-            for gameTeam in team_tournament.team_tournament.games:
+        if (team_ids and team_tournament.team_tournament.team_id in team_ids and not tournament_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids and not team_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids and team_ids and team_tournament.team_tournament.team_id in team_ids)or (not team_ids and not tournament_ids):
+           for gameTeam in team_tournament.team_tournament.games:
                 if game_id and gameTeam.game_id == game_id or not game_id or years and gameTeam.game.start_time.year in years:
                     for situation in gameTeam.game.situations:
                         if situation.data["batter"]["player"]["id"] == player_id :
@@ -683,4 +742,189 @@ def get_player_stats(player_id):
     res["AVG"] = res["H"]/res["AB"] if res["AB"] != 0 else 0
     res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
     res["SLG"] = (res["1B"] + 2*res["2B"] + 3*res["3B"] + 4*res["HR"])/res["AB"] if res["AB"] != 0 else 0
+    return res
+
+
+@route_bp.route("/team/<int:team_id>/tournaments/",methods=["GET"])
+def get_team_tournaments(team_id):
+    query = request.args.to_dict()
+    #TODO
+    year_ids = eval(str(query.get("year_ids")))
+    team_ids = eval(str(query.get("team_ids")))
+    team = Team.query.get(team_id)
+    res = []
+    for team_tournament in team.tournaments:
+        # if team_ids and team_tournament.team_tournament.tournament_id in team_ids or not team_ids:
+        res.append({
+        'id':team_tournament.tournament.id,
+        'name': team_tournament.tournament.name,
+        })
+    return res
+
+@route_bp.route("/team/<int:team_id>/years/",methods=["GET"])
+def get_team_years(team_id):
+    query = request.args.to_dict()
+    #TODO
+    tournament_ids = eval(str(query.get("tournament_ids")))
+    team_ids = eval(str(query.get("tournament_ids")))
+    team = Team.query.get(team_id)
+    res = set()
+    for team_tournament in team.tournaments:
+        # if team_ids and team_tournament.team_tournament.tournament_id in team_ids or not team_ids:
+        for gameTeam in team_tournament.games:
+            res.add(gameTeam.game.start_time.year)
+    return list(res)
+
+@route_bp.route("/team/<int:team_id>/teams/",methods=["GET"])
+def get_team_opponents(team_id):
+    query = request.args.to_dict()
+    #TODO
+    tournament_ids = eval(str(query.get("tournament_ids")))
+    year_ids = eval(str(query.get("year_ids")))
+    team = Team.query.get(team_id)
+    res = []
+    def id_in_list(id,list):
+        for element in list:
+            if element["id"] == id:
+                return True
+        return False
+    for team_tournament in team.tournaments:
+        if tournament_ids and team_tournament.tournament_id in tournament_ids or not tournament_ids:
+            for gameTeam in team_tournament.games:
+                gameTeamObject = GameTeam.query.filter_by(game_id = gameTeam.game_id,   home_away = HomeAway.AWAY if gameTeam.home_away == HomeAway.HOME else HomeAway.HOME).first()
+                if not id_in_list(gameTeamObject.team_tournament.team.id,res):
+                    res.append(
+                        {"id":gameTeamObject.team_tournament.team.id,
+                        "name":gameTeamObject.team_tournament.team.name
+                        })
+    
+    return res
+
+
+@route_bp.route("/team/<int:team_id>/stats/",methods=["GET"])
+def get_team_stats(team_id):
+    query = request.args.to_dict()
+    team_ids = eval(str(query.get("team_ids")))
+    tournament_ids = eval(str(query.get("tournament_ids")))
+    game_id = query.get("game_id")
+    years = eval(str(query.get("years")))
+    team = Team.query.get(team_id)
+
+    res = {
+        "PA":0,
+        "H":0,
+        "AB":0,
+        "SO":0,
+        "BB":0,
+        "HBP":0,
+        "AVG":0,
+        "SLG":0,
+        "1B":0,
+        "2B":0,
+        "3B":0,
+        "HR":0
+
+    }
+    for team_tournament in team.tournaments:
+        #(team_ids and team_tournament.team_id in team_ids)
+        if (tournament_ids and team_tournament.tournament_id in tournament_ids) or (not team_ids and not tournament_ids):
+            for player in team_tournament.players:
+                for gameTeam in team_tournament.games:
+                    if game_id and gameTeam.game_id == game_id or years and gameTeam.game.start_time.year in years or not game_id and not years:
+                        for situation in gameTeam.game.situations:
+                            if situation.data["batter"]["player"]["id"] == player.id :
+                                if situation.data["situationCategory"] != "":
+                                    res["PA"] += 1
+                                if situation.data["situationCategory"] == "hit":
+                                    res["H"] += 1
+                                    if situation.data["situation"] == "Single":
+                                        res["1B"] +=1
+                                    elif situation.data["situation"] == "Double":
+                                        res["2B"] +=1
+                                    elif situation.data["situation"] == "Triple":
+                                        res["3B"] +=1
+                                    elif situation.data["situation"] == "Homerun":
+                                        res["HR"] +=1
+                                if situation.data["situationCategory"] == "walk":
+                                    res["BB"] +=1
+                                if situation.data["situationCategory"] == "hit by pitch":
+                                    res["HBP"] +=1
+                                if situation.data["situationCategory"] == "strikeout":
+                                    res["SO"] +=1
+                                if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
+                                    res["AB"] +=1
+                                
+                    
+    res["AVG"] = res["H"]/res["AB"] if res["AB"] != 0 else 0
+    # res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
+    # res["SLG"] = (res["1B"] + 2*res["2B"] + 3*res["3B"] + 4*res["HR"])/res["AB"] if res["AB"] != 0 else 0
+    return res
+
+
+
+@route_bp.route("/player/<int:player_id>/games_stats/",methods=["GET"])
+def get_player_games_stats(player_id):
+    query = request.args.to_dict()
+    team_ids = eval(str(query.get("team_ids")))
+    tournament_ids = eval(str(query.get("tournament_ids")))
+    years = eval(str(query.get("years")))
+    player = Player.query.get(player_id)
+
+    res = []
+    for team_tournament in player.teams_tournaments:
+        print(team_tournament.team_tournament.tournament_id)
+        if (team_ids and team_tournament.team_tournament.team_id in team_ids and not tournament_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids and not team_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids and team_ids and team_tournament.team_tournament.team_id in team_ids)or (not team_ids and not tournament_ids):
+            for gameTeam in team_tournament.team_tournament.games:
+                if years and gameTeam.game.start_time.year in years or not years:
+                    game_stats = {
+                        "PA":0,
+                        "H":0,
+                        "AB":0,
+                        "SO":0,
+                        "BB":0,
+                        "HBP":0,
+                        "AVG":0,
+                        "SLG":0,
+                        "1B":0,
+                        "2B":0,
+                        "3B":0,
+                        "HR":0
+
+                    }
+                    for situation in gameTeam.game.situations:
+                        if situation.data["batter"]["player"]["id"] == player_id :
+                            if situation.data["situationCategory"] != "":
+                                game_stats["PA"] += 1
+                            if situation.data["situationCategory"] == "hit":
+                                game_stats["H"] += 1
+                                if situation.data["situation"] == "Single":
+                                    game_stats["1B"] +=1
+                                elif situation.data["situation"] == "Double":
+                                    game_stats["2B"] +=1
+                                elif situation.data["situation"] == "Triple":
+                                    game_stats["3B"] +=1
+                                elif situation.data["situation"] == "Homerun":
+                                    game_stats["HR"] +=1
+                            if situation.data["situationCategory"] == "walk":
+                                game_stats["BB"] +=1
+                            if situation.data["situationCategory"] == "hit by pitch":
+                                game_stats["HBP"] +=1
+                            if situation.data["situationCategory"] == "strikeout":
+                                game_stats["SO"] +=1
+                            if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
+                                game_stats["AB"] +=1
+                    game_stats["AVG"] = game_stats["H"]/game_stats["AB"] if game_stats["AB"] != 0 else 0
+                    game_stats["OBP"] = (game_stats["H"]+game_stats["BB"]+game_stats["HBP"])/game_stats["PA"] if game_stats["PA"] != 0 else 0
+                    game_stats["SLG"] = (game_stats["1B"] + 2*game_stats["2B"] + 3*game_stats["3B"] + 4*game_stats["HR"])/game_stats["AB"] if game_stats["AB"] != 0 else 0
+                    game_teams = GameTeam.query.filter_by(game_id = gameTeam.game.id).all();
+                    home_team = list(filter(lambda x: x.home_away.value == "home",game_teams))[0]
+                    away_team = list(filter(lambda x: x.home_away.value == "away",game_teams))[0]
+                    res.append({
+                        "id":gameTeam.game.id,
+                        "homeTeam":home_team.team_tournament.team.name,
+                        "awayTeam":away_team.team_tournament.team.name,
+                        "startTime":gameTeam.game.start_time,
+                        "stats":game_stats
+                        })
+                            
     return res

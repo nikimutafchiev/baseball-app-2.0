@@ -17,9 +17,26 @@ export default function TeamInfo() {
     const [isEdit, setIsEdit] = useState(false);
     const team = useSWR(`http://localhost:6363/team/${id}`, (url) => fetch(url).then((res) => res.json()));
     const [isShrinked, setIsShrinked] = useState(false);
-    const years = ["2021", '2022', '2023', "2024"];
-    const teams = ["Lions", "Blues", "Akademik", "Coyotes", "Buffaloes", "Yunak"];
-    const tournaments = ["Bulgarian Cup", "Champions League", "World cup"];
+
+    const [teamIDs, setTeamIDs] = useState([]);
+    const [tournamentIDs, setTournamentIDs] = useState([]);
+    const [yearsSelect, setYearsSelect] = useState([]);
+    const query_params = { tournament_query: tournamentIDs.length != 0 ? `tournament_ids=[${tournamentIDs}]` : "", team_query: teamIDs.length != 0 ? `team_ids=[${teamIDs}]` : "", year_query: yearsSelect.length != 0 ? `years=[${yearsSelect}]` : "" }
+    const get_query = (tournament, team, year) => {
+        var res = ""
+        if (tournament == true && query_params.tournament_query.length != 0)
+            res += `?${query_params.tournament_query}`
+        if (team == true && query_params.team_query.length != 0)
+            res += `${res.length == 0 ? "?" : "&"}${query_params.team_query}`
+        if (year == true && query_params.year_query.length != 0)
+            res += `${res.length == 0 ? "?" : "&"}${query_params.year_query}`
+        return res
+    }
+
+    const years = useSWR(`http://localhost:6363/team/${id}/years/${get_query(true, true, false)}`, (url) => fetch(url).then((res) => res.json()));
+    const teams = useSWR(`http://localhost:6363/team/${id}/teams/${get_query(true, false, true)}`, (url) => fetch(url).then((res) => res.json()));
+    const tournaments = useSWR(`http://localhost:6363/team/${id}/tournaments/${get_query(false, true, true)}`, (url) => fetch(url).then((res) => res.json()));
+    const stats = useSWR(`http://localhost:6363/team/${id}/stats/${get_query(true, true, true)}`, (url) => fetch(url).then((res) => res.json()));
     return (<>{
         team.data && <div className="w-full h-full flex flex-col md:flex-row gap-4">
             {!isShrinked &&
@@ -74,7 +91,6 @@ export default function TeamInfo() {
             </div>}
             <div className="flex flex-1 flex-row gap-8">
                 <div className="flex flex-1 flex-col gap-4 h-fit">
-                    <h3 className="text-3xl font-semibold">Stats overview</h3>
                     <div className="flex flex-col md:flex-row justify-around h-40 mb-4 md:h-12">
                         <div className="md:w-1/4 rounded drop-shadow-lg">
                             <Autocomplete
@@ -82,10 +98,10 @@ export default function TeamInfo() {
                                 limitTags={1}
                                 className="absolute inset-0"
                                 size="small"
-                                options={years}
-                                defaultValue={[years[years.length - 1]]}
+                                options={years.data ? years.data : []}
                                 disableCloseOnSelect
                                 getOptionLabel={(option) => option}
+                                onChange={(e, newValues) => setYearsSelect(newValues)}
                                 renderInput={(params) => (
                                     <TextField label="Year" className="bg-white rounded"{...params} />
                                 )}
@@ -97,11 +113,12 @@ export default function TeamInfo() {
                                 limitTags={1}
                                 className="absolute inset-0"
                                 size="small"
-                                options={teams}
+                                options={teams.data ? teams.data : []}
                                 disableCloseOnSelect
-                                getOptionLabel={(option) => option}
+                                getOptionLabel={(option) => option.name}
+                                onChange={(e, newValues) => setTeamIDs(newValues.map((value) => value.id))}
                                 renderInput={(params) => (
-                                    <TextField label="Team" className="bg-white rounded h-fit"{...params} />
+                                    <TextField label="Opponent teams" className="bg-white rounded h-fit"{...params} />
                                 )}
                             />
                         </div>
@@ -111,19 +128,22 @@ export default function TeamInfo() {
                                 limitTags={1}
                                 className="absolute inset-0"
                                 size="small"
-                                options={tournaments}
+                                options={tournaments.data ? tournaments.data : []}
                                 disableCloseOnSelect
-                                getOptionLabel={(option) => option}
+                                getOptionLabel={(option) => option.name}
+                                onChange={(e, newValues) => setTournamentIDs(newValues.map((value) => value.id))}
                                 renderInput={(params) => (
                                     <TextField label="Tournament" className="bg-white rounded"{...params} />
                                 )}
                             />
                         </div>
                     </div>
+                    <h3 className="text-3xl font-semibold">Stats overview</h3>
+
 
                     <div className="grid md:grid-cols-2 gap-4">
                         {[
-                            { label: "AVG", value: "0.707", rank: "#4" },
+                            { label: "AVG", value: stats.data ? stats.data.AVG.toFixed(3) : 0.000, rank: "#4" },
                             { label: "W-L", value: "12-23", rank: "#2" },
                         ].map((stat, index) => (
                             <div
@@ -140,50 +160,6 @@ export default function TeamInfo() {
                     </div>
                     <hr className="border-t-2 border-line"></hr>
                     <h3 className="text-3xl font-semibold">Detailed stats</h3>
-                    <div className="flex flex-col md:flex-row justify-around h-40 mb-4 md:h-12">
-                        <div className="md:w-1/4 rounded drop-shadow-lg">
-                            <Autocomplete
-                                multiple
-                                limitTags={1}
-                                className="absolute inset-0"
-                                size="small"
-                                options={years}
-                                disableCloseOnSelect
-                                getOptionLabel={(option) => option}
-                                renderInput={(params) => (
-                                    <TextField label="Year" className="bg-white rounded"{...params} />
-                                )}
-                            />
-                        </div>
-                        <div className=" md:w-1/3 rounded  drop-shadow-lg">
-                            <Autocomplete
-                                multiple
-                                limitTags={1}
-                                className="absolute inset-0"
-                                size="small"
-                                options={teams}
-                                disableCloseOnSelect
-                                getOptionLabel={(option) => option}
-                                renderInput={(params) => (
-                                    <TextField label="Team" className="bg-white rounded h-fit"{...params} />
-                                )}
-                            />
-                        </div>
-                        <div className=" md:w-1/3 rounded  drop-shadow-lg">
-                            <Autocomplete
-                                multiple
-                                limitTags={1}
-                                className="absolute inset-0"
-                                size="small"
-                                options={tournaments}
-                                disableCloseOnSelect
-                                getOptionLabel={(option) => option}
-                                renderInput={(params) => (
-                                    <TextField label="Tournament" className="bg-white rounded"{...params} />
-                                )}
-                            />
-                        </div>
-                    </div>
                     <div className="bg-white rounded self-center drop-shadow-lg">
                         <ToggleButtonGroup
                             color="primary"

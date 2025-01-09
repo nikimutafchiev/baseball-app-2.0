@@ -5,14 +5,17 @@ export default function TeamSelectList(props) {
     const [teamSelected, setTeamSelected] = useState(false);
     const [selectedTeamId, setSelectedTeamId] = useState(-1);
     const { id } = useParams();
+    const addTeam = async () => {
+        await fetch(`http://localhost:6363/tournament_teams/?tournament_id=${id}&team_id=${selectedTeamId}`, {
+            method: "POST"
+        });
+        setTeamSelected(false);
+        setSelectedTeamId(-1);
+        props.close();
+    }
     useEffect(() => {
         if (teamSelected && selectedTeamId != -1) {
-            fetch(`http://localhost:6363/tournament_teams/?tournament_id=${id}&team_id=${selectedTeamId}`, {
-                method: "POST"
-            });
-            setTeamSelected(false);
-            setSelectedTeamId(-1);
-            props.close();
+            addTeam();
         }
     }, [teamSelected, selectedTeamId]);
     return (<>

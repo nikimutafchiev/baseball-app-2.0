@@ -1,17 +1,21 @@
-import { Autocomplete, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material"
+import { Autocomplete, TextField, ToggleButton, ToggleButtonGroup, MenuItem } from "@mui/material"
+import { LineChart } from "@mui/x-charts/LineChart"
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { BiEdit } from "react-icons/bi";
 import { RiSaveLine } from "react-icons/ri";
 import { IoReorderThree } from "react-icons/io5";
 import { CircularProgress } from "@mui/material";
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TableFooter } from "@mui/material";
 import useSWR from "swr";
+import PlayerSelectList from "../Other/PlayerSelectList";
 export default function PlayerInfo() {
     const [isEdit, setIsEdit] = useState(false);
     const { id } = useParams();
     const [teamIDs, setTeamIDs] = useState([]);
     const [tournamentIDs, setTournamentIDs] = useState([]);
     const [yearsSelect, setYearsSelect] = useState([]);
+    const [selectClicked, setSelectClicked] = useState(false);
     const query_params = { tournament_query: tournamentIDs.length != 0 ? `tournament_ids=[${tournamentIDs}]` : "", team_query: teamIDs.length != 0 ? `team_ids=[${teamIDs}]` : "", year_query: yearsSelect.length != 0 ? `years=[${yearsSelect}]` : "" }
     const get_query = (tournament, team, year) => {
         var res = ""
@@ -24,12 +28,64 @@ export default function PlayerInfo() {
         return res
     }
     const player = useSWR(`http://localhost:6363/player/${id}`, (url) => fetch(url).then((res) => res.json()));
+    const players = useSWR("http://localhost:6363/players", (url) => fetch(url).then((res) => res.json()));
+    const [selectedPlayer, setSelectedPlayer] = useState(null);
     const stats = useSWR(`http://localhost:6363/player/${id}/stats/${get_query(true, true, true)}`, (url) => fetch(url).then((res) => res.json()));
+    const [selectedPlayerStats, setSelectedPlayerStats] = useState([]);
+    const games_stats = useSWR(`http://localhost:6363/player/${id}/games_stats/${get_query(true, true, true)}`, (url) => fetch(url).then((res) => res.json()));
     const years = useSWR(`http://localhost:6363/player/${id}/years/${get_query(true, true, false)}`, (url) => fetch(url).then((res) => res.json()));
     const teams = useSWR(`http://localhost:6363/player/${id}/teams/${get_query(true, false, true)}`, (url) => fetch(url).then((res) => res.json()));
     const tournaments = useSWR(`http://localhost:6363/player/${id}/tournaments/${get_query(false, true, true)}`, (url) => fetch(url).then((res) => res.json()));
 
     const [isShrinked, setIsShrinked] = useState(false);
+    const [graphStat, setGraphStat] = useState("H");
+    useEffect(() => {
+        if (selectedPlayer)
+            fetch(`http://localhost:6363/player/${selectedPlayer.id}/stats/${get_query(true, true, true)}`)
+                .then(response => response.json())
+                .then(data => {
+                    setSelectedPlayerStats(data);
+                })
+                .catch(error => console.error(error));
+        else
+            setSelectedPlayerStats(null);
+    }, [selectedPlayer]);
+    const get_stat_array = (stat, games) => {
+        if (["H", "BB", "SO"].includes(stat))
+            return games.map((game) => game.stats[stat])
+        var res = []
+        let temp_stats = {
+            "PA": 0,
+            "H": 0,
+            "AB": 0,
+            "SO": 0,
+            "BB": 0,
+            "HBP": 0,
+            "AVG": 0,
+            "SLG": 0,
+            "1B": 0,
+            "2B": 0,
+            "3B": 0,
+            "HR": 0
+
+        }
+        for (let i = 0; i < games.length; i++) {
+
+            temp_stats["H"] += games[i].stats["H"]
+            temp_stats["1B"] += games[i].stats["1B"]
+            temp_stats["2B"] += games[i].stats["2B"]
+            temp_stats["3B"] += games[i].stats["3B"]
+            temp_stats["HR"] += games[i].stats["HR"]
+            temp_stats["AB"] += games[i].stats["AB"]
+            temp_stats["PA"] += games[i].stats["PA"]
+            if (stat == "AVG")
+                res.push(temp_stats["AB"] ? (temp_stats["H"] / temp_stats["AB"]).toFixed(3) : 0)
+            else if (stat == "SLG")
+                res.push(temp_stats["AB"] ? ((temp_stats["1B"] + 2 * temp_stats["2B"] + 3 * temp_stats["3B"] + 4 * temp_stats["HR"]) / temp_stats["AB"]).toFixed(3) : 0)
+        }
+        return res
+
+    }
     return (
         <>
             {player.data && <div className="flex flex-col md:flex-row w-full gap-8 text-white text-sm ">
@@ -44,8 +100,8 @@ export default function PlayerInfo() {
                             </h3>
                             <img className="w-[180px] h-[200px]" src={player.data.image ? player.data.image : "http://placehold.co/180x200"} />
                             <div className="flex flex-col gap-0.5 items-center w-full">
-                                {player.data.heigth && <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50" ><div>Height:</div> <div className="w-fit flex flex-row gap-1"><div>{player.data.height}</div><div> cm</div></div></div>}
-                                {player.data.weight && <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Weigth:</div> <div>{player.data.weigth} kg</div></div>}
+                                {player.data.height && <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50" ><div>Height:</div> <div className="w-fit flex flex-row gap-1"><div>{player.data.height}</div><div> cm</div></div></div>}
+                                {player.data.weigth && <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Weigth:</div> <div>{player.data.weigth} kg</div></div>}
                                 {player.data.dateOfBirth && <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Birthday:</div> <div>{new Date(player.data.dateOfBirth).toLocaleDateString()}</div></div>}
                                 {player.data.country && <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50 text-nowrap"><div>Birthplace:</div> <div>{player.data.country}</div></div>}
                                 {player.data.battingSide && player.data.throwingArm && <div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50"><div>Batting/Throwing:</div><div>{player.data.battingSide}/{player.data.throwingArm}</div> </div>}
@@ -82,7 +138,6 @@ export default function PlayerInfo() {
 
                 <div className="flex flex-row flex-1 gap-8">
                     <div className="flex flex-col flex-1 text-black gap-4 h-fit">
-                        <h3 className="text-3xl font-semibold">Stats overview</h3>
                         <div className="flex flex-col md:flex-row justify-around mb-4 h-40 md:h-12">
                             <div className="md:w-1/4 rounded drop-shadow-lg">
                                 <Autocomplete
@@ -130,7 +185,7 @@ export default function PlayerInfo() {
                                 />
                             </div>
                         </div>
-
+                        <h3 className="text-3xl font-semibold">Stats overview</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {[
                                 { label: "AVG", value: stats.data ? stats.data.AVG.toFixed(3) : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0.000, rank: "#4 in Leaderboard" },
@@ -211,8 +266,8 @@ export default function PlayerInfo() {
                             </ToggleButtonGroup>
                         </div>
 
-                        <div className="w-full bg-white rounded-2xl drop-shadow-lg h-96">
-                            <div className="bg-white rounded">
+                        <div className="w-full drop-shadow-lg h-96">
+                            {/* <div className="bg-white rounded">
                                 <ToggleButtonGroup
                                     color="primary"
                                     exclusive
@@ -220,23 +275,151 @@ export default function PlayerInfo() {
                                     <ToggleButton>Graph</ToggleButton>
                                     <ToggleButton>Table</ToggleButton>
                                 </ToggleButtonGroup>
-                            </div>
+                            </div> */}
+                            {games_stats.data && <TableContainer style={{ maxWidth: "100%", minHeight: "100%", maxHeight: "100%", overflowY: "auto", backgroundColor: "white", borderRadius: "16px" }}>
+                                <Table stickyHeader >
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell><div className="text-base font-semibold">Start time</div></TableCell>
+                                            <TableCell><div className="text-base font-semibold">Home team</div></TableCell>
+                                            <TableCell><div className="text-base font-semibold">Away team</div></TableCell>
+                                            <TableCell><div className="text-base font-semibold">AB</div></TableCell>
+                                            <TableCell><div className="text-base font-semibold">R</div></TableCell>
+                                            <TableCell><div className="text-base font-semibold">H</div></TableCell>
+                                            <TableCell><div className="text-base font-semibold">RBI</div></TableCell>
+                                            <TableCell><div className="text-base font-semibold">BB</div></TableCell>
+                                            <TableCell><div className="text-base font-semibold">SO</div></TableCell>
+                                            <TableCell><div className="text-base font-semibold">AVG</div></TableCell>
+                                            <TableCell><div className="text-base font-semibold">SLG</div></TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody sx={{ overflowY: "auto" }}>{
+
+                                        games_stats.data.map((row) => (
+                                            <TableRow
+
+                                                key={row.id}
+
+                                            >
+
+                                                {/* <TableCell component="th" scope="row">
+                                                    {row.battingOrder}
+                                                </TableCell> */}
+                                                <TableCell>{new Date(row.startTime).toLocaleDateString()}</TableCell>
+                                                <TableCell>{row.homeTeam}</TableCell>
+                                                <TableCell>{row.awayTeam}</TableCell>
+                                                <TableCell>{row.stats.AB}</TableCell>
+                                                <TableCell>{row.stats.R}</TableCell>
+                                                <TableCell>{row.stats.H}</TableCell>
+                                                <TableCell>{row.stats.RBI}</TableCell>
+                                                <TableCell>{row.stats.BB}</TableCell>
+                                                <TableCell>{row.stats.SO}</TableCell>
+                                                <TableCell>{row.stats.AVG.toFixed(3)}</TableCell>
+                                                <TableCell>{row.stats.SLG.toFixed(3)}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                    <TableFooter sx={{ position: "sticky", bottom: 0, zIndex: 1, backgroundColor: "white" }}>
+                                        <TableRow>
+                                            <TableCell></TableCell>
+                                            <TableCell></TableCell>
+                                            <TableCell></TableCell>
+                                            <TableCell><div className="font-semibold text-black text-sm">{stats.data ? stats.data.AB : 0}</div></TableCell>
+                                            <TableCell><div className="font-semibold text-black text-sm">{stats.data ? stats.data.R : 0}</div></TableCell>
+                                            <TableCell><div className="font-semibold text-black text-sm">{stats.data ? stats.data.H : 0}</div></TableCell>
+                                            <TableCell><div className="font-semibold text-black text-sm">{stats.data ? stats.data.RBI : 0}</div></TableCell>
+                                            <TableCell><div className="font-semibold text-black text-sm">{stats.data ? stats.data.BB : 0}</div></TableCell>
+                                            <TableCell><div className="font-semibold text-black text-sm">{stats.data ? stats.data.SO : 0}</div></TableCell>
+                                            <TableCell><div className="font-semibold text-black text-sm">{stats.data ? stats.data.AVG.toFixed(3) : 0}</div></TableCell>
+                                            <TableCell><div className="font-semibold text-black text-sm">{stats.data ? stats.data.SLG.toFixed(3) : 0}</div></TableCell>
+                                        </TableRow>
+                                    </TableFooter>
+                                </Table>
+                            </TableContainer>}
+
+                        </div>
+                        <div className="w-full  drop-shadow-lg min-h-96 bg-white rounded-2xl p-2">
+                            <TextField
+                                size="small" className="w-1/6"
+                                select
+                                onChange={(e) => { setGraphStat(e.target.value) }}
+                                value={graphStat}
+                            >
+                                {["H", "AVG", "BB", "SO", "SLG"].map((option) => (
+                                    <MenuItem key={option} value={option}>
+                                        {<div className="text-sm">{option}</div>}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                            {games_stats.data &&
+                                <LineChart
+                                    xAxis={[{ data: games_stats.data.map((game) => new Date(game.startTime)), valueFormatter: (date) => new Date(date).toLocaleDateString() }]}
+                                    series={[
+                                        {
+                                            data: get_stat_array(graphStat, games_stats.data.sort((a, b) => new Date(a.startTime) - new Date(b.startTime))),
+                                            label: graphStat,
+                                            color: "#6A994E",
+                                        },
+                                    ]}
+                                    height={400}
+                                />
+                            }
                         </div>
                         <hr className="border-t-2 border-line"></hr>
                         <h3 className="text-3xl font-semibold">Player comparison</h3>
-                        <div className="bg-white rounded self-center drop-shadow-lg">
-                            <ToggleButtonGroup
-                                color="primary"
-                                exclusive
-                            >
-                                <ToggleButton>Batting</ToggleButton>
-                                <ToggleButton>Pitching</ToggleButton>
-                                <ToggleButton>Fielding</ToggleButton>
-                            </ToggleButtonGroup>
-                        </div>
+                        <div className="flex flex-col gap-4">
+                            <div className="flex flex-row justify-between">
+                                <button className={`${selectedPlayer ? "visible" : "invisible"} text-sm p-2 rounded drop-shadow-lg bg-accent_2 hover:bg-accent_3 text-white font-semibold`} onClick={() => setSelectedPlayer(null)}>
+                                    CLEAR
+                                </button>
+                                <button className="w-fit flex flex-row items-center gap-2 px-4 py-2 rounded-lg text-white bg-primary_2 hover:bg-primary_3 font-semibold text-base sm:text-lg md:text-xl" onClick={() => setSelectClicked(true)}>
+                                    SELECT PLAYER
+                                </button>
+                            </div>
+                            <div className="bg-white rounded self-center drop-shadow-lg">
+                                <ToggleButtonGroup
+                                    color="primary"
+                                    exclusive
+                                >
+                                    <ToggleButton>Batting</ToggleButton>
+                                    <ToggleButton>Pitching</ToggleButton>
+                                    <ToggleButton>Fielding</ToggleButton>
+                                </ToggleButtonGroup>
+                            </div>
+                            <div className="grid grid-cols-3 font-semibold text-xl ">
+                                <div className="text-center ">
+                                    {player.data.firstName} {player.data.lastName}
+                                </div>
+                                <div>
 
+                                </div>
+                                {selectedPlayer &&
+                                    <div className="text-center">
+                                        {selectedPlayer.firstName} {selectedPlayer.lastName}
+                                    </div>}
+                            </div>
+                            <div className="grid grid-cols-3 font-semibold bg-white px-6 py-3 rounded drop-shadow-lg">
+                                {
+                                    [
+                                        { "player_1": stats.data ? stats.data.H : 0, "type": "H", "player_2": selectedPlayerStats ? selectedPlayerStats.H : undefined },
+                                        { "player_1": stats.data ? stats.data.AVG.toFixed(3) : 0, "type": "AVG", "player_2": selectedPlayerStats ? selectedPlayerStats.AVG.toFixed(3) : undefined },
+                                        { "player_1": stats.data ? stats.data.OBP.toFixed(3) : 0, "type": "OBP", "player_2": selectedPlayerStats ? selectedPlayerStats.OBP.toFixed(3) : undefined },
+                                        { "player_1": stats.data ? stats.data.SLG.toFixed(3) : 0, "type": "SLG", "player_2": selectedPlayerStats ? selectedPlayerStats.SLG.toFixed(3) : undefined }
+                                    ].map((stat) => <>
+                                        <div className={`text-left border-r-2 p-1.5 ${stat.player_1 > stat.player_2 ? "bg-green-100" : stat.player_1 == stat.player_2 ? "bg-blue-100" : ""}`}>{stat.player_1}</div>
+                                        <div className="text-center p-1.5">{stat.type}</div>
+                                        <div className={`text-right border-l-2  p-1.5 ${stat.player_1 < stat.player_2 ? "bg-green-100" : stat.player_1 == stat.player_2 ? "bg-blue-100" : ""}`}>{stat.player_2}</div>
+                                    </>)
+                                }
+                            </div>
+                        </div>
+                        {selectClicked && <PlayerSelectList close={(player) => { setSelectClicked(false); setSelectedPlayer(player) }} players={players.data ? players.data.filter((a) => a.id != player.data.id) : []} rosterSelect={false} />}
+                        {selectClicked && <div className="fixed inset-0 z-10 bg-black bg-opacity-50" ></div>}
                     </div>
+
                 </div >
+
             </div >}
+
         </>)
 }

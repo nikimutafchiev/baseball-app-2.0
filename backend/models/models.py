@@ -100,6 +100,10 @@ class Game(db.Model):
     {
         "home": [0 for i in range(0,9)], "away": [0 for i in range(0,9)]
     })
+    
+    hits: Mapped[Optional[int]]
+    errors: Mapped[Optional[int]]
+    lob: Mapped[Optional[int]]
 
     teams: Mapped[List["GameTeam"]] = relationship(back_populates="game")
     user_associations: Mapped[List["UserGame"]] = relationship(back_populates="game")
@@ -115,6 +119,7 @@ class GameTeam(db.Model):
     result: Mapped[int] = mapped_column(Integer,nullable=False,default=0)
     home_away: Mapped[HomeAway] = mapped_column(Enum(HomeAway),nullable=False)
     players: Mapped[List["GameTeamTeamTournamentPlayer"]] = relationship(back_populates="game_team")
+    is_winner: Mapped[bool] = mapped_column(Integer,default = False)
     __table_args__ = (db.UniqueConstraint("game_id","home_away",name="unique_game_home_away"),
                       db.UniqueConstraint("game_id","team_tournament_id",name="unique_game_team"),)
 
