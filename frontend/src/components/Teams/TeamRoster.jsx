@@ -14,14 +14,9 @@ export default function TeamRoster() {
         () => {
             players.mutate(); roster.mutate();
             taken_players.mutate();
+            setSelectList(players.data && taken_players.data ? players.data.filter((player) => !taken_players.data.includes(player.id)) : [])
         }
         , [addClicked]
-    )
-    useEffect(
-        () => {
-            setSelectList(players.data && taken_players.data ? players.data.filter((player) => !taken_players.data.includes(player.id)) : [])
-        },
-        [players, taken_players]
     )
     return (<div className="h-fit flex flex-col w-full gap-4 p-4">
         {roster.data &&

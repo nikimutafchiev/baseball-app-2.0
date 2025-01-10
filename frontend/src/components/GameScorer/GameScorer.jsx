@@ -295,7 +295,7 @@ export default function GameScorer() {
             });
         }
         else {
-            fetch(`http://localhost:6363/game/${id}/change_outs`, {
+            await fetch(`http://localhost:6363/game/${id}/change_outs`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -491,7 +491,7 @@ export default function GameScorer() {
     //TODO Fix the bug, when runner window is no opened, to delete all the runners, when changing batting turns 424-433
     const situationComponents = {
         "Hit": <GameScorerHitOptions close={clearOption} situationFunction={(bases, hitType) => {
-            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "hit", situation: hitType }])
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "hit", situation: hitType, finalBase: null }])
             addSituation("hit", hitType);
             moveRunners(bases);
             clearCount();
@@ -529,11 +529,11 @@ export default function GameScorer() {
             clearCount={() => clearCount()}
             incrementOuts={() => incrementOuts()}
             moveRunners={(bases) => moveRunners(bases)}
-            addSituation={(situationCategory, situation) => { setRunnersSituations([...runnersSituations, { player: offense.batter, situation: situation, situationCategory: situationCategory }]); addSituation(situationCategory, situation, true) }} />,
+            addSituation={(situationCategory, situation) => { setRunnersSituations([...runnersSituations, { player: offense.batter, situation: situation, situationCategory: situationCategory, finalBase: null }]); addSituation(situationCategory, situation, true) }} />,
         "Strikeout": <GameScorerStrikeoutOptions close={clearOption}
             situationFunction={(strikeoutType) => {
                 setIsSituationReady(false);
-                setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "strikeout", situation: strikeoutType }])
+                setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "strikeout", situation: strikeoutType, finalBase: null }])
                 addSituation("strikeout", strikeoutType, true);
                 clearCount();
                 nextBatter();
@@ -542,7 +542,7 @@ export default function GameScorer() {
             }}
         />,
         "Groundout": <GameScorerOutOptions close={clearOption} situationFunction={(positions) => {
-            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "groundout", situation: `Groundout ${positions}` }])
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "groundout", situation: `Groundout ${positions}`, finalBase: null }])
             addSituation("groundout", `Groundout ${positions}`, true);
             moveRunners(0);
             clearCount();
@@ -550,7 +550,7 @@ export default function GameScorer() {
             incrementOuts();
         }} />,
         "Flyout": <GameScorerFlyoutOptions close={clearOption} situation="Flyout" situationCode="F" situationFunction={(position) => {
-            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "flyout", situation: `Flyout ${positionValuesToAbbrevations[position]}` }])
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "flyout", situation: `Flyout ${positionValuesToAbbrevations[position]}`, finalBase: null }])
             addSituation("flyout", `Flyout ${positionValuesToAbbrevations[position]}`, true);
             moveRunners(0);
             clearCount();
@@ -558,7 +558,7 @@ export default function GameScorer() {
             incrementOuts();
         }} />,
         "Sac flyout": <GameScorerFlyoutOptions close={clearOption} situation="Sacrifice fly" situationCode="SF" situationFunction={(position) => {
-            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "sacrifice flyout", situation: `Sacrificise flyout ${positionValuesToAbbrevations[position]}` }])
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "sacrifice flyout", situation: `Sacrificise flyout ${positionValuesToAbbrevations[position]}`, finalBase: null }])
             addSituation("sacrifice flyout", `Sacrificise flyout ${positionValuesToAbbrevations[position]}`, true);
             moveRunners(0);
             clearCount();
@@ -566,7 +566,7 @@ export default function GameScorer() {
             incrementOuts();
         }} />,
         "Linedrive": <GameScorerFlyoutOptions close={clearOption} situation="Linedrive" situationCode="L" situationFunction={(position) => {
-            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "flyout", situation: `Linedrive  ${positionValuesToAbbrevations[position]}` }])
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "flyout", situation: `Linedrive  ${positionValuesToAbbrevations[position]}`, finalBase: null }])
             addSituation("flyout", `Linedrive ${positionValuesToAbbrevations[position]}`, true);
             moveRunners(0);
             clearCount();
@@ -575,7 +575,7 @@ export default function GameScorer() {
         }
         } />,
         "Foul fly": <GameScorerFlyoutOptions close={clearOption} situation="Foul fly" situationCode="FF" situationFunction={(position) => {
-            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "flyout", situation: `Foul flyout ${positionValuesToAbbrevations[position]}` }])
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "flyout", situation: `Foul flyout ${positionValuesToAbbrevations[position]}`, finalBase: null }])
             addSituation("flyout", `Foul flyout ${positionValuesToAbbrevations[position]}`, true);
             moveRunners(0);
             clearCount();
@@ -583,7 +583,7 @@ export default function GameScorer() {
             incrementOuts();
         }} />,
         "Pop fly": <GameScorerFlyoutOptions close={clearOption} situation="Pop fly" situationCode="P" situationFunction={(position) => {
-            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "flyout", situation: `Pop flyout ${positionValuesToAbbrevations[position]}` }])
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "flyout", situation: `Pop flyout ${positionValuesToAbbrevations[position]}`, finalBase: null }])
             addSituation("flyout", `Pop flyout ${positionValuesToAbbrevations[position]}`, true);
             moveRunners(0);
             clearCount();
@@ -591,7 +591,7 @@ export default function GameScorer() {
             incrementOuts();
         }} />,
         "Infield fly": <GameScorerFlyoutOptions close={clearOption} situation="Infield fly" situationCode="IF" situationFunction={(position) => {
-            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "flyout", situation: `Infield flyout ${positionValuesToAbbrevations[position]}` }])
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "flyout", situation: `Infield flyout ${positionValuesToAbbrevations[position]}`, finalBase: null }])
             addSituation("flyout", `Infield flyout ${positionValuesToAbbrevations[position]}`, true);
             moveRunners(0);
             clearCount();
@@ -599,28 +599,28 @@ export default function GameScorer() {
             incrementOuts();
         }} />,
         "Walk": <GameScorerWalkOptions close={clearOption} situationFunction={(walkType) => {
-            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "walk", situation: walkType }]);
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "walk", situation: walkType, finalBase: null }]);
             addSituation("walk", walkType);
             moveRunners(1);
             clearCount();
             nextBatter();
         }} />,
         "Dropped 3rd": <GameScorerDroppedStrikeoutOptions close={clearOption} situationFunction={(droppedType) => {
-            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "dropped 3rd", situation: droppedType }]);
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "dropped 3rd", situation: droppedType, finalBase: null }]);
             addSituation("dropped 3rd", droppedType);
             moveRunners(1);
             clearCount();
             nextBatter();
         }} />,
         "Fielder's choice": <GameScorerOutOptions close={clearOption} situationFunction={(positions) => {
-            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "fielder's choice", situation: `Fielder's choice ${positions}` }])
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "fielder's choice", situation: `Fielder's choice ${positions}`, finalBase: null }])
             addSituation("fielder's choice", `Fielder's choice ${positions}`);
             moveRunners(1);
             clearCount();
             nextBatter();
         }} />,
         "Sac bunt": <GameScorerOutOptions close={clearOption} situationFunction={(positions) => {
-            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "sacrifice bunt", situation: `Sacrifice bunt ${positions}` }])
+            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "sacrifice bunt", situation: `Sacrifice bunt ${positions}`, finalBase: null }])
             addSituation("sacrifice bunt", `Sacrifice bunt ${positions}`, true);
             moveRunners(0);
             clearCount();
@@ -632,7 +632,7 @@ export default function GameScorer() {
             situationFunction={(errorSituation) => {
                 // console.log(errorSituation)
                 // setIsSituationReady(false);
-                setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "error", situation: errorSituation }]);
+                setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "error", situation: errorSituation, finalBase: null }]);
                 addSituation("error", errorSituation);
                 moveRunners(1);
                 clearCount();
@@ -672,7 +672,7 @@ export default function GameScorer() {
                 setIsSituationReady(true);
             }
         }} runner={runnersToMove[runnerWindowCount - 1]}
-            situationFunction={(player, situationCategory, situation, startBase, finalBase, isOut = false) => {
+            situationFunction={async (player, situationCategory, situation, startBase, finalBase, isOut = false) => {
                 if (situation != "")
                     setRunnersSituations([...runnersSituations, { player: player, situationCategory: situationCategory, situation: situation, finalBase: finalBase, isOut: isOut }]);
                 const newOffense = { ...offense };
@@ -685,7 +685,7 @@ export default function GameScorer() {
                         const newPoints = points.away;
                         newPoints[inning - 1] = points.away[inning - 1] + 1;
 
-                        fetch(`http://localhost:6363/game/${id}/change_points_by_inning`, {
+                        await fetch(`http://localhost:6363/game/${id}/change_points_by_inning`, {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
@@ -696,7 +696,7 @@ export default function GameScorer() {
 
                         });
                         setPoints({ home: points.home, away: newPoints })
-                        fetch(`http://localhost:6363/game_team/change_score/?game_id=${id}&home_away=AWAY`, {
+                        await fetch(`http://localhost:6363/game_team/change_score/?game_id=${id}&home_away=AWAY`, {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
@@ -711,7 +711,7 @@ export default function GameScorer() {
                     } else {
                         const newPoints = points.home;
                         newPoints[inning - 1] = points.home[inning - 1] + 1;
-                        fetch(`http://localhost:6363/game/${id}/change_points_by_inning`, {
+                        await fetch(`http://localhost:6363/game/${id}/change_points_by_inning`, {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
@@ -722,7 +722,7 @@ export default function GameScorer() {
 
                         });
                         setPoints({ home: newPoints, away: points.away })
-                        fetch(`http://localhost:6363/game_team/change_score/?game_id=${id}&home_away=HOME`, {
+                        await fetch(`http://localhost:6363/game_team/change_score/?game_id=${id}&home_away=HOME`, {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
@@ -742,7 +742,7 @@ export default function GameScorer() {
                 }
 
                 setOffense(newOffense);
-                fetch(`http://localhost:6363/game/${id}/change_runners`, {
+                await fetch(`http://localhost:6363/game/${id}/change_runners`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -823,7 +823,7 @@ export default function GameScorer() {
                         setAwayLOB(awayLOB + Object.entries(offense).filter(([position, player]) => position !== "batter" && player !== null).length);
                     }
                     setInningHalf(inningHalf == "UP" ? "DOWN" : "UP");
-                    await fetch(`http://localhost:6363/game/${id}/change_inning`, {
+                    fetch(`http://localhost:6363/game/${id}/change_inning`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -852,7 +852,8 @@ export default function GameScorer() {
             moveRunners={moveRunners}
             clearCount={() => clearCount()}
             nextBatter={() => nextBatter()}
-            addSituation={(situationCategory, situation) => { setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: situationCategory, situation: situation }]); addSituation(situationCategory, situation) }}
+            //TODO
+            addSituation={(situationCategory, situation) => { setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: situationCategory, situation: situation, finalBase: null }]); addSituation(situationCategory, situation) }}
             occupiedBases={
                 Object.entries(offense).map(([key, value]) => {
                     if (value && key != "batter")
@@ -863,12 +864,12 @@ export default function GameScorer() {
             }
             incrementBallCount={() => {
                 if (ballCount == 3) {
-                    setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "walk", situation: "Walk on balk" }]);
+                    setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "walk", situation: "Walk on balk", finalBase: "1B" }]);
                     addSituation("walk", "Walk");
                     moveRunners(1);
                 }
                 else {
-                    setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "", situation: "Ball on balk" }]);
+                    // setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "", situation: "Ball on balk" }]);
                     setBallCount(ballCount + 1);
                 }
             }}
@@ -1229,7 +1230,7 @@ export default function GameScorer() {
                                 ><div>BB</div><div>Walk</div></button>
                                 <button className="bg-red-500 hover:bg-red-400 flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => setSituationOption("Flyout")}><div>F</div><div>Flyout</div></button>
                                 <button className="bg-primary_2 hover:bg-primary_2_hover  flex flex-row px-2 justify-between items-center transform transition-transform hover:scale-105 rounded" onClick={() => {
-                                    setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "hit by pitch", situation: "Hit by pitch" }]);
+                                    setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "hit by pitch", situation: "Hit by pitch", finalBase: null }]);
                                     addSituation("hit by pitch", "Hit by pitch");
                                     moveRunners(1);
                                     nextBatter();
@@ -1247,7 +1248,7 @@ export default function GameScorer() {
                                 <div className="grid grid-cols-2 gap-x-1">
                                     <button className="bg-primary_2 hover:bg-primary_2_hover  py-1 text-center place-content-center rounded text-base" onClick={() => {
                                         if (ballCount == 3) {
-                                            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "walk", situation: "Walk" }]);
+                                            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "walk", situation: "Walk", finalBase: null }]);
                                             addSituation("walk", "Walk");
                                             moveRunners(1);
                                             nextBatter();
@@ -1262,7 +1263,7 @@ export default function GameScorer() {
                                     <button className="bg-red-500 hover:bg-red-400 py-1 text-center place-content-center rounded text-base" onClick={() => {
                                         if (strikeCount == 2) {
                                             setIsSituationReady(false);
-                                            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "strikeout", situation: "Strikeout looking" }])
+                                            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "strikeout", situation: "Strikeout looking", finalBase: null }])
                                             addSituation("strikeout", "Strikeout looking", true);
                                             nextBatter();
                                             incrementOuts();
@@ -1275,7 +1276,7 @@ export default function GameScorer() {
                                     <button className="bg-red-500 hover:bg-red-400 py-1 text-center place-content-center rounded text-base" onClick={() => {
                                         if (strikeCount == 2) {
                                             setIsSituationReady(false);
-                                            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "strikeout", situation: "Strikeout swinging" }])
+                                            setRunnersSituations([...runnersSituations, { player: offense.batter, situationCategory: "strikeout", situation: "Strikeout swinging", finalBase: null }])
                                             addSituation("strikeout", "Strikeout swinging", true);
                                             nextBatter();
                                             incrementOuts();

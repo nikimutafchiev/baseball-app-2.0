@@ -21,7 +21,7 @@ export default function TournamentInfoPlayerLeaderboard() {
                     {["AVG", "H", "BB", "SO"].map((stat) => (
                         <div className="w-full flex flex-col">
                             <h3 className="text-xl font-semibold text-gray-800 mb-4">{stat}</h3>
-                            <div className="w-full flex flex-col bg-white rounded-lg shadow-md overflow-hidden">
+                            <div className="w-full flex flex-col bg-white rounded-lg shadow-md max-h-[500px] overflow-y-auto overflow-hidden">
                                 {/* <div className="flex flex-col bg-primary_2  hover:bg-primary_2_hover p-4 cursor-pointer ">
                                 <h4 className="text-xl font-semibold text-white mb-2">
                                     #1 - Evgenii Chernozemsky
@@ -103,9 +103,9 @@ export default function TournamentInfoPlayerLeaderboard() {
                                     statValue: 0.585,
                                 },
                             ]*/
-                                    stats.data.sort((a, b) => b.stats[stat] - a.stats[stat]).slice(0, 10).map((player, index) => (
+                                    stats.data.sort((a, b) => b.stats[stat] - a.stats[stat]).map((player, index) => (
                                         <>
-                                            {index == 0 && <Link to={`/players/${player.id}`} className="flex flex-col bg-primary_2  gap-1 hover:bg-primary_2_hover p-3 cursor-pointer ">
+                                            {index == 0 && <Link to={`/players/${player.id}`} className="flex flex-col sticky top-0 shadow-lg bg-primary_2  gap-1 hover:bg-primary_2_hover p-3 cursor-pointer ">
                                                 <h4 className="text-xl font-semibold text-white mb-2">
                                                     #1 -{player.firstName} {player.lastName}
                                                 </h4>

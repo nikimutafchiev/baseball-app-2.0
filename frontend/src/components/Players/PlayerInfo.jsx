@@ -359,10 +359,28 @@ export default function PlayerInfo() {
                                             data: get_stat_array(graphStat, games_stats.data.sort((a, b) => new Date(a.startTime) - new Date(b.startTime))),
                                             label: graphStat,
                                             color: "#6A994E",
+                                            area: true,
+                                            id: "stat"
+
                                         },
                                     ]}
+                                    grid={{ horizontal: true }}
+
                                     height={400}
-                                />
+                                    sx={{
+                                        "--Charts-lineArea-opacity": 1,
+                                        '& .MuiAreaElement-series-stat': {
+                                            fill: "url('#gradient')",
+                                        }
+                                    }}
+                                >
+                                    <defs>
+                                        <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stopColor="#84b867" stopOpacity={0.5} />
+                                            <stop offset="100%" stopColor="#84b867" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                </LineChart>
                             }
                         </div>
                         <hr className="border-t-2 border-line"></hr>
@@ -401,10 +419,10 @@ export default function PlayerInfo() {
                             <div className="grid grid-cols-3 font-semibold bg-white px-6 py-3 rounded drop-shadow-lg">
                                 {
                                     [
-                                        { "player_1": stats.data ? stats.data.H : 0, "type": "H", "player_2": selectedPlayerStats ? selectedPlayerStats.H : undefined },
-                                        { "player_1": stats.data ? stats.data.AVG.toFixed(3) : 0, "type": "AVG", "player_2": selectedPlayerStats ? selectedPlayerStats.AVG.toFixed(3) : undefined },
-                                        { "player_1": stats.data ? stats.data.OBP.toFixed(3) : 0, "type": "OBP", "player_2": selectedPlayerStats ? selectedPlayerStats.OBP.toFixed(3) : undefined },
-                                        { "player_1": stats.data ? stats.data.SLG.toFixed(3) : 0, "type": "SLG", "player_2": selectedPlayerStats ? selectedPlayerStats.SLG.toFixed(3) : undefined }
+                                        { "player_1": stats.data ? stats.data.H : 0, "type": "H", "player_2": selectedPlayer && selectedPlayerStats ? selectedPlayerStats.H : undefined },
+                                        { "player_1": stats.data ? stats.data.AVG.toFixed(3) : 0, "type": "AVG", "player_2": selectedPlayer && selectedPlayerStats ? selectedPlayerStats.AVG.toFixed(3) : undefined },
+                                        { "player_1": stats.data ? stats.data.OBP.toFixed(3) : 0, "type": "OBP", "player_2": selectedPlayer && selectedPlayerStats ? selectedPlayerStats.OBP.toFixed(3) : undefined },
+                                        { "player_1": stats.data ? stats.data.SLG.toFixed(3) : 0, "type": "SLG", "player_2": selectedPlayer && selectedPlayerStats ? selectedPlayerStats.SLG.toFixed(3) : undefined }
                                     ].map((stat) => <>
                                         <div className={`text-left border-r-2 p-1.5 ${stat.player_1 > stat.player_2 ? "bg-green-100" : stat.player_1 == stat.player_2 ? "bg-blue-100" : ""}`}>{stat.player_1}</div>
                                         <div className="text-center p-1.5">{stat.type}</div>

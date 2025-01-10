@@ -8,7 +8,7 @@ export default function PlayerList(props) {
     const letters = [
         "A", 'B', "C", "D", "E", "F", "G", "H", "I", "J", 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
     ]
-    const filteredLetters = props.players.data ? letters.map((letter) => { return { label: letter, value: props.players.data.filter((player) => player.firstName.toLowerCase().includes(props.searchInput.toLowerCase()) || player.lastName.toLowerCase().includes(props.searchInput.toLowerCase())).filter((player) => player.firstName.charAt(0) === letter) } }).filter((letter) => letter.value.length > 0) : [];
+    const filteredLetters = props.players.data ? letters.map((letter) => { return { label: letter, value: props.players.data.filter((player) => (player.firstName + " " + player.lastName).toLowerCase().includes(props.searchInput.toLowerCase())).filter((player) => player.firstName.charAt(0) === letter) } }).filter((letter) => letter.value.length > 0) : [];
     return (<>
         {props.players.isLoading && <div className="mt-10 flex flex-row justify-center w-full"><CircularProgress color='success' size={60} /></div>}
         {(props.players.error && !props.players.isLoading) && <Alert className="mt-10 flex flex-row justify-center w-1/2 mx-auto" severity="error">Error occured, while fetching players!</Alert>}

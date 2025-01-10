@@ -751,7 +751,9 @@ def get_player_stats(player_id):
         "1B":0,
         "2B":0,
         "3B":0,
-        "HR":0
+        "HR":0,
+        "R":0,
+        "RBI":0
 
     }
     for team_tournament in player.teams_tournaments:
@@ -780,7 +782,14 @@ def get_player_stats(player_id):
                                 res["SO"] +=1
                             if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
                                 res["AB"] +=1
-                            
+                            for runner_situation in situation.data["runners"]:
+                                if runner_situation["finalBase"] == "Home":
+                                    res["RBI"] += 1
+                        for runner_situation in situation.data["runners"]:
+                                if runner_situation["player"]["player"]["id"] == player_id:
+                                    if runner_situation["finalBase"] == "Home":
+                                        res["R"] += 1
+                             
                     
     res["AVG"] = res["H"]/res["AB"] if res["AB"] != 0 else 0
     res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
@@ -865,7 +874,9 @@ def get_team_stats(team_id):
         "1B":0,
         "2B":0,
         "3B":0,
-        "HR":0
+        "HR":0,
+        "R":0,
+        "RBI":0
 
     }
     for team_tournament in team.tournaments:
@@ -896,7 +907,15 @@ def get_team_stats(team_id):
                                     res["SO"] +=1
                                 if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
                                     res["AB"] +=1
-                                
+                                for runner_situation in situation.data["runners"]:
+                                   
+                                    
+                                    if runner_situation["finalBase"] == "Home":
+                                        res["RBI"] += 1
+                            for runner_situation in situation.data["runners"]:
+                                if runner_situation["player"]["player"]["id"]== player.player.id:
+                                        if runner_situation["finalBase"] == "Home":
+                                            res["R"] += 1
                     
     res["AVG"] = res["H"]/res["AB"] if res["AB"] != 0 else 0
     # res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
@@ -926,7 +945,8 @@ def get_tournament_stats(tournament_id):
                         "1B":0,
                         "2B":0,
                         "3B":0,
-                        "HR":0
+                        "HR":0,"R":0,
+                        "RBI":0
 
                     }
                 for gameTeam in team_tournament.games:
@@ -953,6 +973,12 @@ def get_tournament_stats(tournament_id):
                                     player_stats["SO"] +=1
                                 if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
                                     player_stats["AB"] +=1
+                                for runner_situation in situation.data["runners"]:
+                                    if runner_situation["player"]["player"]["id"] == player.player.id:
+                                        if runner_situation["finalBase"] == "Home":
+                                            player_stats["R"] += 1
+                                    if runner_situation["finalBase"] == "Home":
+                                        player_stats["RBI"] += 1
                 player_stats["AVG"] = player_stats["H"]/player_stats["AB"] if player_stats["AB"] != 0 else 0
                 res.append({
                     "id":player.id,
@@ -996,7 +1022,9 @@ def get_player_games_stats(player_id):
                         "1B":0,
                         "2B":0,
                         "3B":0,
-                        "HR":0
+                        "HR":0,
+                        "R":0,
+                        "RBI":0
 
                     }
                     for situation in gameTeam.game.situations:
@@ -1021,6 +1049,14 @@ def get_player_games_stats(player_id):
                                 game_stats["SO"] +=1
                             if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
                                 game_stats["AB"] +=1
+                            for runner_situation in situation.data["runners"]:
+                                if runner_situation["finalBase"] == "Home":
+                                    game_stats["RBI"] += 1
+                        #TODO
+                        for runner_situation in situation.data["runners"]:
+                                if runner_situation["player"]["player"]["id"]== player_id:
+                                    if runner_situation["finalBase"] == "Home":
+                                        game_stats["R"] += 1
                     game_stats["AVG"] = game_stats["H"]/game_stats["AB"] if game_stats["AB"] != 0 else 0
                     game_stats["OBP"] = (game_stats["H"]+game_stats["BB"]+game_stats["HBP"])/game_stats["PA"] if game_stats["PA"] != 0 else 0
                     game_stats["SLG"] = (game_stats["1B"] + 2*game_stats["2B"] + 3*game_stats["3B"] + 4*game_stats["HR"])/game_stats["AB"] if game_stats["AB"] != 0 else 0
