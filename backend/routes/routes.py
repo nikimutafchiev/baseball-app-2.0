@@ -886,52 +886,55 @@ def get_team_stats(team_id):
         if (tournament_ids and team_tournament.tournament_id in tournament_ids) or ( not tournament_ids):
             for player in team_tournament.players:
                 for gameTeam in team_tournament.games:
-                    if game_id and gameTeam.game_id == game_id or years and gameTeam.game.start_time.year in years or not game_id and not years: 
-                        
-                        for situation in gameTeam.game.situations:
-                            if situation.data["batter"]["player"]["id"] == player.player.id :
-                                if situation.data["situationCategory"] != "":
-                                    res["PA"] += 1
-                                if situation.data["situationCategory"] == "hit":
-                                    res["H"] += 1
-                                    if situation.data["situation"] == "Single":
-                                        res["1B"] +=1
-                                    elif situation.data["situation"] == "Double":
-                                        res["2B"] +=1
-                                    elif situation.data["situation"] == "Triple":
-                                        res["3B"] +=1
-                                    elif situation.data["situation"] == "Homerun":
-                                        res["HR"] +=1
-                                if situation.data["situationCategory"] == "walk":
-                                    res["BB"] +=1
-                                if situation.data["situationCategory"] == "hit by pitch":
-                                    res["HBP"] +=1
-                                if situation.data["situationCategory"] == "strikeout":
-                                    res["SO"] +=1
-                                if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
-                                    res["AB"] +=1
-                                for runner_situation in situation.data["runners"]:
-                                   
+                    gameTeamObject = GameTeam.query.filter_by(game_id = gameTeam.game_id,   home_away = HomeAway.AWAY if gameTeam.home_away == HomeAway.HOME else HomeAway.HOME).first()
+                    if not years and game_id and gameTeam.game_id == game_id or not game_id and years and gameTeam.game.start_time.year in years or game_id and years and gameTeam.game_id == game_id and gameTeam.game.start_time.year in years or not game_id and not years : 
+                        if team_ids and gameTeamObject.team_tournament.team_id in team_ids or not team_ids:
+                            for situation in gameTeam.game.situations:
+                                if situation.data["batter"]["player"]["id"] == player.player.id :
+                                    if situation.data["situationCategory"] != "":
+                                        res["PA"] += 1
+                                    if situation.data["situationCategory"] == "hit":
+                                        res["H"] += 1
+                                        if situation.data["situation"] == "Single":
+                                            res["1B"] +=1
+                                        elif situation.data["situation"] == "Double":
+                                            res["2B"] +=1
+                                        elif situation.data["situation"] == "Triple":
+                                            res["3B"] +=1
+                                        elif situation.data["situation"] == "Homerun":
+                                            res["HR"] +=1
+                                    if situation.data["situationCategory"] == "walk":
+                                        res["BB"] +=1
+                                    if situation.data["situationCategory"] == "hit by pitch":
+                                        res["HBP"] +=1
+                                    if situation.data["situationCategory"] == "strikeout":
+                                        res["SO"] +=1
+                                    if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
+                                        res["AB"] +=1
+                                    for runner_situation in situation.data["runners"]:
                                     
-                                    if runner_situation["finalBase"] == "Home":
-                                        res["RBI"] += 1
-                            for runner_situation in situation.data["runners"]:
-                                if runner_situation["player"]["player"]["id"]== player.player.id:
+                                        
                                         if runner_situation["finalBase"] == "Home":
-                                            res["R"] += 1
+                                            res["RBI"] += 1
+                                for runner_situation in situation.data["runners"]:
+                                    if runner_situation["player"]["player"]["id"]== player.player.id:
+                                            if runner_situation["finalBase"] == "Home":
+                                                res["R"] += 1
     for team_tournament in team.tournaments:
         #(team_ids and team_tournament.team_id in team_ids)
         if (tournament_ids and team_tournament.tournament_id in tournament_ids) or ( not tournament_ids):
             for gameTeam in team_tournament.games:
-                if gameTeam.game.status == GameStatuses.ENDED:
-                    if gameTeam.is_winner:
-                        res["W"]+=1
-                    else:
-                        res["L"]+=1
+                gameTeamObject = GameTeam.query.filter_by(game_id = gameTeam.game_id,   home_away = HomeAway.AWAY if gameTeam.home_away == HomeAway.HOME else HomeAway.HOME).first()
+                if team_ids and gameTeamObject.team_tournament.team_id in team_ids or not team_ids:
+                    if gameTeam.game.status == GameStatuses.ENDED:
+                        if gameTeam.is_winner:
+                            res["W"]+=1
+                        else:
+                            res["L"]+=1
                     
     res["AVG"] = res["H"]/res["AB"] if res["AB"] != 0 else 0
-    # res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
-    # res["SLG"] = (res["1B"] + 2*res["2B"] + 3*res["3B"] + 4*res["HR"])/res["AB"] if res["AB"] != 0 else 0
+    res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
+    res["SLG"] = (res["1B"] + 2*res["2B"] + 3*res["3B"] + 4*res["HR"])/res["AB"] if res["AB"] != 0 else 0
     return res
 
 @route_bp.route("/tournament/<int:tournament_id>/stats/",methods=["GET"])

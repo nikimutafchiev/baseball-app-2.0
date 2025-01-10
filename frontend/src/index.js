@@ -30,6 +30,7 @@ import TeamRoster from './components/Teams/TeamRoster';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './ProtectedRoute';
 import SignUpPage from './pages/SigupPage';
+import StatsGuidePage from './pages/StatsGuidePage';
 const rooter = createBrowserRouter([
   {
     path: "/",
@@ -137,6 +138,10 @@ const rooter = createBrowserRouter([
       {
         path: "signup",
         element: <SignUpPage />
+      },
+      {
+        path: "guide",
+        element: <StatsGuidePage/>
       }
     ]
   }

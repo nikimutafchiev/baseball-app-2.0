@@ -21,6 +21,6 @@ export default function TournamentInfoTeams() {
             {<RiAddCircleLine />} ADD TEAM
         </button>
         <TournamentTeamList teams={teams} />
-        {addClicked && <TeamSelectList teams={selectData} close={() => setAddClicked(false)} />}
+        {addClicked && <TeamSelectList teams={selectData} close={() => setAddClicked(false)} adder={true} tournament_id={id} />}
     </div>)
 }

@@ -5,7 +5,7 @@ export default function RosterPage() {
     const { id } = useParams();
     const game = useSWR(`http://localhost:6363/game/${id}`, (url) => fetch(url).then((res) => res.json()));
     return (<>{
-        game.data && <div className="bg-gray-200 min-h-[90vh] flex flex-row justify-around p-2 ">
+        game.data && <div className=" min-h-[90vh] flex flex-row justify-around p-2 ">
             <Link className="rounded font-semibold bg-accent_2 hover:bg-accent_3 text-white drop-shadow-lg h-fit p-2" to={".."} relative="path">Back</Link>
             <Roster team={game.data.homeTeam} tournament={game.data.tournament} homeAway="HOME" />
             <Roster team={game.data.awayTeam} tournament={game.data.tournament} homeAway="AWAY" />
