@@ -876,15 +876,18 @@ def get_team_stats(team_id):
         "3B":0,
         "HR":0,
         "R":0,
-        "RBI":0
+        "RBI":0,
+        "W":0,
+        "L":0
 
     }
     for team_tournament in team.tournaments:
         #(team_ids and team_tournament.team_id in team_ids)
-        if (tournament_ids and team_tournament.tournament_id in tournament_ids) or (not team_ids and not tournament_ids):
+        if (tournament_ids and team_tournament.tournament_id in tournament_ids) or ( not tournament_ids):
             for player in team_tournament.players:
                 for gameTeam in team_tournament.games:
-                    if game_id and gameTeam.game_id == game_id or years and gameTeam.game.start_time.year in years or not game_id and not years:
+                    if game_id and gameTeam.game_id == game_id or years and gameTeam.game.start_time.year in years or not game_id and not years: 
+                        
                         for situation in gameTeam.game.situations:
                             if situation.data["batter"]["player"]["id"] == player.player.id :
                                 if situation.data["situationCategory"] != "":
@@ -916,6 +919,15 @@ def get_team_stats(team_id):
                                 if runner_situation["player"]["player"]["id"]== player.player.id:
                                         if runner_situation["finalBase"] == "Home":
                                             res["R"] += 1
+    for team_tournament in team.tournaments:
+        #(team_ids and team_tournament.team_id in team_ids)
+        if (tournament_ids and team_tournament.tournament_id in tournament_ids) or ( not tournament_ids):
+            for gameTeam in team_tournament.games:
+                if gameTeam.game.status == GameStatuses.ENDED:
+                    if gameTeam.is_winner:
+                        res["W"]+=1
+                    else:
+                        res["L"]+=1
                     
     res["AVG"] = res["H"]/res["AB"] if res["AB"] != 0 else 0
     # res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
@@ -1072,3 +1084,35 @@ def get_player_games_stats(player_id):
                         })
                             
     return res
+
+
+@route_bp.route("/tournament/<int:tournament_id>/ranking",methods=["GET"])
+def get_tournament_ranking(tournament_id):
+    tournament = Tournament.query.get(tournament_id)
+
+    res = []
+    for team_tournament in tournament.teams:
+        #(team_ids and team_tournament.team_id in team_ids)
+        team_stats={
+            "W":0,
+            "L":0
+        }
+
+        for gameTeam in team_tournament.games:
+            if gameTeam.game.status == GameStatuses.ENDED:
+                if gameTeam.is_winner:
+                    team_stats["W"]+=1
+                else:
+                    team_stats["L"]+=1
+        res.append({
+            "id":team_tournament.team.id,
+            "teamName": team_tournament.team.name,
+            "teamImage":team_tournament.team.image,
+            "stats":team_stats})
+                                
+                    
+    
+    # res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
+    # res["SLG"] = (res["1B"] + 2*res["2B"] + 3*res["3B"] + 4*res["HR"])/res["AB"] if res["AB"] != 0 else 0
+    return res
+

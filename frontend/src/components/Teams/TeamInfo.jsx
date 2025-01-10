@@ -143,8 +143,8 @@ export default function TeamInfo() {
 
                     <div className="grid md:grid-cols-2 gap-4">
                         {[
-                            { label: "AVG", value: stats.data ? stats.data.AVG.toFixed(3) : 0.000, rank: "#4" },
-                            { label: "W-L", value: "12-23", rank: "#2" },
+                            { label: "AVG", value: stats.data ? stats.data.AVG.toFixed(3) : 0.000 },
+                            { label: "W-L", value: `${stats.data ? stats.data.W : 0}-${stats.data ? stats.data.L : 0}` },
                         ].map((stat, index) => (
                             <div
                                 key={index}
@@ -152,7 +152,6 @@ export default function TeamInfo() {
                             >
                                 <div className="flex flex-row text-lg justify-between items-center">
                                     <div className="font-bold text-gray-800">{stat.label}</div>
-                                    <div className=" text-gray-500">{stat.rank}</div>
                                 </div>
                                 <div className="text-5xl font-semibold text-gray-700">{stat.value}</div>
                             </div>

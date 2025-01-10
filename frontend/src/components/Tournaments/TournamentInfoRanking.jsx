@@ -1,6 +1,10 @@
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material"
+import { useParams } from "react-router-dom";
+import useSWR from "swr";
 export default function TournamentInfoRanking() {
-    return (<div className="w-full bg-white rounded p-4">
+    const { id } = useParams()
+    const teams = useSWR(`http://localhost:6363/tournament/${id}/ranking`, (url) => fetch(url).then((res) => res.json()));
+    return (<>{teams.data && <div className="w-full bg-white rounded p-4">
         <h2 className="text-3xl font-semibold mb-4">Rankings</h2>
         <TableContainer >
             <Table sx={{ minWidth: "100 %" }} size="small">
@@ -13,7 +17,7 @@ export default function TournamentInfoRanking() {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {[
+                    {/* {[
                         {
                             "rank": 1,
                             "name": "Akademik Sofia",
@@ -84,19 +88,19 @@ export default function TournamentInfoRanking() {
                             "w": 7,
                             "l": 18
                         }
-                    ]
-                        .map((row) => (
+                    ] */
+                        teams.data.sort((a, b) => b.stats.W - a.stats.W).map((row, index) => (
 
                             <TableRow
-                                key={row.rank}
+                                key={index}
                             >
 
                                 <TableCell component="th" scope="row">
-                                    <div className="font-semibold">{row.rank}</div>
+                                    <div className="font-semibold">{index + 1}</div>
                                 </TableCell>
-                                <TableCell><div className="flex flex-row items-center gap-4"><img src={`${row.logo}`}></img>{row.name}</div></TableCell>
-                                <TableCell>{row.w}</TableCell>
-                                <TableCell>{row.l}</TableCell>
+                                <TableCell><div className="flex flex-row items-center gap-4"><img className="size-10" src={`${row.teamImage ? row.teamImage : "http://placehold.co/40x40"}`}></img>{row.teamName}</div></TableCell>
+                                <TableCell>{row.stats.W}</TableCell>
+                                <TableCell>{row.stats.L}</TableCell>
 
                             </TableRow>
                         ))}
@@ -105,5 +109,5 @@ export default function TournamentInfoRanking() {
         </TableContainer>
 
 
-    </div>)
+    </div>}</>)
 }

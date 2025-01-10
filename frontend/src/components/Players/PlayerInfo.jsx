@@ -188,14 +188,14 @@ export default function PlayerInfo() {
                         <h3 className="text-3xl font-semibold">Stats overview</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {[
-                                { label: "AVG", value: stats.data ? stats.data.AVG.toFixed(3) : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0.000, rank: "#4 in Leaderboard" },
-                                { label: "AB", value: stats.data ? stats.data.AB : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0, rank: "#4 in Leaderboard" },
-                                { label: "OBP", value: stats.data ? stats.data.OBP.toFixed(3) : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0.000, rank: "#2" },
-                                { label: "SO", value: stats.data ? stats.data.SO : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0, rank: "#3" },
-                                { label: "BB", value: stats.data ? stats.data.BB : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0, rank: "#5" },
-                                { label: "H", value: stats.data ? stats.data.H : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0, rank: "#6" },
-                                { label: "PA", value: stats.data ? stats.data.PA : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0, rank: "#11" },
-                                { label: "SLG", value: stats.data ? stats.data.SLG.toFixed(3) : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0.000, rank: "#11" }
+                                { label: "AVG", value: stats.data ? stats.data.AVG.toFixed(3) : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0.000, },
+                                { label: "AB", value: stats.data ? stats.data.AB : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0, },
+                                { label: "OBP", value: stats.data ? stats.data.OBP.toFixed(3) : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0.000, },
+                                { label: "SO", value: stats.data ? stats.data.SO : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0, },
+                                { label: "BB", value: stats.data ? stats.data.BB : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0, },
+                                { label: "H", value: stats.data ? stats.data.H : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0, },
+                                { label: "PA", value: stats.data ? stats.data.PA : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0, },
+                                { label: "SLG", value: stats.data ? stats.data.SLG.toFixed(3) : stats.isLoading ? <div className="m"><CircularProgress color='success' /></div> : 0.000, }
                             ].map((stat, index) => (
                                 <div
                                     key={index}
@@ -203,7 +203,7 @@ export default function PlayerInfo() {
                                 >
                                     <div className="flex flex-row text-lg justify-between items-center">
                                         <div className="font-bold text-gray-800">{stat.label}</div>
-                                        <div className=" text-gray-500">{stat.rank}</div>
+
                                     </div>
                                     <div className="text-5xl font-semibold text-gray-700">{stat.value}</div>
                                 </div>
