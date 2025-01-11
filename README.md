@@ -1,8 +1,9 @@
 # baseball-app
 
 ## Requirements
-__Latest version of npm__
-__Latest version of python__
+__Latest version of npm__ - [node + npm download](https://nodejs.org/en/download)
+
+__Latest version of python__ - [Python download](https://www.python.org/downloads/)
 
 ## Run frontend
 1. `cd frontend`
