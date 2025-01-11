@@ -243,18 +243,25 @@ def assign_game():
     query = request.args.to_dict()
     game = Game.query.get(query["game_id"])
     user = User.query.filter_by(username=query["username"]).first()
+    if not user:
+        return {"message":"There is no such user"}
     gameUser = UserGame.query.filter_by(game_id = query["game_id"],user_id = user.id).first()
     if gameUser:
-        if not game.is_assigned and not game.is_to_do:
+        if not gameUser.is_assigned and not gameUser.is_to_do:
             gameUser.is_assigned =  True
-        elif game.is_assigned:
+            db.session.commit()
+            return {"message":"Successfully assigned game"}
+        elif gameUser.is_assigned:
             gameUser.is_assigned = False
-        db.session.commit()
+            db.session.commit()
+            return {"message":"Successfully unassigned game"}
+        else:
+            return {"message":"Game is already accepted by the user"}
     else:
         user_game_association = UserGame(game=game,user=user,is_assigned=True,assigner_id=query["assigner_id"])
         db.session.add(user_game_association)
         db.session.commit()
-    return "Succefully assigned/unassigned game"
+    return {"message":"Successfully assigned game"}
 
 @route_bp.route("/assigned_games/",methods=["GET"])
 def get_assigned_games():
@@ -503,7 +510,8 @@ def get_game_team_roster():
             "3B":0,
             "HR":0,
             "RBI":0,
-            "R":0
+            "R":0,
+            
 
         }
         for situation in game_team.game.situations:
@@ -766,7 +774,12 @@ def get_player_stats(player_id):
         "3B":0,
         "HR":0,
         "R":0,
-        "RBI":0
+        "RBI":0,
+        "IBB":0,
+        "OPS":0,
+        "TB":0,
+        "XBH":0,
+        "ROE":0
 
     }
     for team_tournament in player.teams_tournaments:
@@ -781,20 +794,32 @@ def get_player_stats(player_id):
                                 res["H"] += 1
                                 if situation.data["situation"] == "Single":
                                     res["1B"] +=1
+                                    res["TB"]+=1
                                 elif situation.data["situation"] == "Double":
                                     res["2B"] +=1
+                                    res["TB"] +=2
+                                    res["XBH"] +=1
                                 elif situation.data["situation"] == "Triple":
                                     res["3B"] +=1
+                                    res["TB"] +=3
+                                    res["XBH"] +=1
                                 elif situation.data["situation"] == "Homerun":
                                     res["HR"] +=1
+                                    res["TB"] +=4
+                                    res["XBH"] +=1
                             if situation.data["situationCategory"] == "walk":
                                 res["BB"] +=1
+                                if situation.data["situation"] == "Intentional walk":
+                                    res["IBB"]+=1
                             if situation.data["situationCategory"] == "hit by pitch":
                                 res["HBP"] +=1
                             if situation.data["situationCategory"] == "strikeout":
                                 res["SO"] +=1
                             if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
                                 res["AB"] +=1
+                            if situation.data["situationCategory"] == "error":
+                                res["ROE"] +=1
+                                
                             for runner_situation in situation.data["runners"]:
                                 if runner_situation["finalBase"] == "Home":
                                     res["RBI"] += 1
@@ -806,7 +831,8 @@ def get_player_stats(player_id):
                     
     res["AVG"] = res["H"]/res["AB"] if res["AB"] != 0 else 0
     res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
-    res["SLG"] = (res["1B"] + 2*res["2B"] + 3*res["3B"] + 4*res["HR"])/res["AB"] if res["AB"] != 0 else 0
+    res["SLG"] = res["TB"]/res["AB"] if res["AB"] != 0 else 0
+    res["OPS"] = (res["OBP"]+res["SLG"])/2
     return res
 
 

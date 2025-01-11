@@ -15,6 +15,7 @@ import { useAuth } from "../../AuthContext";
 import { useEffect, useState } from "react";
 import validator from "validator"
 import GameScorerPlayByPlay from "../GameScorer/GameScorerPlayByPlay";
+import { CircularProgress, Alert } from "@mui/material";
 
 export default function GameInfo() {
     const { user } = useAuth();
@@ -39,99 +40,100 @@ export default function GameInfo() {
     }, [homeAway, homeRoster, awayRoster]);
     const [assignee, setAssignee] = useState(user.username);
     const [menuOption, setMenuOption] = useState("Stats");
-    return (<>{
-        game.data && <div className="flex flex-col md:flex-row gap-4">
+    return (<>
+        <div className="flex flex-col md:flex-row gap-4">
+
             <div className="flex flex-col bg-white rounded-2xl drop-shadow-lg min-h-[82vh] max-h-[85vh] md:w-1/3 p-10 items-center justify-between">
-                {user && <div className="flex flex-row  justify-center gap-4 mb-2">
-                    <TextField label={<div className="text-sm">Username</div>} variant="outlined" value={assignee} onChange={(e) => setAssignee(e.target.value)} className="w-1/2" size="small" helperText={!validator.isURL(assignee) && assignee.length != 0 ? "Invalid username" : ""}></TextField>
-                    <button className="p-2 py-3 h-fit text-white bg-blue-500 hover:bg-blue-600 text-xs rounded drop-shadow-md font-semibold"
-                        onClick={() => {
-                            fetch(`http://localhost:6363/game/assign/?username=${assignee}&game_id=${game.data.id}&assigner_id=${user.id}`, {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
+                {game.data && <>
+                    {user && <div className="flex flex-row  justify-center gap-4 mb-2">
+                        <TextField label={<div className="text-sm">Username</div>} variant="outlined" value={assignee} onChange={(e) => setAssignee(e.target.value)} className="w-1/2" size="small" helperText={!validator.isURL(assignee) && assignee.length != 0 ? "Invalid username" : ""}></TextField>
+                        <button className="p-2 py-3 h-fit text-white bg-blue-500 hover:bg-blue-600 text-xs rounded drop-shadow-md font-semibold"
+                            onClick={() => {
+                                fetch(`http://localhost:6363/game/assign/?username=${assignee}&game_id=${game.data.id}&assigner_id=${user.id}`, {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
 
-                            });
-                            alert("Succefully assigned game!")
-                        }}>
-                        Assign for scoring
-                    </button>
-                </div>}
-                <div className="flex flex-col text-gray-500 text-xs font-semibold ">
-                    <div className="text-center">
-                        {game.data.venue}
-                    </div>
-                    <div className="text-center">
-                        {new Date(game.data.startTime).toLocaleString()}
-                    </div>
-                </div>
-                <div className="grid grid-cols-3  w-full">
-                    <div className="flex flex-col items-center text-center gap-2 text-xs font-semibold">
-                        <img className="size-[80px]" src={game.data.homeTeam.image ? game.data.homeTeam.image : "https://placehold.co/80x80"}></img>
-                        {game.data.homeTeam.name}
-                    </div>
-                    <div className="flex flex-row gap-2 items-center justify-center text-2xl font-semibold">
-                        <h3>
-                            {game.data.homeResult}
-                        </h3>
-                        -
-                        <h3>
-                            {game.data.awayResult}
-                        </h3>
-                    </div>
-                    <div className="flex flex-col items-center gap-2 text-xs font-semibold text-center">
-                        <img className="size-[80px]" src={game.data.awayTeam.image ? game.data.awayTeam.image : "https://placehold.co/80x80"}></img>
-                        {game.data.awayTeam.name}
-                    </div>
-                </div>
-                <div className="text-xl font-semibold text-accent_2 gap-4">
-
-                    <div className="flex flex-row gap-1 items-center">{statusIcons[game.data.status]}<div className=" uppercase">{game.data.status}</div></div>
-                </div>
-
-                <div className=" px-2 py-1 rounded flex flex-row items-center gap-4 justify-center w-full">
-                    {game.data.status === "live" &&
-                        <div className="relative  flex-1">
-
-                            <div className="flex flex-row items-center gap-3">
-                                <div className="flex flex-col items-center text-center">
-                                    <div className="text-black flex flex-row font-semibold items-center ">{game.data.inning} {game.data.inningHalf == "UP" ? <FaCaretUp /> : <FaCaretDown />}</div>
-                                    <div className="flex flex-row justify-center text-yellow-400">
-                                        <GoDotFill size={10} className={`${game.data.outs > 0 ? "visible" : "invisible"}`} />
-                                        <GoDotFill size={10} className={`${game.data.outs > 1 ? "visible" : "invisible"}`} />
-                                    </div>
-                                </div>
-                                <div className="flex flex-row  items-center">
-                                    <div className={`${game.data.runners.firstBaseRunner ? "bg-yellow-400" : "border-2 border-yellow-400"} size-3 rotate-45 items-center justify-center`}>
-                                    </div>
-                                    <div className={`${game.data.runners.secondBaseRunner ? "bg-yellow-400" : "border-2 border-yellow-400"} mb-6 size-3 rotate-45 items-center justify-center`}>
-                                    </div>
-                                    <div className={`${game.data.runners.thirdBaseRunner ? "bg-yellow-400" : "border-2 border-yellow-400"} size-3 rotate-45 items-center justify-center`}>
-                                    </div>
-                                </div>
-                            </div>
-
-
+                                }).then(response => response.json()).then(data => alert(data.message));
+                            }}>
+                            Assign for scoring
+                        </button>
+                    </div>}
+                    <div className="flex flex-col text-gray-500 text-xs font-semibold ">
+                        <div className="text-center">
+                            {game.data.venue}
                         </div>
-                    }
-                    <table className="table-auto">
-                        <thead className="border-b-[1px] text-xs border-gray-500 ">
-                            <tr>
-                                {["Team", 1, 2, 3, 4, 5, 6, 7, 8, 9, "R", "H", "E", "LOB"].map((value) => <th className="p-1 font-bold">{value}</th>)}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                {[game.data.awayTeam.tlc, ...game.data.pointsByInning.away, game.data.awayResult, game.data.awayTeam.hits, game.data.awayTeam.errors, game.data.awayTeam.lob].map((value) => <td className="text-center font-semibold text-2xs p-1">{value}</td>)}
-                            </tr>
-                            <tr>
-                                {[game.data.homeTeam.tlc, ...game.data.pointsByInning.home, game.data.homeResult, game.data.homeTeam.hits, game.data.homeTeam.errors, game.data.homeTeam.lob].map((value) => <td className="text-center font-semibold text-2xs p-1">{value}</td>)}
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                {/* <div className="w-full flex flex-row text-xs font-semibold">
+                        <div className="text-center">
+                            {new Date(game.data.startTime).toLocaleString()}
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-3  w-full">
+                        <div className="flex flex-col items-center text-center gap-2 text-xs font-semibold">
+                            <img className="size-[80px]" src={game.data.homeTeam.image ? game.data.homeTeam.image : "https://placehold.co/80x80"}></img>
+                            {game.data.homeTeam.name}
+                        </div>
+                        <div className="flex flex-row gap-2 items-center justify-center text-2xl font-semibold">
+                            <h3>
+                                {game.data.homeResult}
+                            </h3>
+                            -
+                            <h3>
+                                {game.data.awayResult}
+                            </h3>
+                        </div>
+                        <div className="flex flex-col items-center gap-2 text-xs font-semibold text-center">
+                            <img className="size-[80px]" src={game.data.awayTeam.image ? game.data.awayTeam.image : "https://placehold.co/80x80"}></img>
+                            {game.data.awayTeam.name}
+                        </div>
+                    </div>
+                    <div className="text-xl font-semibold text-accent_2 gap-4">
+
+                        <div className="flex flex-row gap-1 items-center">{statusIcons[game.data.status]}<div className=" uppercase">{game.data.status}</div></div>
+                    </div>
+
+                    <div className=" px-2 py-1 rounded flex flex-row items-center gap-4 justify-center w-full">
+                        {game.data.status === "live" &&
+                            <div className="relative  flex-1">
+
+                                <div className="flex flex-row items-center gap-3">
+                                    <div className="flex flex-col items-center text-center">
+                                        <div className="text-black flex flex-row font-semibold items-center ">{game.data.inning} {game.data.inningHalf == "UP" ? <FaCaretUp /> : <FaCaretDown />}</div>
+                                        <div className="flex flex-row justify-center text-yellow-400">
+                                            <GoDotFill size={10} className={`${game.data.outs > 0 ? "visible" : "invisible"}`} />
+                                            <GoDotFill size={10} className={`${game.data.outs > 1 ? "visible" : "invisible"}`} />
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-row  items-center">
+                                        <div className={`${game.data.runners.thirdBaseRunner ? "bg-yellow-400" : "border-2 border-yellow-400"} size-3 rotate-45 items-center justify-center`}>
+                                        </div>
+                                        <div className={`${game.data.runners.secondBaseRunner ? "bg-yellow-400" : "border-2 border-yellow-400"} mb-6 size-3 rotate-45 items-center justify-center`}>
+                                        </div>
+                                        <div className={`${game.data.runners.firstBaseRunner ? "bg-yellow-400" : "border-2 border-yellow-400"} size-3 rotate-45 items-center justify-center`}>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        }
+                        <table className="table-auto">
+                            <thead className="border-b-[1px] text-xs border-gray-500 ">
+                                <tr>
+                                    {["Team", 1, 2, 3, 4, 5, 6, 7, 8, 9, "R", "H", "E", "LOB"].map((value) => <th className="p-1 font-bold">{value}</th>)}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    {[game.data.awayTeam.tlc, ...game.data.pointsByInning.away, game.data.awayResult, game.data.awayTeam.hits, game.data.awayTeam.errors, game.data.awayTeam.lob].map((value) => <td className="text-center font-semibold text-2xs p-1">{value}</td>)}
+                                </tr>
+                                <tr>
+                                    {[game.data.homeTeam.tlc, ...game.data.pointsByInning.home, game.data.homeResult, game.data.homeTeam.hits, game.data.homeTeam.errors, game.data.homeTeam.lob].map((value) => <td className="text-center font-semibold text-2xs p-1">{value}</td>)}
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    {/* <div className="w-full flex flex-row text-xs font-semibold">
                     <div className="w-1/2 text-center">
                         W - Petyo Petkov
                     </div>
@@ -139,13 +141,15 @@ export default function GameInfo() {
                         L - Evgenii Chernozemsky
                     </div>
                 </div> */}
-                {game.data.venueLink && <div className="text-xs font-semibold">
-                    Field location - <a className="text-blue-500 underline" href={game.data.venueLink} target="_blank">{game.data.venueLink}</a>
-                </div>}
-                <Link to={`/score/${game.data.id}`} className={`w-2/5 px-1 py-2 bg-orange-400 font-semibold  text-sm rounded text-white text-nowrap hover:bg-orange-300 flex flex-row items-center gap-1 justify-center drop-shadow-lg ${user && user.role == "admin" ? "" : "hidden"}`}><div>Score game</div><RiArrowRightCircleLine size={15} /></Link>
-
+                    {game.data.venueLink && <div className="text-xs font-semibold">
+                        Field location - <a className="text-blue-500 underline" href={game.data.venueLink} target="_blank">{game.data.venueLink}</a>
+                    </div>}
+                    <Link to={`/score/${game.data.id}`} className={`w-2/5 px-1 py-2 bg-orange-400 font-semibold  text-sm rounded text-white text-nowrap hover:bg-orange-300 flex flex-row items-center gap-1 justify-center drop-shadow-lg ${user && user.role == "admin" ? "" : "hidden"}`}><div>Score game</div><RiArrowRightCircleLine size={15} /></Link>
+                </>}
+                {game.isLoading && <div className="h-full w-full content-center text-center"><CircularProgress color='success' size={40} /></div>}
+                {game.error && !game.isLoading && <Alert className="mt-10 flex flex-row justify-center w-full mx-auto" severity="error">Error occured, while fetching game info!</Alert>}
             </div>
-            <div className="flex flex-col p-2 flex-1 bg-white rounded-2xl drop-shadow-lg h-[85vh]">
+            <div className="flex flex-col p-2 w-[65%] bg-white rounded-2xl drop-shadow-lg h-[85vh]">
                 <div className="flex flex-row gap-6">
                     <TextField
                         size="small" className="w-1/6"
@@ -179,6 +183,7 @@ export default function GameInfo() {
                     }
                 </div>
                 {menuOption === "Stats" &&
+                    homeRoster.data && awayRoster.data &&
                     <div className="h-[90%]">
                         <TableContainer style={{ maxWidth: "98%", maxHeight: "100%", overflowY: "auto", overflowX: "auto" }}>
                             <Table stickyHeader>
@@ -226,9 +231,15 @@ export default function GameInfo() {
                         </TableContainer>
                     </div>
                 }
-                {menuOption === "Play by play" && <div className="max-h-[75vh]"><GameScorerPlayByPlay situations={situations.data ? situations.data.sort((a, b) => b.id - a.id) : []} /></div>
+                {menuOption === "Stats" && homeRoster.isLoading && awayRoster.isLoading && <div className="h-full content-center text-center w-full"><CircularProgress color='success' size={40} /></div>}
+                {menuOption === "Stats" && homeRoster.error && awayRoster.error && !homeRoster.isLoading && !awayRoster.isLoading && <Alert className="mt-10 flex flex-row justify-center w-1/2 mx-auto" severity="error">Error occured, while fetching situations!</Alert>}
+
+                {menuOption === "Play by play" && situations.data && <div className="max-h-[75vh]"><GameScorerPlayByPlay situations={situations.data.sort((a, b) => b.id - a.id)} /></div>
                 }
+                {menuOption === "Play by play" && situations.error && !situations.isLoading && <Alert className="mt-10 flex flex-row justify-center w-1/2 mx-auto" severity="error">Error occured, while fetching situations!</Alert>}
+
+                {menuOption === "Play by play" && situations.isLoading && <div className="h-full w-full content-center text-center"><CircularProgress color='success' size={40} /></div>}
             </div>
         </div >
-    }</>)
+    </>)
 }

@@ -4,7 +4,7 @@ export default function StatsGuidePage() {
 			<h1 className="text-5xl font-semibold mb-4">
 				Stats guide
 			</h1>
-			<div className="w-full p-2 h-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-3 gap-y-5">
+			<div className="w-full p-2 h-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-3 gap-y-8">
 				{[
 					{
 						abbreviation: "AVG",
@@ -109,15 +109,110 @@ export default function StatsGuidePage() {
 							<div>
 								Slugging percentage represents the total number of bases a player records per at-bat.</div>
 						),
-						formula: "(1B + 2*2B + 3*3B + 4*HR)/AB",
-						seeAlso: ["1B", "2B", "3B", "HR", "AB"]
-					}
+						formula: "TB/AB",
+						seeAlso: ["TB", "AB"]
+					},
+					{
+						abbreviation: "AB",
+						name: "At bat",
+						description: (
+							<div>
+								An official at-bat comes when a batter reaches base via a fielder's choice, hit or an error (not including catcher's interference) or when a batter is put out on a non-sacrifice.</div>
+						),
+						seeAlso: ["FC", "H", "ROE"]
+					},
+					{
+						abbreviation: "CS",
+						name: "Caught stealing",
+						description: (
+							<div>
+								A caught stealing occurs when a runner attempts to steal but is tagged out before reaching second base, third base or home plate.</div>
+						)
+					},
+					{
+						abbreviation: "GSH",
+						name: "Grand slam",
+						description: (
+							<div>
+								A grand slam occurs when a batter hits a home run with men on first base, second base and third base. Four runs score on a grand slam -- the most possible on one play -- and a batter is awarded four RBIs.</div>
+						)
+					},
+					{
+						abbreviation: "IBB",
+						name: "Intentional walk",
+						description: (
+							<div>
+								An intentional walk occurs when the defending team elects to walk a batter on purpose, putting him on first base instead of letting him try to hit.</div>
+						)
+					},
+					{
+						abbreviation: "LOB",
+						name: "Left on base",
+						description: (
+							<div>
+								In an individual batter's case, it refers to how many men remain on base after that batter makes an out at the plate, as the batter has failed to do his job to score those runners -- or at least put himself in a position to score.
+								In a team's case or in an individual pitcher's case, it refers to the number of men who remain on base at the end of an inning.</div>
+						)
+					},
+					{
+						abbreviation: "OPS",
+						name: "On-base plus slugging",
+						description: (
+							<div>
+								OPS adds on-base percentage and slugging percentage to get one number that unites the two. It's meant to combine how well a hitter can reach base, with how well he can hit for average and for power.</div>
+						),
+						formula: "(OBP + SLG)/2",
+						seeAlso: ["OBP", "SLG"]
+					},
+					{
+						abbreviation: "ROE",
+						name: "Reached on error",
+						description: (
+							<div>
+								A batter receives a reached on error when he reaches base because of a defensive error - meaning he wouldn't have otherwise reached.</div>
+						)
+					},
+					{
+						abbreviation: "R",
+						name: "Run",
+						description: (
+							<div>
+								A player is awarded a run if he crosses the plate to score his team a run.</div>
+						)
+					},
+					{
+						abbreviation: "RBI",
+						name: "Runs batted in",
+						description: (
+							<div>
+								A batter is credited with an RBI in most cases where the result of his plate appearance is a run being scored. There are a few exceptions, however. A player does not receive an RBI when the run scores as a result of an error or ground into double play.</div>
+						)
+					},
+					{
+						abbreviation: "SB",
+						name: "Stolen base",
+						description: (
+							<div>
+								A stolen base occurs when a baserunner advances by taking a base to which he isn't entitled. This generally occurs when a pitcher is throwing a pitch, but it can also occur while the pitcher still has the ball or is attempting a pickoff, or as the catcher is throwing the ball back to the pitcher.</div>
+						)
+					},
+					{
+						abbreviation: "TB",
+						name: "Total bases",
+						description: (
+							<div>
+								Total bases refer to the number of bases gained by a batter through his hits.</div>
+						),
+						formula: "1B + 2*2B + 3*3B + 4*HR",
+						seeAlso: ["1B", "2B", "3B", "HR"]
+					},
+
 
 				]
 					.sort((a, b) => a.abbreviation.localeCompare(b.abbreviation))
 					.map((stat) => (
 						<div
-							className="bg-white py-6 px-4 rounded-xl drop-shadow-lg flex flex-col gap-3 scroll-mt-[11vh] p-1"
+							className="bg-white py-6 px-4 rounded-xl drop-shadow-lg flex flex-col gap-3 scroll-mt-[12vh] p-1"
 							id={`guide-${stat.abbreviation}`}
 						>
 							<div className="flex flex-col gap-1 w-fit">

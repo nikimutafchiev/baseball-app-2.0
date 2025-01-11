@@ -21,6 +21,7 @@ import {
 	TableBody,
 	TableFooter,
 } from "@mui/material";
+import { FaArrowUp } from "react-icons/fa"
 import useSWR from "swr";
 import PlayerSelectList from "../Other/PlayerSelectList";
 export default function PlayerInfo() {
@@ -85,6 +86,8 @@ export default function PlayerInfo() {
 
 	const [isShrinked, setIsShrinked] = useState(false);
 	const [graphStat, setGraphStat] = useState("AVG");
+	const [sortColumn, setSortColumn] = useState("startTime");
+
 	useEffect(() => {
 		if (selectedPlayer)
 			fetch(
@@ -308,115 +311,282 @@ export default function PlayerInfo() {
 								</div>
 							</div>
 							<h3 className="text-3xl font-semibold">Stats overview</h3>
-							<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+							<div className={`grid grid-cols-1 sm:grid-cols-2 ${isShrinked ? "lg:grid-cols-6" : "lg:grid-cols-5"} gap-3`}>
 								{[
 									{
 										label: "AVG",
 										value: stats.data ? (
 											stats.data.AVG.toFixed(3)
 										) : stats.isLoading ? (
-											<div className="m">
+											<div >
 												<CircularProgress color="success" />
 											</div>
 										) : (
 											0.0
 										),
+										coefficient: true
 									},
 									{
 										label: "AB",
 										value: stats.data ? (
 											stats.data.AB
 										) : stats.isLoading ? (
-											<div className="m">
+											<div >
 												<CircularProgress color="success" />
 											</div>
 										) : (
 											0
 										),
+										coefficient: false
 									},
 									{
 										label: "OBP",
 										value: stats.data ? (
 											stats.data.OBP.toFixed(3)
 										) : stats.isLoading ? (
-											<div className="m">
+											<div >
 												<CircularProgress color="success" />
 											</div>
 										) : (
 											0.0
 										),
+										coefficient: true
 									},
 									{
 										label: "SO",
 										value: stats.data ? (
 											stats.data.SO
 										) : stats.isLoading ? (
-											<div className="m">
+											<div >
 												<CircularProgress color="success" />
 											</div>
 										) : (
 											0
 										),
+										coefficient: false
 									},
 									{
 										label: "BB",
 										value: stats.data ? (
 											stats.data.BB
 										) : stats.isLoading ? (
-											<div className="m">
+											<div >
 												<CircularProgress color="success" />
 											</div>
 										) : (
 											0
 										),
+										coefficient: false
 									},
 									{
 										label: "H",
 										value: stats.data ? (
 											stats.data.H
 										) : stats.isLoading ? (
-											<div className="m">
+											<div >
 												<CircularProgress color="success" />
 											</div>
 										) : (
 											0
 										),
+										coefficient: false
+									},
+									{
+										label: "1B",
+										value: stats.data ? (
+											stats.data["1B"]
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "2B",
+										value: stats.data ? (
+											stats.data["2B"]
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "3B",
+										value: stats.data ? (
+											stats.data["3B"]
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "HR",
+										value: stats.data ? (
+											stats.data.HR
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
 									},
 									{
 										label: "PA",
 										value: stats.data ? (
 											stats.data.PA
 										) : stats.isLoading ? (
-											<div className="m">
+											<div >
 												<CircularProgress color="success" />
 											</div>
 										) : (
 											0
 										),
+										coefficient: false
+
 									},
 									{
 										label: "SLG",
 										value: stats.data ? (
 											stats.data.SLG.toFixed(3)
 										) : stats.isLoading ? (
-											<div className="m">
+											<div >
 												<CircularProgress color="success" />
 											</div>
 										) : (
 											0.0
 										),
+										coefficient: true
 									},
-								].map((stat, index) => (
+									{
+										label: "HBP",
+										value: stats.data ? (
+											stats.data.HBP
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "R",
+										value: stats.data ? (
+											stats.data.R
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "RBI",
+										value: stats.data ? (
+											stats.data.RBI
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "IBB",
+										value: stats.data ? (
+											stats.data.IBB
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "OPS",
+										value: stats.data ? (
+											stats.data.OPS.toFixed(3)
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: true
+									},
+									{
+										label: "TB",
+										value: stats.data ? (
+											stats.data.TB
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "XBH",
+										value: stats.data ? (
+											stats.data.XBH
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "ROE",
+										value: stats.data ? (
+											stats.data.ROE
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+								].sort((a, b) => a.coefficient == b.coefficient ? a.label.localeCompare(b.label) : b.coefficient - a.coefficient).map((stat, index) => (
 									<div
 										key={index}
 										className="bg-white p-4 h-28 rounded-2xl shadow-lg flex flex-col justify-between"
 									>
-										<div className="flex flex-row text-lg justify-between items-center">
-											<a className="font-bold text-gray-800" href="/guide">
+										<div className="flex flex-col w-fit justify-between items-center">
+											<a className="font-semibold text-gray-800 pr-6" href="/guide">
 												{stat.label}
 											</a>
+											<hr className="border-t-2 border-gray-200 w-full">
+											</hr>
 										</div>
-										<div className="text-5xl font-semibold text-gray-700">
+										<div className="text-4xl font-semibold text-gray-700">
 											{stat.value}
 										</div>
 									</div>
@@ -486,140 +656,147 @@ export default function PlayerInfo() {
                                     <ToggleButton>Table</ToggleButton>
                                 </ToggleButtonGroup>
                             </div> */}
-								{games_stats.data && (
-									<TableContainer
-										style={{
-											maxWidth: "100%",
-											minHeight: "100%",
-											maxHeight: "100%",
-											overflowY: "auto",
-											backgroundColor: "white",
-											borderRadius: "16px",
-										}}
-									>
-										<Table stickyHeader>
-											<TableHead>
-												<TableRow>
-													<TableCell>
-														<div className="text-base font-semibold">
-															Start time
-														</div>
-													</TableCell>
-													<TableCell>
-														<div className="text-base font-semibold">
-															Home team
-														</div>
-													</TableCell>
-													<TableCell>
-														<div className="text-base font-semibold">
-															Away team
-														</div>
-													</TableCell>
-													<TableCell>
-														<div className="text-base font-semibold">AB</div>
-													</TableCell>
-													<TableCell>
-														<div className="text-base font-semibold">R</div>
-													</TableCell>
-													<TableCell>
-														<div className="text-base font-semibold">H</div>
-													</TableCell>
-													<TableCell>
-														<div className="text-base font-semibold">RBI</div>
-													</TableCell>
-													<TableCell>
-														<div className="text-base font-semibold">BB</div>
-													</TableCell>
-													<TableCell>
-														<div className="text-base font-semibold">SO</div>
-													</TableCell>
-													<TableCell>
-														<div className="text-base font-semibold">AVG</div>
-													</TableCell>
-													<TableCell>
-														<div className="text-base font-semibold">SLG</div>
-													</TableCell>
-												</TableRow>
-											</TableHead>
-											<TableBody sx={{ overflowY: "auto" }}>
-												{games_stats.data.map((row) => (
-													<TableRow key={row.id}>
-														{/* <TableCell component="th" scope="row">
-                                                    {row.battingOrder}
-                                                </TableCell> */}
-														<TableCell>
-															{new Date(row.startTime).toLocaleDateString()}
+								{games_stats.data &&
+									(
+										<TableContainer
+											style={{
+												maxWidth: "100%",
+												minHeight: "100%",
+												maxHeight: "100%",
+												overflowY: "auto",
+												backgroundColor: "white",
+												borderRadius: "16px",
+											}}
+										>
+											<Table stickyHeader>
+												<TableHead>
+													<TableRow>
+														<TableCell onClick={() => setSortColumn("startTime")}>
+															<div className="flex flex-row items-center cursor-pointer w-24 gap-0.5">
+																<div className="text-sm font-semibold">
+																	Start time
+																</div>
+																<div className={`${sortColumn == "startTime" ? "visible" : "invisible"}`}> <FaArrowUp />
+																</div></div></TableCell>
+														<TableCell onClick={() => setSortColumn("homeTeam")}>
+															<div className="flex flex-row items-center cursor-pointer w-24 gap-0.5"><div className="text-sm font-semibold">
+																Home team
+															</div>
+																<div className={`${sortColumn == "homeTeam" ? "visible" : "invisible"}`}> <FaArrowUp /></div>
+															</div></TableCell>
+														<TableCell onClick={() => setSortColumn("awayTeam")}>
+															<div className="flex flex-row items-center cursor-pointer w-24  gap-0.5"><div className="text-sm font-semibold">
+																Away team
+															</div>
+																<div className={`${sortColumn == "awayTeam" ? "visible" : "invisible"}`}> <FaArrowUp /></div>
+															</div></TableCell>
+														<TableCell onClick={() => setSortColumn("AB")}>
+															<div className="flex flex-row items-center cursor-pointer  gap-0.5"><div className="text-base font-semibold">AB</div>
+
+																<div className={`${sortColumn == "AB" ? "visible" : "invisible"}`} > <FaArrowUp /></div></div>
 														</TableCell>
-														<TableCell>{row.homeTeam}</TableCell>
-														<TableCell>{row.awayTeam}</TableCell>
-														<TableCell>{row.stats.AB}</TableCell>
-														<TableCell>{row.stats.R}</TableCell>
-														<TableCell>{row.stats.H}</TableCell>
-														<TableCell>{row.stats.RBI}</TableCell>
-														<TableCell>{row.stats.BB}</TableCell>
-														<TableCell>{row.stats.SO}</TableCell>
-														<TableCell>{row.stats.AVG.toFixed(3)}</TableCell>
-														<TableCell>{row.stats.SLG.toFixed(3)}</TableCell>
+														<TableCell onClick={() => setSortColumn("R")}>
+															<div className="flex flex-row items-center cursor-pointer gap-0.5"><div className="text-base font-semibold">R</div>
+																<div className={`${sortColumn == "R" ? "visible" : "invisible"}`}><FaArrowUp /></div></div></TableCell>
+														<TableCell onClick={() => setSortColumn("H")}>
+															<div className="flex flex-row items-center cursor-pointer gap-0.5"><div className="text-base font-semibold">H</div>
+																<div className={`${sortColumn == "H" ? "visible" : "invisible"}`}><FaArrowUp /></div></div></TableCell>
+														<TableCell onClick={() => setSortColumn("RBI")}>
+															<div className="flex flex-row items-center cursor-pointer gap-0.5"><div className="text-base font-semibold">RBI</div>
+																<div className={`${sortColumn == "RBI" ? "visible" : "invisible"}`}><FaArrowUp /></div></div></TableCell>
+														<TableCell onClick={() => setSortColumn("BB")}>
+															<div className="flex flex-row items-center cursor-pointer gap-0.5"><div className="text-base font-semibold">BB</div>
+																<div className={`${sortColumn == "BB" ? "visible" : "invisible"}`}><FaArrowUp /></div></div></TableCell>
+														<TableCell onClick={() => setSortColumn("SO")}>
+															<div className="flex flex-row items-center cursor-pointer gap-0.5"><div className="text-base font-semibold">SO</div>
+																<div className={`${sortColumn == "SO" ? "visible" : "invisible"}`}><FaArrowUp /></div></div></TableCell>
+														<TableCell onClick={() => setSortColumn("AVG")}>
+															<div className="flex flex-row items-center cursor-pointer gap-0.5"><div className="text-base font-semibold">AVG</div>
+																<div className={`${sortColumn == "AVG" ? "visible" : "invisible"}`}><FaArrowUp /></div></div></TableCell>
+														<TableCell onClick={() => setSortColumn("SLG")}>
+															<div className="flex flex-row items-center cursor-pointer gap-0.5"><div className="text-base font-semibold">SLG</div>
+																<div className={`${sortColumn == "SLG" ? "visible" : "invisible"}`}><FaArrowUp /></div></div></TableCell>
 													</TableRow>
-												))}
-											</TableBody>
-											<TableFooter
-												sx={{
-													position: "sticky",
-													bottom: 0,
-													zIndex: 1,
-													backgroundColor: "white",
-												}}
-											>
-												<TableRow>
-													<TableCell></TableCell>
-													<TableCell></TableCell>
-													<TableCell></TableCell>
-													<TableCell>
-														<div className="font-semibold text-black text-sm">
-															{stats.data ? stats.data.AB : 0}
-														</div>
-													</TableCell>
-													<TableCell>
-														<div className="font-semibold text-black text-sm">
-															{stats.data ? stats.data.R : 0}
-														</div>
-													</TableCell>
-													<TableCell>
-														<div className="font-semibold text-black text-sm">
-															{stats.data ? stats.data.H : 0}
-														</div>
-													</TableCell>
-													<TableCell>
-														<div className="font-semibold text-black text-sm">
-															{stats.data ? stats.data.RBI : 0}
-														</div>
-													</TableCell>
-													<TableCell>
-														<div className="font-semibold text-black text-sm">
-															{stats.data ? stats.data.BB : 0}
-														</div>
-													</TableCell>
-													<TableCell>
-														<div className="font-semibold text-black text-sm">
-															{stats.data ? stats.data.SO : 0}
-														</div>
-													</TableCell>
-													<TableCell>
-														<div className="font-semibold text-black text-sm">
-															{stats.data ? stats.data.AVG.toFixed(3) : 0}
-														</div>
-													</TableCell>
-													<TableCell>
-														<div className="font-semibold text-black text-sm">
-															{stats.data ? stats.data.SLG.toFixed(3) : 0}
-														</div>
-													</TableCell>
-												</TableRow>
-											</TableFooter>
-										</Table>
-									</TableContainer>
-								)}
+												</TableHead>
+												<TableBody sx={{ overflowY: "auto" }}>
+													{games_stats.data.sort((a, b) => ["homeTeam", "awayTeam"].includes(sortColumn) ? a[sortColumn].localeCompare(b[sortColumn]) : sortColumn == 'startTime' ? a[sortColumn] - b[sortColumn] : b.stats[sortColumn] - a.stats[sortColumn]).map((row) => (
+														<TableRow key={row.id}>
+															{/* <TableCell component="th" scope="row">
+																{row.battingOrder}
+															</TableCell> */}
+															<TableCell>
+																{new Date(row.startTime).toLocaleDateString()}
+															</TableCell>
+															<TableCell>{row.homeTeam}</TableCell>
+															<TableCell>{row.awayTeam}</TableCell>
+															<TableCell>{row.stats.AB}</TableCell>
+															<TableCell>{row.stats.R}</TableCell>
+															<TableCell>{row.stats.H}</TableCell>
+															<TableCell>{row.stats.RBI}</TableCell>
+															<TableCell>{row.stats.BB}</TableCell>
+															<TableCell>{row.stats.SO}</TableCell>
+															<TableCell>{row.stats.AVG.toFixed(3)}</TableCell>
+															<TableCell>{row.stats.SLG.toFixed(3)}</TableCell>
+														</TableRow>
+													))}
+												</TableBody>
+												<TableFooter
+													sx={{
+														position: "sticky",
+														bottom: 0,
+														zIndex: 1,
+														backgroundColor: "white",
+													}}
+												>
+													<TableRow>
+														<TableCell></TableCell>
+														<TableCell></TableCell>
+														<TableCell></TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.AB : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.R : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.H : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.RBI : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.BB : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.SO : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.AVG.toFixed(3) : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.SLG.toFixed(3) : 0}
+															</div>
+														</TableCell>
+													</TableRow>
+												</TableFooter>
+											</Table>
+										</TableContainer>
+									)}
 							</div>
 							<div className="w-full  drop-shadow-lg min-h-96 bg-white rounded-2xl p-2">
 								<TextField
@@ -804,9 +981,10 @@ export default function PlayerInfo() {
 								<div className="fixed inset-0 z-10 bg-black bg-opacity-50"></div>
 							)}
 						</div>
-					</div>
-				</div>
-			)}
+					</div >
+				</div >
+			)
+			}
 		</>
 	);
 }
