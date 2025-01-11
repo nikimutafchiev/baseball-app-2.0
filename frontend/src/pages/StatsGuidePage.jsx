@@ -139,7 +139,14 @@ export default function StatsGuidePage() {
 
 									<div className="font-semibold">See also: </div>
 									<div className="flex flex-row flex-wrap gap-2">
-										{stat.seeAlso.map((a) => <a className="font-semibold cursor-pointer text-blue-500 hover:text-blue-400 " href={`#guide-${a}`}>
+										{stat.seeAlso.map((a) => <a onClick={() => {
+											const element = document.getElementById(`guide-${a}`);
+											if (element) {
+												element.style.animation = "none";
+												void element.offsetHeight; //re-render-ва компонента
+												element.style.animation = "glow 2s linear";
+											}
+										}} className="font-semibold cursor-pointer text-blue-500 hover:text-blue-400 " href={`#guide-${a}`}>
 											{a}
 										</a>)
 										}
@@ -148,6 +155,6 @@ export default function StatsGuidePage() {
 						</div>
 					))}
 			</div>
-		</div>
+		</div >
 	);
 }
