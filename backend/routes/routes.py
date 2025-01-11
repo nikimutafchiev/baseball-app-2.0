@@ -497,7 +497,9 @@ def get_game_team_roster():
             "1B":0,
             "2B":0,
             "3B":0,
-            "HR":0
+            "HR":0,
+            "RBI":0,
+            "R":0
 
         }
         for situation in game_team.game.situations:
@@ -522,6 +524,13 @@ def get_game_team_roster():
                     stats["SO"] +=1
                 if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
                     stats["AB"] +=1
+                for runner_situation in situation.data["runners"]:
+                    if runner_situation["finalBase"] == "Home":
+                        stats["RBI"] += 1
+            for runner_situation in situation.data["runners"]:
+                if runner_situation["player"]["player"]["id"]== player.id:
+                        if runner_situation["finalBase"] == "Home":
+                            stats["R"] += 1        
                                 
                         
         stats["AVG"] = stats["H"]/stats["AB"] if stats["AB"] != 0 else 0
@@ -912,8 +921,6 @@ def get_team_stats(team_id):
                                     if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
                                         res["AB"] +=1
                                     for runner_situation in situation.data["runners"]:
-                                    
-                                        
                                         if runner_situation["finalBase"] == "Home":
                                             res["RBI"] += 1
                                 for runner_situation in situation.data["runners"]:
@@ -965,7 +972,7 @@ def get_tournament_stats(tournament_id):
 
                     }
                 for gameTeam in team_tournament.games:
-                    if game_id and gameTeam.game_id == game_id or years and gameTeam.game.start_time.year in years or not game_id and not years:
+                    if game_id and gameTeam.game_id == game_id and not years or years and gameTeam.game.start_time.year in years and not game_id or years and gameTeam.game.start_time.year in years and game_id and gameTeam.game_id == game_id or not game_id and not years:
                         for situation in gameTeam.game.situations:
                             if situation.data["batter"]["player"]["id"] == player.player.id :
                                 if situation.data["situationCategory"] != "":
@@ -989,11 +996,12 @@ def get_tournament_stats(tournament_id):
                                 if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
                                     player_stats["AB"] +=1
                                 for runner_situation in situation.data["runners"]:
-                                    if runner_situation["player"]["player"]["id"] == player.player.id:
+                                        if runner_situation["finalBase"] == "Home":
+                                            player_stats["RBI"] += 1
+                            for runner_situation in situation.data["runners"]:
+                                if runner_situation["player"]["player"]["id"]== player.player.id:
                                         if runner_situation["finalBase"] == "Home":
                                             player_stats["R"] += 1
-                                    if runner_situation["finalBase"] == "Home":
-                                        player_stats["RBI"] += 1
                 player_stats["AVG"] = player_stats["H"]/player_stats["AB"] if player_stats["AB"] != 0 else 0
                 res.append({
                     "id":player.id,
@@ -1067,7 +1075,6 @@ def get_player_games_stats(player_id):
                             for runner_situation in situation.data["runners"]:
                                 if runner_situation["finalBase"] == "Home":
                                     game_stats["RBI"] += 1
-                        #TODO
                         for runner_situation in situation.data["runners"]:
                                 if runner_situation["player"]["player"]["id"]== player_id:
                                     if runner_situation["finalBase"] == "Home":

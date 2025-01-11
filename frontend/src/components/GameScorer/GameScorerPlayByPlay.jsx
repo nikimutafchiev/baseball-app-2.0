@@ -17,7 +17,7 @@ export default function GameScorerPlayByPlay(props) {
                                 {situation.data.runners.map((runner) => <div>#{runner.player.uniformNumber} {runner.player.player.lastName} {runner.situation} {runner.finalBase}</div>)}
                             </div>
                         </div>
-                        <div className="flex flex-col w-1/5 gap-2">
+                        <div className="flex flex-col w-1/5 gap-2 items-center">
                             <div className="flex flex-row justify-center">
                                 {situation.data.inning} {situation.data.inningHalf == "UP" ? <FaCaretUp className="text-green-500" size={15} /> : <FaCaretDown className="text-red-500" size={15} />}
                             </div>
