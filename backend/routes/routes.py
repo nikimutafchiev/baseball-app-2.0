@@ -4,6 +4,7 @@ from flask import request, Blueprint
 from flask_jwt_extended import  create_access_token
 from datetime import date,datetime,timezone
 from models.models import db
+import bcrypt
 route_bp = Blueprint("routes",__name__)
 
 @route_bp.route("/player",methods=['POST'])
@@ -171,10 +172,13 @@ def get_games_by_tournament():
 @route_bp.route("/signup", methods=["POST"])
 def signup():
     data = request.json    
+    bytes = data["password"].encode('utf-8') 
+    salt = bcrypt.gensalt() 
+    hash = bcrypt.hashpw(bytes, salt) 
 
     if User.query.filter_by(username=data['username']).first():
         return "This username is taken",400
-    new_user = User(username=data['username'],password=data['password'],first_name=data['firstName'], last_name= data['lastName'], role=data['role'])
+    new_user = User(username=data['username'],password=hash,first_name=data['firstName'], last_name= data['lastName'], role=data['role'])
     db.session.add(new_user)
     db.session.commit()
     return ""
@@ -187,8 +191,8 @@ def login():
 
     user = User.query.filter_by(username=username).first()
 
-    if user and user.password == password:
-        access_token = create_access_token(identity=user.id,additional_claims={"user":{"id":user.id,"username":user.username,"firstName":user.first_name,"lastName":user.last_name,"password":user.password,"role":user.role.value}})
+    if user and bcrypt.checkpw(password.encode('utf-8'),user.password):
+        access_token = create_access_token(identity=user.id,additional_claims={"user":{"id":user.id,"username":user.username,"firstName":user.first_name,"lastName":user.last_name,"role":user.role.value}})
         return {'access_token': access_token}
     else:
         return {},400

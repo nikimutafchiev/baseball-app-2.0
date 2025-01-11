@@ -37,19 +37,7 @@ export default function ProfileAccountInfo() {
                     <span className="w-3/4 text-gray-800">{user.username}</span>
 
                 </div>
-                <div className="flex items-center gap-4">
-                    <label className="w-1/4 text-lg font-medium text-gray-700">Password:</label>
-                    {!isEdit ? (
-                        <span className="w-3/4 text-gray-800">{user.password}</span>
-                    ) : (
-                        <TextField
-                            className="w-3/4"
-                            variant="outlined"
-                            size="small"
-                            value={user.password}
-                        />
-                    )}
-                </div>
+
             </div>
         </div>)
 }
