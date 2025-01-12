@@ -226,6 +226,11 @@ export default function GameScorer() {
     const incrementOuts = async () => {
         if (outs + 1 == 3) {
             setOuts(3);
+            setOffense({
+                firstBaseRunner: null,
+                secondBaseRunner: null,
+                thirdBaseRunner: null
+            });
             await fetch(`http://localhost:6363/game/${id}/change_outs`, {
                 method: "POST",
                 headers: {
@@ -248,12 +253,10 @@ export default function GameScorer() {
 
             });
 
-            setOffense({
-                firstBaseRunner: null,
-                secondBaseRunner: null,
-                thirdBaseRunner: null
-            });
+
             if (inningHalf == "DOWN") {
+                setHomeLOB(homeLOB + Object.entries(offense).filter(([position, player]) => player !== null).length);
+                setInning(inning + 1);
                 await fetch(`http://localhost:6363/game_team/change_lob/?game_id=${id}&home_away=HOME`, {
                     method: "POST",
                     headers: {
@@ -264,10 +267,11 @@ export default function GameScorer() {
                     })
 
                 });
-                setHomeLOB(homeLOB + Object.entries(offense).filter(([position, player]) => player !== null).length);
-                setInning(inning + 1);
+
             }
+
             else {
+                setAwayLOB(awayLOB + Object.entries(offense).filter(([position, player]) => player !== null).length);
                 await fetch(`http://localhost:6363/game_team/change_lob/?game_id=${id}&home_away=AWAY`, {
                     method: "POST",
                     headers: {
@@ -278,7 +282,7 @@ export default function GameScorer() {
                     })
 
                 });
-                setAwayLOB(awayLOB + Object.entries(offense).filter(([position, player]) => player !== null).length);
+
             }
             setInningHalf(inningHalf == "UP" ? "DOWN" : "UP");
             await fetch(`http://localhost:6363/game/${id}/change_inning`, {
@@ -290,6 +294,7 @@ export default function GameScorer() {
             });
         }
         else {
+            setOuts(outs + 1);
             await fetch(`http://localhost:6363/game/${id}/change_outs`, {
                 method: "POST",
                 headers: {
@@ -300,7 +305,7 @@ export default function GameScorer() {
                 })
 
             });
-            setOuts(outs + 1);
+
         }
     }
     const situationAdder = () => {
@@ -704,6 +709,8 @@ export default function GameScorer() {
                     } else {
                         const newPoints = points.home;
                         newPoints[inning - 1] = points.home[inning - 1] + 1;
+                        setHomePoints(homePoints + 1);
+                        setPoints({ home: newPoints, away: points.away })
                         await fetch(`http://localhost:6363/game/${id}/change_points_by_inning`, {
                             method: "POST",
                             headers: {
@@ -714,8 +721,7 @@ export default function GameScorer() {
                             })
 
                         });
-                        setHomePoints(homePoints + 1);
-                        setPoints({ home: newPoints, away: points.away })
+
                         await fetch(`http://localhost:6363/game_team/change_score/?game_id=${id}&home_away=HOME`, {
                             method: "POST",
                             headers: {
@@ -735,7 +741,7 @@ export default function GameScorer() {
                     newOffense[startBase == "1B" ? "firstBaseRunner" : startBase == "2B" ? "secondBaseRunner" : startBase == "3B" ? "thirdBaseRunner" : ""] = null;
                 }
 
-
+                setOffense(newOffense);
                 fetch(`http://localhost:6363/game/${id}/change_runners`, {
                     method: "POST",
                     headers: {
@@ -746,7 +752,7 @@ export default function GameScorer() {
                     })
 
                 });
-                setOffense(newOffense);
+
             }
 
             }
@@ -761,6 +767,11 @@ export default function GameScorer() {
             incrementOuts={async () => {
                 if (outs + 1 == 3) {
                     setOuts(3);
+                    setOffense({
+                        firstBaseRunner: null,
+                        secondBaseRunner: null,
+                        thirdBaseRunner: null
+                    });
                     await fetch(`http://localhost:6363/game/${id}/change_outs`, {
                         method: "POST",
                         headers: {
@@ -781,15 +792,13 @@ export default function GameScorer() {
                         })
 
                     });
-                    setOffense({
-                        firstBaseRunner: null,
-                        secondBaseRunner: null,
-                        thirdBaseRunner: null
-                    });
+
                     addSituation("", "");
                     setSituationOption("");
                     setIsSituationReady(true);
                     if (inningHalf == "DOWN") {
+                        setHomeLOB(homeLOB + Object.entries(offense).filter(([position, player]) => player !== null).length);
+                        setInning(inning + 1);
                         await fetch(`http://localhost:6363/game_team/change_lob/?game_id=${id}&home_away=HOME`, {
                             method: "POST",
                             headers: {
@@ -800,10 +809,9 @@ export default function GameScorer() {
                             })
 
                         });
-                        setHomeLOB(homeLOB + Object.entries(offense).filter(([position, player]) => player !== null).length);
-                        setInning(inning + 1);
                     }
                     else {
+                        setAwayLOB(awayLOB + Object.entries(offense).filter(([position, player]) => player !== null).length);
                         await fetch(`http://localhost:6363/game_team/change_lob/?game_id=${id}&home_away=AWAY`, {
                             method: "POST",
                             headers: {
@@ -814,7 +822,7 @@ export default function GameScorer() {
                             })
 
                         });
-                        setAwayLOB(awayLOB + Object.entries(offense).filter(([position, player]) => player !== null).length);
+
                     }
                     setInningHalf(inningHalf == "UP" ? "DOWN" : "UP");
                     fetch(`http://localhost:6363/game/${id}/change_inning`, {
@@ -1288,7 +1296,9 @@ export default function GameScorer() {
                     </div>
                 </div >
             }
-            {game.data && game.data.status !== "live" && <div className="w-screen h-[60vh] text-4xl content-center text-center">Cannot score not started game!</div>}
+            {game.data && game.data.status === "scheduled" && <div className="w-screen h-[60vh] text-4xl content-center text-center">Cannot score not started game!</div>}
+            {game.data && game.data.status === "ended" && <div className="w-screen h-[80vh] text-4xl flex flex-col justify-center items-center gap-6">The game is over!
+                <Link to={`/games/${game.data.id}`} className="bg-blue-500 hover:bg-blue-400 p-4 text-xl text-white drop-shadow-lg rounded font-semibold">Game info</Link></div>}
             {situationOption !== "" && situationComponents[situationOption]
             }
 
