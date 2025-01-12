@@ -514,35 +514,36 @@ def get_game_team_roster():
             
 
         }
-        for situation in game_team.game.situations:
-            if situation.data["batter"]["player"]["id"] == player.id :
-                if situation.data["situationCategory"] != "":
-                    stats["PA"] += 1
-                if situation.data["situationCategory"] == "hit":
-                    stats["H"] += 1
-                    if situation.data["situation"] == "Single":
-                        stats["1B"] +=1
-                    elif situation.data["situation"] == "Double":
-                        stats["2B"] +=1
-                    elif situation.data["situation"] == "Triple":
-                        stats["3B"] +=1
-                    elif situation.data["situation"] == "Homerun":
-                        stats["HR"] +=1
-                if situation.data["situationCategory"] == "walk":
-                    stats["BB"] +=1
-                if situation.data["situationCategory"] == "hit by pitch":
-                    stats["HBP"] +=1
-                if situation.data["situationCategory"] == "strikeout":
-                    stats["SO"] +=1
-                if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
-                    stats["AB"] +=1
-                for runner_situation in situation.data["runners"]:
-                    if runner_situation["finalBase"] == "Home":
-                        stats["RBI"] += 1
-            for runner_situation in situation.data["runners"]:
-                if runner_situation["player"]["player"]["id"]== player.id:
-                        if runner_situation["finalBase"] == "Home":
-                            stats["R"] += 1        
+        merge_dicts(get_stats(game_team.game.situations,player.id),stats)
+        # for situation in game_team.game.situations:
+        #     if situation.data["batter"]["player"]["id"] == player.id :
+        #         if situation.data["situationCategory"] != "":
+        #             stats["PA"] += 1
+        #         if situation.data["situationCategory"] == "hit":
+        #             stats["H"] += 1
+        #             if situation.data["situation"] == "Single":
+        #                 stats["1B"] +=1
+        #             elif situation.data["situation"] == "Double":
+        #                 stats["2B"] +=1
+        #             elif situation.data["situation"] == "Triple":
+        #                 stats["3B"] +=1
+        #             elif situation.data["situation"] == "Homerun":
+        #                 stats["HR"] +=1
+        #         if situation.data["situationCategory"] == "walk":
+        #             stats["BB"] +=1
+        #         if situation.data["situationCategory"] == "hit by pitch":
+        #             stats["HBP"] +=1
+        #         if situation.data["situationCategory"] == "strikeout":
+        #             stats["SO"] +=1
+        #         if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
+        #             stats["AB"] +=1
+        #         for runner_situation in situation.data["runners"]:
+        #             if runner_situation["finalBase"] == "Home":
+        #                 stats["RBI"] += 1
+        #     for runner_situation in situation.data["runners"]:
+        #         if runner_situation["player"]["player"]["id"]== player.id:
+        #                 if runner_situation["finalBase"] == "Home":
+        #                     stats["R"] += 1        
                                 
                         
         stats["AVG"] = stats["H"]/stats["AB"] if stats["AB"] != 0 else 0
@@ -750,7 +751,84 @@ def get_player_years(player_id):
             for gameTeam in team_tournament.team_tournament.games:
                 res.add(gameTeam.game.start_time.year)
     return list(res)
-         
+
+def id_in_list(id,list):
+    for i in range(0,len(list)):
+        if list[i]["id"] == id:
+            return i
+    return None
+    
+def merge_dicts(srcDict,destDict):
+    for key in destDict:
+        if key in srcDict:
+            destDict[key] = destDict[key] + srcDict[key]
+
+def get_stats(situations_list,player_id):
+    res = {
+        "PA":0,
+        "H":0,
+        "AB":0,
+        "SO":0,
+        "BB":0,
+        "HBP":0,
+        "AVG":0,
+        "SLG":0,
+        "1B":0,
+        "2B":0,
+        "3B":0,
+        "HR":0,
+        "R":0,
+        "RBI":0,
+        "IBB":0,
+        "OPS":0,
+        "TB":0,
+        "XBH":0,
+        "ROE":0
+    }
+    for situation in situations_list:
+        if situation.data["batter"]["player"]["id"] == player_id :
+            if situation.data["situationCategory"] != "":
+                res["PA"] += 1
+            if situation.data["situationCategory"] == "hit":
+                res["H"] += 1
+                if situation.data["situation"] == "Single":
+                    res["1B"] +=1
+                    res["TB"]+=1
+                elif situation.data["situation"] == "Double":
+                    res["2B"] +=1
+                    res["TB"] +=2
+                    res["XBH"] +=1
+                elif situation.data["situation"] == "Triple":
+                    res["3B"] +=1
+                    res["TB"] +=3
+                    res["XBH"] +=1
+                elif situation.data["situation"] == "Homerun":
+                    res["HR"] +=1
+                    res["TB"] +=4
+                    res["XBH"] +=1
+            if situation.data["situationCategory"] == "walk":
+                res["BB"] +=1
+                if situation.data["situation"] == "Intentional walk":
+                    res["IBB"]+=1
+            if situation.data["situationCategory"] == "hit by pitch":
+                res["HBP"] +=1
+            if situation.data["situationCategory"] == "strikeout":
+                res["SO"] +=1
+            if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
+                res["AB"] +=1
+            if situation.data["situationCategory"] == "error":
+                res["ROE"] +=1
+                
+            for runner_situation in situation.data["runners"]:
+                if runner_situation["finalBase"] == "Home":
+                    res["RBI"] += 1
+        for runner_situation in situation.data["runners"]:
+                if runner_situation["player"]["player"]["id"] == player_id:
+                    if runner_situation["finalBase"] == "Home":
+                        res["R"] += 1
+    return res                    
+
+
 @route_bp.route("/player/<int:player_id>/stats/",methods=["GET"])
 def get_player_stats(player_id):
     query = request.args.to_dict()
@@ -785,47 +863,7 @@ def get_player_stats(player_id):
         if (team_ids and team_tournament.team_tournament.team_id in team_ids and not tournament_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids and not team_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids and team_ids and team_tournament.team_tournament.team_id in team_ids)or (not team_ids and not tournament_ids):
            for gameTeam in team_tournament.team_tournament.games:
                 if game_id and gameTeam.game_id == game_id or not game_id or years and gameTeam.game.start_time.year in years:
-                    for situation in gameTeam.game.situations:
-                        if situation.data["batter"]["player"]["id"] == player_id :
-                            if situation.data["situationCategory"] != "":
-                                res["PA"] += 1
-                            if situation.data["situationCategory"] == "hit":
-                                res["H"] += 1
-                                if situation.data["situation"] == "Single":
-                                    res["1B"] +=1
-                                    res["TB"]+=1
-                                elif situation.data["situation"] == "Double":
-                                    res["2B"] +=1
-                                    res["TB"] +=2
-                                    res["XBH"] +=1
-                                elif situation.data["situation"] == "Triple":
-                                    res["3B"] +=1
-                                    res["TB"] +=3
-                                    res["XBH"] +=1
-                                elif situation.data["situation"] == "Homerun":
-                                    res["HR"] +=1
-                                    res["TB"] +=4
-                                    res["XBH"] +=1
-                            if situation.data["situationCategory"] == "walk":
-                                res["BB"] +=1
-                                if situation.data["situation"] == "Intentional walk":
-                                    res["IBB"]+=1
-                            if situation.data["situationCategory"] == "hit by pitch":
-                                res["HBP"] +=1
-                            if situation.data["situationCategory"] == "strikeout":
-                                res["SO"] +=1
-                            if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
-                                res["AB"] +=1
-                            if situation.data["situationCategory"] == "error":
-                                res["ROE"] +=1
-                                
-                            for runner_situation in situation.data["runners"]:
-                                if runner_situation["finalBase"] == "Home":
-                                    res["RBI"] += 1
-                        for runner_situation in situation.data["runners"]:
-                                if runner_situation["player"]["player"]["id"] == player_id:
-                                    if runner_situation["finalBase"] == "Home":
-                                        res["R"] += 1
+                    merge_dicts(get_stats(gameTeam.game.situations,player.id),res)
                              
                     
     res["AVG"] = res["H"]/res["AB"] if res["AB"] != 0 else 0
@@ -926,16 +964,6 @@ def get_team_stats(team_id):
     players_stats = []
     games_stats = []
 
-    def id_in_list(id,list):
-        for i in range(0,len(list)):
-            if list[i]["id"] == id:
-                return i
-        return None
-    
-    def merge_dicts(dict1,dict2):
-        for key in dict2:
-            if key in dict1:
-                dict2[key] = dict2[key] + dict1[key]
 
     for team_tournament in team.tournaments:
         #(team_ids and team_tournament.team_id in team_ids)
@@ -987,100 +1015,21 @@ def get_team_stats(team_id):
                     }
                     if not years and game_id and gameTeam.game_id == game_id or not game_id and years and gameTeam.game.start_time.year in years or game_id and years and gameTeam.game_id == game_id and gameTeam.game.start_time.year in years or not game_id and not years : 
                         if team_ids and gameTeamObject.team_tournament.team_id in team_ids or not team_ids:
-                            for situation in gameTeam.game.situations:
-                                if situation.data["batter"]["player"]["id"] == player.player.id :
-                                    if situation.data["situationCategory"] != "":
-                                        res["PA"] += 1
-                                        player_stats["PA"] += 1
-                                        game_stats["PA"] += 1
-                                    if situation.data["situationCategory"] == "hit":
-                                        res["H"] += 1
-                                        player_stats["H"] += 1
-                                        game_stats["H"] += 1
-                                        if situation.data["situation"] == "Single":
-                                            res["1B"] +=1
-                                            player_stats["1B"] +=1
-                                            game_stats["1B"] +=1
-                                            res["TB"] +=1
-                                            player_stats["TB"] +=1
-                                            game_stats["TB"] +=1
-                                        elif situation.data["situation"] == "Double":
-                                            res["2B"] +=1
-                                            player_stats["2B"] +=1
-                                            game_stats["2B"] +=1
-                                            res["TB"] +=2
-                                            player_stats["TB"] +=2
-                                            game_stats["TB"] +=2
-                                            res["XBH"] +=1
-                                            player_stats["XBH"] +=1
-                                            game_stats["XBH"] +=1
-                                        elif situation.data["situation"] == "Triple":
-                                            res["3B"] +=1
-                                            player_stats["3B"] +=1
-                                            game_stats["3B"] +=1
-                                            res["TB"] +=3
-                                            player_stats["TB"] +=3
-                                            game_stats["TB"] +=3
-                                            res["XBH"] +=1
-                                            player_stats["XBH"] +=1
-                                            game_stats["XBH"] +=1
-                                        elif situation.data["situation"] == "Homerun":
-                                            res["HR"] +=1
-                                            player_stats["HR"] +=1
-                                            game_stats["HR"] +=1
-                                            res["TB"] +=4
-                                            player_stats["TB"] +=4
-                                            game_stats["TB"] +=4
-                                            res["XBH"] +=1
-                                            player_stats["XBH"] +=1
-                                            game_stats["XBH"] +=1
-                                    if situation.data["situationCategory"] == "walk":
-                                        res["BB"] +=1
-                                        player_stats["BB"] +=1
-                                        game_stats["BB"] +=1
-                                        if situation.data["situation"] == "Intentional walk":
-                                            res["IBB"] +=1
-                                            player_stats["IBB"] +=1
-                                            game_stats["IBB"] +=1
-                                    if situation.data["situationCategory"] == "hit by pitch":
-                                        res["HBP"] +=1
-                                        player_stats["HBP"] +=1
-                                        game_stats["HBP"] +=1
-                                    if situation.data["situationCategory"] == "strikeout":
-                                        res["SO"] +=1
-                                        player_stats["SO"] +=1
-                                        game_stats["SO"] +=1
-                                    if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
-                                        res["AB"] +=1
-                                        player_stats["AB"] +=1
-                                        game_stats["AB"] +=1
-                                    if situation.data["situationCategory"] == "error":
-                                        res["ROE"] +=1
-                                        player_stats["ROE"] +=1
-                                        game_stats["ROE"] +=1
-                                
-                                    for runner_situation in situation.data["runners"]:
-                                        if runner_situation["finalBase"] == "Home":
-                                            res["RBI"] += 1
-                                            player_stats["RBI"] += 1
-                                            game_stats["RBI"] += 1
-                                for runner_situation in situation.data["runners"]:
-                                    if runner_situation["player"]["player"]["id"]== player.player.id:
-                                            if runner_situation["finalBase"] == "Home":
-                                                res["R"] += 1
-                                                player_stats["R"] += 1
-                                                game_stats["R"] += 1
-                        game_index = id_in_list(gameTeam.game.id,games_stats)
-                        if game_index == None:
-                            games_stats.append({
-                                "id": gameTeam.game.id,
-                                "homeTeam": gameTeam.team_tournament.team.name if gameTeam.home_away == HomeAway.HOME else gameTeamObject.team_tournament.team.name,
-                                "awayTeam": gameTeamObject.team_tournament.team.name if gameTeam.home_away == HomeAway.HOME else gameTeam.team_tournament.team.name,
-                                "startTime":gameTeam.game.start_time,
-                                "stats":game_stats
-                            })
-                        else:
-                            merge_dicts(game_stats,games_stats[game_index]["stats"])
+                            res_stats = get_stats(gameTeam.game.situations,player.player.id)
+                            merge_dicts(res_stats,game_stats)
+                            merge_dicts(res_stats,player_stats)
+                            merge_dicts(res_stats,res)
+                            game_index = id_in_list(gameTeam.game.id,games_stats)
+                            if game_index == None:
+                                games_stats.append({
+                                    "id": gameTeam.game.id,
+                                    "homeTeam": gameTeam.team_tournament.team.name if gameTeam.home_away == HomeAway.HOME else gameTeamObject.team_tournament.team.name,
+                                    "awayTeam": gameTeamObject.team_tournament.team.name if gameTeam.home_away == HomeAway.HOME else gameTeam.team_tournament.team.name,
+                                    "startTime":gameTeam.game.start_time,
+                                    "stats":game_stats
+                                })
+                            else:
+                                merge_dicts(game_stats,games_stats[game_index]["stats"])
 
                 player_index = id_in_list(player.player.id,players_stats)
                 if player_index == None:
@@ -1151,35 +1100,7 @@ def get_tournament_stats(tournament_id):
                     }
                 for gameTeam in team_tournament.games:
                     if game_id and gameTeam.game_id == game_id and not years or years and gameTeam.game.start_time.year in years and not game_id or years and gameTeam.game.start_time.year in years and game_id and gameTeam.game_id == game_id or not game_id and not years:
-                        for situation in gameTeam.game.situations:
-                            if situation.data["batter"]["player"]["id"] == player.player.id :
-                                if situation.data["situationCategory"] != "":
-                                    player_stats["PA"] += 1
-                                if situation.data["situationCategory"] == "hit":
-                                    player_stats["H"] += 1
-                                    if situation.data["situation"] == "Single":
-                                        player_stats["1B"] +=1
-                                    elif situation.data["situation"] == "Double":
-                                        player_stats["2B"] +=1
-                                    elif situation.data["situation"] == "Triple":
-                                        player_stats["3B"] +=1
-                                    elif situation.data["situation"] == "Homerun":
-                                        player_stats["HR"] +=1
-                                if situation.data["situationCategory"] == "walk":
-                                    player_stats["BB"] +=1
-                                if situation.data["situationCategory"] == "hit by pitch":
-                                    player_stats["HBP"] +=1
-                                if situation.data["situationCategory"] == "strikeout":
-                                    player_stats["SO"] +=1
-                                if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
-                                    player_stats["AB"] +=1
-                                for runner_situation in situation.data["runners"]:
-                                        if runner_situation["finalBase"] == "Home":
-                                            player_stats["RBI"] += 1
-                            for runner_situation in situation.data["runners"]:
-                                if runner_situation["player"]["player"]["id"]== player.player.id:
-                                        if runner_situation["finalBase"] == "Home":
-                                            player_stats["R"] += 1
+                        merge_dicts(get_stats(gameTeam.game.situations,player.player.id),player_stats)
                 player_stats["AVG"] = player_stats["H"]/player_stats["AB"] if player_stats["AB"] != 0 else 0
                 player_stats["OBP"] = (player_stats["H"]+player_stats["BB"]+player_stats["HBP"])/player_stats["PA"] if player_stats["PA"] != 0 else 0
                 player_stats["SLG"] = (player_stats["1B"] + 2*player_stats["2B"] + 3*player_stats["3B"] + 4*player_stats["HR"])/player_stats["AB"] if player_stats["AB"] != 0 else 0
@@ -1229,35 +1150,7 @@ def get_player_games_stats(player_id):
                         "RBI":0
 
                     }
-                    for situation in gameTeam.game.situations:
-                        if situation.data["batter"]["player"]["id"] == player_id :
-                            if situation.data["situationCategory"] != "":
-                                game_stats["PA"] += 1
-                            if situation.data["situationCategory"] == "hit":
-                                game_stats["H"] += 1
-                                if situation.data["situation"] == "Single":
-                                    game_stats["1B"] +=1
-                                elif situation.data["situation"] == "Double":
-                                    game_stats["2B"] +=1
-                                elif situation.data["situation"] == "Triple":
-                                    game_stats["3B"] +=1
-                                elif situation.data["situation"] == "Homerun":
-                                    game_stats["HR"] +=1
-                            if situation.data["situationCategory"] == "walk":
-                                game_stats["BB"] +=1
-                            if situation.data["situationCategory"] == "hit by pitch":
-                                game_stats["HBP"] +=1
-                            if situation.data["situationCategory"] == "strikeout":
-                                game_stats["SO"] +=1
-                            if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
-                                game_stats["AB"] +=1
-                            for runner_situation in situation.data["runners"]:
-                                if runner_situation["finalBase"] == "Home":
-                                    game_stats["RBI"] += 1
-                        for runner_situation in situation.data["runners"]:
-                                if runner_situation["player"]["player"]["id"]== player_id:
-                                    if runner_situation["finalBase"] == "Home":
-                                        game_stats["R"] += 1
+                    merge_dicts(get_stats(gameTeam.game.situations,player_id),game_stats)
                     game_stats["AVG"] = game_stats["H"]/game_stats["AB"] if game_stats["AB"] != 0 else 0
                     game_stats["OBP"] = (game_stats["H"]+game_stats["BB"]+game_stats["HBP"])/game_stats["PA"] if game_stats["PA"] != 0 else 0
                     game_stats["SLG"] = (game_stats["1B"] + 2*game_stats["2B"] + 3*game_stats["3B"] + 4*game_stats["HR"])/game_stats["AB"] if game_stats["AB"] != 0 else 0
