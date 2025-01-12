@@ -21,7 +21,7 @@ import {
 	TableBody,
 	TableFooter,
 } from "@mui/material";
-import { FaArrowUp } from "react-icons/fa"
+import { FaArrowDown, FaArrowUp } from "react-icons/fa"
 import useSWR from "swr";
 import PlayerSelectList from "../Other/PlayerSelectList";
 export default function PlayerInfo() {
@@ -87,6 +87,7 @@ export default function PlayerInfo() {
 	const [isShrinked, setIsShrinked] = useState(false);
 	const [graphStat, setGraphStat] = useState("AVG");
 	const [sortColumn, setSortColumn] = useState("startTime");
+	const [sortOrder, setSortOrder] = useState("DESC");
 
 	useEffect(() => {
 		if (selectedPlayer)
@@ -671,55 +672,59 @@ export default function PlayerInfo() {
 											<Table stickyHeader>
 												<TableHead>
 													<TableRow>
-														<TableCell onClick={() => setSortColumn("startTime")}>
-															<div className="flex flex-row items-center cursor-pointer w-24 gap-0.5">
-																<div className="text-sm font-semibold">
-																	Start time
-																</div>
-																<div className={`${sortColumn == "startTime" ? "visible" : "invisible"}`}> <FaArrowUp />
-																</div></div></TableCell>
-														<TableCell onClick={() => setSortColumn("homeTeam")}>
-															<div className="flex flex-row items-center cursor-pointer w-24 gap-0.5"><div className="text-sm font-semibold">
-																Home team
-															</div>
-																<div className={`${sortColumn == "homeTeam" ? "visible" : "invisible"}`}> <FaArrowUp /></div>
-															</div></TableCell>
-														<TableCell onClick={() => setSortColumn("awayTeam")}>
-															<div className="flex flex-row items-center cursor-pointer w-24  gap-0.5"><div className="text-sm font-semibold">
-																Away team
-															</div>
-																<div className={`${sortColumn == "awayTeam" ? "visible" : "invisible"}`}> <FaArrowUp /></div>
-															</div></TableCell>
-														<TableCell onClick={() => setSortColumn("AB")}>
-															<div className="flex flex-row items-center cursor-pointer  gap-0.5"><div className="text-base font-semibold">AB</div>
-
-																<div className={`${sortColumn == "AB" ? "visible" : "invisible"}`} > <FaArrowUp /></div></div>
-														</TableCell>
-														<TableCell onClick={() => setSortColumn("R")}>
-															<div className="flex flex-row items-center cursor-pointer gap-0.5"><div className="text-base font-semibold">R</div>
-																<div className={`${sortColumn == "R" ? "visible" : "invisible"}`}><FaArrowUp /></div></div></TableCell>
-														<TableCell onClick={() => setSortColumn("H")}>
-															<div className="flex flex-row items-center cursor-pointer gap-0.5"><div className="text-base font-semibold">H</div>
-																<div className={`${sortColumn == "H" ? "visible" : "invisible"}`}><FaArrowUp /></div></div></TableCell>
-														<TableCell onClick={() => setSortColumn("RBI")}>
-															<div className="flex flex-row items-center cursor-pointer gap-0.5"><div className="text-base font-semibold">RBI</div>
-																<div className={`${sortColumn == "RBI" ? "visible" : "invisible"}`}><FaArrowUp /></div></div></TableCell>
-														<TableCell onClick={() => setSortColumn("BB")}>
-															<div className="flex flex-row items-center cursor-pointer gap-0.5"><div className="text-base font-semibold">BB</div>
-																<div className={`${sortColumn == "BB" ? "visible" : "invisible"}`}><FaArrowUp /></div></div></TableCell>
-														<TableCell onClick={() => setSortColumn("SO")}>
-															<div className="flex flex-row items-center cursor-pointer gap-0.5"><div className="text-base font-semibold">SO</div>
-																<div className={`${sortColumn == "SO" ? "visible" : "invisible"}`}><FaArrowUp /></div></div></TableCell>
-														<TableCell onClick={() => setSortColumn("AVG")}>
-															<div className="flex flex-row items-center cursor-pointer gap-0.5"><div className="text-base font-semibold">AVG</div>
-																<div className={`${sortColumn == "AVG" ? "visible" : "invisible"}`}><FaArrowUp /></div></div></TableCell>
-														<TableCell onClick={() => setSortColumn("SLG")}>
-															<div className="flex flex-row items-center cursor-pointer gap-0.5"><div className="text-base font-semibold">SLG</div>
-																<div className={`${sortColumn == "SLG" ? "visible" : "invisible"}`}><FaArrowUp /></div></div></TableCell>
+														{[{ title: "Start time", id: "startTime" }, {
+															title: "Home team",
+															id: "homeTeam"
+														},
+														{
+															title: "Away team",
+															id: "awayTeam"
+														},
+														{
+															title: "AB",
+															id: "AB"
+														},
+														{
+															title: "R",
+															id: "R"
+														},
+														{
+															title: "H",
+															id: "H"
+														},
+														{
+															title: "RBI",
+															id: "RBI"
+														},
+														{
+															title: "BB",
+															id: "BB"
+														},
+														{
+															title: "SO",
+															id: "SO"
+														},
+														{
+															title: "AVG",
+															id: "AVG"
+														},
+														{
+															title: "SLG",
+															id: "SLG"
+														}].map((column) =>
+															<TableCell onClick={() => { if (sortColumn == column.id) setSortOrder(sortOrder === "ASC" ? "DESC" : "ASC"); else { setSortColumn(column.id); setSortOrder("DESC") } }}>
+																<div className="flex flex-row items-center cursor-pointer min-w-fit gap-0.5">
+																	<div className="text-sm font-semibold">
+																		{column.title}
+																	</div>
+																	<div className={`${sortColumn == column.id ? "visible" : "invisible"}`}> {sortOrder == "ASC" && <FaArrowUp size={10} />}
+																		{sortOrder == "DESC" && <FaArrowDown size={10} />}
+																	</div></div></TableCell>
+														)}
 													</TableRow>
 												</TableHead>
 												<TableBody sx={{ overflowY: "auto" }}>
-													{games_stats.data.sort((a, b) => ["homeTeam", "awayTeam"].includes(sortColumn) ? a[sortColumn].localeCompare(b[sortColumn]) : sortColumn == 'startTime' ? a[sortColumn] - b[sortColumn] : b.stats[sortColumn] - a.stats[sortColumn]).map((row) => (
+													{[...games_stats.data].sort((a, b) => { const res = ["homeTeam", "awayTeam"].includes(sortColumn) ? b[sortColumn].localeCompare(a[sortColumn]) : sortColumn == 'startTime' ? new Date(b[sortColumn]) - new Date(a[sortColumn]) : b.stats[sortColumn] - a.stats[sortColumn]; if (sortOrder == "ASC") return -res; return res; }).map((row) => (
 														<TableRow key={row.id}>
 															{/* <TableCell component="th" scope="row">
 																{row.battingOrder}
