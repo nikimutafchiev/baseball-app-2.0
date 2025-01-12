@@ -25,7 +25,7 @@ export default function TeamRoster() {
             </button>
         }
         <div className="flex flex-col gap-4">
-            {roster.data && roster.data.sort((a, b) => a.uniformNumber - b.uniformNumber).map((player) => (
+            {roster.data && [...roster.data].sort((a, b) => a.uniformNumber - b.uniformNumber).map((player) => (
                 <div
                     className="bg-white rounded-lg shadow-sm  flex flex-row items-center justify-between gap-4 p-4"
                 >

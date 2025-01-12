@@ -89,7 +89,7 @@ export default function TournamentInfoRanking() {
                             "l": 18
                         }
                     ] */
-                        teams.data.sort((a, b) => b.stats.W - a.stats.W).map((row, index) => (
+                        [...teams.data].sort((a, b) => b.stats.W - a.stats.W).map((row, index) => (
 
                             <TableRow
                                 key={index}

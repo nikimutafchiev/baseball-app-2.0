@@ -65,7 +65,7 @@ export default function Roster(props) {
                 {props.team.tlc}
             </div>
             {
-                players.sort((a, b) => a.battingOrder - b.battingOrder).map((player, index) => <div className="flex flex-row items-center bg-primary_2 hover:bg-primary_2_hover cursor-pointer overflow-hidden text-white rounded-lg  shadow-md">
+                [...players].sort((a, b) => a.battingOrder - b.battingOrder).map((player, index) => <div className="flex flex-row items-center bg-primary_2 hover:bg-primary_2_hover cursor-pointer overflow-hidden text-white rounded-lg  shadow-md">
                     <div className="w-1/12 text-center font-semibold bg-primary_1 p-1">
                         {index + 1}
                     </div>

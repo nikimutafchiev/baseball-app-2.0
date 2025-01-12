@@ -103,7 +103,7 @@ export default function TournamentInfoPlayerLeaderboard() {
                                     statValue: 0.585,
                                 },
                             ]*/
-                                    stats.data.sort((a, b) => b.stats[stat] - a.stats[stat]).map((player, index) => (
+                                    [...stats.data].sort((a, b) => b.stats[stat] - a.stats[stat]).map((player, index) => (
                                         <>
                                             {index == 0 && <Link to={`/players/${player.id}`} className="flex flex-col sticky top-0 shadow-lg bg-primary_2  gap-1 hover:bg-primary_2_hover p-3 cursor-pointer ">
                                                 <h4 className="text-xl font-semibold text-white mb-2">

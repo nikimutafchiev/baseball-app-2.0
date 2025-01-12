@@ -234,7 +234,7 @@ export default function GameInfo() {
                 {menuOption === "Stats" && homeRoster.isLoading && awayRoster.isLoading && <div className="h-full content-center text-center w-full"><CircularProgress color='success' size={40} /></div>}
                 {menuOption === "Stats" && homeRoster.error && awayRoster.error && !homeRoster.isLoading && !awayRoster.isLoading && <Alert className="mt-10 flex flex-row justify-center w-1/2 mx-auto" severity="error">Error occured, while fetching situations!</Alert>}
 
-                {menuOption === "Play by play" && situations.data && <div className="max-h-[75vh]"><GameScorerPlayByPlay situations={situations.data.sort((a, b) => b.id - a.id)} /></div>
+                {menuOption === "Play by play" && situations.data && <div className="max-h-[75vh]"><GameScorerPlayByPlay situations={[...situations.data].sort((a, b) => b.id - a.id)} /></div>
                 }
                 {menuOption === "Play by play" && situations.error && !situations.isLoading && <Alert className="mt-10 flex flex-row justify-center w-1/2 mx-auto" severity="error">Error occured, while fetching situations!</Alert>}
 

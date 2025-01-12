@@ -19,7 +19,7 @@ export default function RosterPlayerPicker(props) {
             </div>
 
             <div className="flex flex-col flex-1 overflow-y-auto px-2">
-                {roster.data && roster.data
+                {roster.data && [...roster.data]
                     .sort((player) => {
                         if (!props.takenPlayers.includes(player.id)) return -1
                         else return 0
