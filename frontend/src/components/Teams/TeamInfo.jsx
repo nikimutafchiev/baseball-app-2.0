@@ -12,6 +12,17 @@ import { useState, useEffect } from "react";
 import { BiEdit } from "react-icons/bi";
 import { RiSaveLine } from "react-icons/ri";
 import TeamSelectList from "../Other/TeamSelectList";
+import {
+	TableContainer,
+	Table,
+	TableHead,
+	TableRow,
+	TableCell,
+	TableBody,
+	TableFooter,
+	MenuItem
+} from "@mui/material";
+import { FaArrowDown, FaArrowUp } from "react-icons/fa"
 export default function TeamInfo() {
 	const { id } = useParams();
 	const icons = {
@@ -29,6 +40,7 @@ export default function TeamInfo() {
 	const [teamIDs, setTeamIDs] = useState([]);
 	const [tournamentIDs, setTournamentIDs] = useState([]);
 	const [yearsSelect, setYearsSelect] = useState([]);
+	const [tableOption, setTableOption] = useState("Games");
 	const query_params = {
 		tournament_query:
 			tournamentIDs.length != 0 ? `tournament_ids=[${tournamentIDs}]` : "",
@@ -83,6 +95,8 @@ export default function TeamInfo() {
 		)}`,
 		(url) => fetch(url).then((res) => res.json())
 	);
+	const [sortColumn, setSortColumn] = useState("startTime");
+	const [sortOrder, setSortOrder] = useState("DESC");
 	useEffect(() => {
 		if (selectedTeam)
 			fetch(
@@ -241,11 +255,11 @@ export default function TeamInfo() {
 								{[
 									{
 										label: "AVG",
-										value: stats.data ? stats.data.AVG.toFixed(3) : 0.0,
+										value: stats.data ? stats.data.stats.AVG.toFixed(3) : 0.0,
 									},
 									{
 										label: "W-L",
-										value: `${stats.data ? stats.data.W : 0}-${stats.data ? stats.data.L : 0
+										value: `${stats.data ? stats.data.stats.W : 0}-${stats.data ? stats.data.stats.L : 0
 											}`,
 									},
 								].map((stat, index) => (
@@ -266,21 +280,326 @@ export default function TeamInfo() {
 							</div>
 							<hr className="border-t-2 border-line"></hr>
 							<h3 className="text-3xl font-semibold">Detailed stats</h3>
-							<div className="bg-white rounded self-center drop-shadow-lg">
-								<ToggleButtonGroup color="primary" exclusive>
-									<ToggleButton>Batting</ToggleButton>
-									<ToggleButton>Pitching</ToggleButton>
-									<ToggleButton>Fielding</ToggleButton>
-								</ToggleButtonGroup>
-							</div>
+							<div className="flex flex-row items-center justify-around">
+								<TextField
+									size="small" className="w-1/6 bg-white overflow-hidden rounded"
+									select
+									onChange={(e) => { setTableOption(e.target.value); if (e.target.value == "Games") { setSortColumn("startTime"); setSortOrder("DESC"); } else { setSortColumn("firstName"); setSortOrder("ASC"); } }}
+									value={tableOption}
+								>
+									{["Games", "Players"].map((option) => (
+										<MenuItem key={option} value={option}>
+											{<div className="text-sm">{option}</div>}
+										</MenuItem>
+									))}
+								</TextField>
+								<div className="bg-white rounded drop-shadow-lg">
 
-							<div className="w-full bg-white rounded-2xl drop-shadow-lg h-96">
-								<div className="bg-white rounded">
 									<ToggleButtonGroup color="primary" exclusive>
-										<ToggleButton>Graph</ToggleButton>
-										<ToggleButton>Table</ToggleButton>
+										<ToggleButton>Batting</ToggleButton>
+										<ToggleButton>Pitching</ToggleButton>
+										<ToggleButton>Fielding</ToggleButton>
 									</ToggleButtonGroup>
 								</div>
+							</div>
+
+							<div className="w-full drop-shadow-lg h-96">
+								{/* <div className="bg-white rounded">
+                                <ToggleButtonGroup
+                                    color="primary"
+                                    exclusive
+                                >
+                                    <ToggleButton>Graph</ToggleButton>
+                                    <ToggleButton>Table</ToggleButton>
+                                </ToggleButtonGroup>
+                            </div> */}
+
+								{stats.data && tableOption == "Games" &&
+									(
+										<TableContainer
+											style={{
+												maxWidth: "100%",
+												minHeight: "100%",
+												maxHeight: "100%",
+												overflowY: "auto",
+												backgroundColor: "white",
+												borderRadius: "16px",
+											}}
+										>
+											<Table stickyHeader>
+												<TableHead>
+													<TableRow>
+														{[{ title: "Start time", id: "startTime" }, {
+															title: "Home team",
+															id: "homeTeam"
+														},
+														{
+															title: "Away team",
+															id: "awayTeam"
+														},
+														{
+															title: "AB",
+															id: "AB"
+														},
+														{
+															title: "R",
+															id: "R"
+														},
+														{
+															title: "H",
+															id: "H"
+														},
+														{
+															title: "RBI",
+															id: "RBI"
+														},
+														{
+															title: "BB",
+															id: "BB"
+														},
+														{
+															title: "SO",
+															id: "SO"
+														},
+														{
+															title: "AVG",
+															id: "AVG"
+														},
+														{
+															title: "SLG",
+															id: "SLG"
+														}].map((column) =>
+															<TableCell onClick={() => { if (sortColumn == column.id) setSortOrder(sortOrder === "ASC" ? "DESC" : "ASC"); else { setSortColumn(column.id); setSortOrder("DESC") } }}>
+																<div className="flex flex-row items-center cursor-pointer min-w-fit gap-0.5">
+																	<div className="text-sm font-semibold">
+																		{column.title}
+																	</div>
+																	<div className={`${sortColumn == column.id ? "visible" : "invisible"}`}> {sortOrder == "ASC" && <FaArrowUp size={10} />}
+																		{sortOrder == "DESC" && <FaArrowDown size={10} />}
+																	</div></div></TableCell>
+														)}
+													</TableRow>
+												</TableHead>
+												<TableBody sx={{ overflowY: "auto" }}>
+													{[...stats.data.games_stats].sort((a, b) => { const res = ["homeTeam", "awayTeam"].includes(sortColumn) ? b[sortColumn].localeCompare(a[sortColumn]) : sortColumn == 'startTime' ? new Date(b[sortColumn]) - new Date(a[sortColumn]) : b.stats[sortColumn] - a.stats[sortColumn]; if (sortOrder == "ASC") return -res; return res; }).map((row) => (
+														<TableRow key={row.id}>
+															{/* <TableCell component="th" scope="row">
+																{row.battingOrder}
+															</TableCell> */}
+															<TableCell>
+																{new Date(row.startTime).toLocaleDateString()}
+															</TableCell>
+															<TableCell>{row.homeTeam}</TableCell>
+															<TableCell>{row.awayTeam}</TableCell>
+															<TableCell>{row.stats.AB}</TableCell>
+															<TableCell>{row.stats.R}</TableCell>
+															<TableCell>{row.stats.H}</TableCell>
+															<TableCell>{row.stats.RBI}</TableCell>
+															<TableCell>{row.stats.BB}</TableCell>
+															<TableCell>{row.stats.SO}</TableCell>
+															<TableCell>{row.stats.AVG.toFixed(3)}</TableCell>
+															<TableCell>{row.stats.SLG.toFixed(3)}</TableCell>
+														</TableRow>
+													))}
+												</TableBody>
+												<TableFooter
+													sx={{
+														position: "sticky",
+														bottom: 0,
+														zIndex: 1,
+														backgroundColor: "white",
+													}}
+												>
+													<TableRow>
+														<TableCell></TableCell>
+														<TableCell></TableCell>
+														<TableCell></TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.AB : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.R : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.H : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.RBI : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.BB : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.SO : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.AVG.toFixed(3) : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.SLG.toFixed(3) : 0}
+															</div>
+														</TableCell>
+													</TableRow>
+												</TableFooter>
+											</Table>
+										</TableContainer>
+									)}
+								{stats.data && tableOption == "Players" &&
+									(
+										<TableContainer
+											style={{
+												maxWidth: "100%",
+												minHeight: "100%",
+												maxHeight: "100%",
+												overflowY: "auto",
+												backgroundColor: "white",
+												borderRadius: "16px",
+											}}
+										>
+											<Table stickyHeader>
+												<TableHead>
+													<TableRow>
+														{[{
+															title: "First name",
+															id: "firstName"
+														},
+														{
+															title: "Last name",
+															id: "lastName"
+														},
+														{
+															title: "AB",
+															id: "AB"
+														},
+														{
+															title: "R",
+															id: "R"
+														},
+														{
+															title: "H",
+															id: "H"
+														},
+														{
+															title: "RBI",
+															id: "RBI"
+														},
+														{
+															title: "BB",
+															id: "BB"
+														},
+														{
+															title: "SO",
+															id: "SO"
+														},
+														{
+															title: "AVG",
+															id: "AVG"
+														},
+														{
+															title: "SLG",
+															id: "SLG"
+														}].map((column) =>
+															<TableCell onClick={() => { if (sortColumn == column.id) setSortOrder(sortOrder === "ASC" ? "DESC" : "ASC"); else { setSortColumn(column.id); setSortOrder("DESC") } }}>
+																<div className="flex flex-row items-center cursor-pointer min-w-fit gap-0.5">
+																	<div className="text-sm font-semibold">
+																		{column.title}
+																	</div>
+																	<div className={`${sortColumn == column.id ? "visible" : "invisible"}`}> {sortOrder == "ASC" && <FaArrowUp size={10} />}
+																		{sortOrder == "DESC" && <FaArrowDown size={10} />}
+																	</div></div></TableCell>
+														)}
+													</TableRow>
+												</TableHead>
+												<TableBody sx={{ overflowY: "auto" }}>
+													{[...stats.data.players_stats].sort((a, b) => { const res = ["firstName", "lastName"].includes(sortColumn) ? b[sortColumn].localeCompare(a[sortColumn]) : b.stats[sortColumn] - a.stats[sortColumn]; if (sortOrder == "ASC") return -res; return res; }).map((row) => (
+														<TableRow key={row.id}>
+															{/* <TableCell component="th" scope="row">
+																{row.battingOrder}
+															</TableCell> */}
+															<TableCell>{row.firstName}</TableCell>
+															<TableCell>{row.lastName}</TableCell>
+															<TableCell>{row.stats.AB}</TableCell>
+															<TableCell>{row.stats.R}</TableCell>
+															<TableCell>{row.stats.H}</TableCell>
+															<TableCell>{row.stats.RBI}</TableCell>
+															<TableCell>{row.stats.BB}</TableCell>
+															<TableCell>{row.stats.SO}</TableCell>
+															<TableCell>{row.stats.AVG.toFixed(3)}</TableCell>
+															<TableCell>{row.stats.SLG.toFixed(3)}</TableCell>
+														</TableRow>
+													))}
+												</TableBody>
+												<TableFooter
+													sx={{
+														position: "sticky",
+														bottom: 0,
+														zIndex: 1,
+														backgroundColor: "white",
+													}}
+												>
+													<TableRow>
+														<TableCell></TableCell>
+														<TableCell></TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.AB : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.R : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.H : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.RBI : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.BB : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.SO : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.AVG.toFixed(3) : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.SLG.toFixed(3) : 0}
+															</div>
+														</TableCell>
+													</TableRow>
+												</TableFooter>
+											</Table>
+										</TableContainer>
+									)}
 							</div>
 							<hr className="border-t-2 border-line"></hr>
 							<h3 className="text-3xl font-semibold">Team H2H</h3>
@@ -297,7 +616,7 @@ export default function TeamInfo() {
 										className="w-fit flex flex-row items-center gap-2 px-4 py-2 rounded-lg text-white bg-primary_2 hover:bg-primary_3 font-semibold text-base sm:text-lg md:text-xl"
 										onClick={() => setSelectClicked(true)}
 									>
-										SELECT PLAYER
+										SELECT TEAM
 									</button>
 								</div>
 								<div className="bg-white p-4 h-28 rounded-2xl shadow-lg flex flex-col justify-between w-1/2 items-center self-center">
@@ -309,8 +628,8 @@ export default function TeamInfo() {
 									)}
 								</div>
 								<div>
-									<h5 className="text-2xl font-semibold">H2H stats</h5>
-									<div className="grid grid-cols-3  font-semibold text-xl mb-2">
+									{/* <h5 className="text-2xl font-semibold">H2H stats</h5> */}
+									<div className="grid grid-cols-3  font-semibold text-xl my-2">
 										<div className="text-center">{team.data.name}</div>
 										<div></div>
 										{selectedTeam && (
@@ -320,41 +639,41 @@ export default function TeamInfo() {
 									<div className="grid grid-cols-3 font-semibold bg-white px-6 py-3 rounded drop-shadow-lg">
 										{[
 											{
-												team1: teamH2Hstats.data ? teamH2Hstats.data.H : 0,
+												team1: teamH2Hstats.data ? teamH2Hstats.data.stats.H : 0,
 												type: "H",
 												team2:
 													selectedTeam && selectedTeamStats
-														? selectedTeamStats.H
+														? selectedTeamStats.stats.H
 														: undefined,
 											},
 											{
 												team1: teamH2Hstats.data
-													? teamH2Hstats.data.AVG.toFixed(3)
+													? teamH2Hstats.data.stats.AVG.toFixed(3)
 													: 0,
 												type: "AVG",
 												team2:
 													selectedTeam && selectedTeamStats
-														? selectedTeamStats.AVG.toFixed(3)
+														? selectedTeamStats.stats.AVG.toFixed(3)
 														: undefined,
 											},
 											{
 												team1: teamH2Hstats.data
-													? teamH2Hstats.data.OBP.toFixed(3)
+													? teamH2Hstats.data.stats.OBP.toFixed(3)
 													: 0,
 												type: "OBP",
 												team2:
 													selectedTeam && selectedTeamStats
-														? selectedTeamStats.OBP.toFixed(3)
+														? selectedTeamStats.stats.OBP.toFixed(3)
 														: undefined,
 											},
 											{
 												team1: teamH2Hstats.data
-													? teamH2Hstats.data.SLG.toFixed(3)
+													? teamH2Hstats.data.stats.SLG.toFixed(3)
 													: 0,
 												type: "SLG",
 												team2:
 													selectedTeam && selectedTeamStats
-														? selectedTeamStats.SLG.toFixed(3)
+														? selectedTeamStats.stats.SLG.toFixed(3)
 														: undefined,
 											},
 										].map((stat) => (
