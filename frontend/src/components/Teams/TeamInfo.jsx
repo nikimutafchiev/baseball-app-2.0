@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import { BiEdit } from "react-icons/bi";
 import { RiSaveLine } from "react-icons/ri";
 import TeamSelectList from "../Other/TeamSelectList";
+import { LineChart } from "@mui/x-charts";
 import {
 	TableContainer,
 	Table,
@@ -20,7 +21,7 @@ import {
 	TableCell,
 	TableBody,
 	TableFooter,
-	MenuItem
+	MenuItem, CircularProgress
 } from "@mui/material";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa"
 export default function TeamInfo() {
@@ -97,6 +98,68 @@ export default function TeamInfo() {
 	);
 	const [sortColumn, setSortColumn] = useState("startTime");
 	const [sortOrder, setSortOrder] = useState("DESC");
+	const [graphStat, setGraphStat] = useState("AVG");
+	const get_stat_array = (stat, games) => {
+		if (["H", "BB", "SO"].includes(stat))
+			return games.map((game) => game.stats[stat]);
+		var res = [];
+		let temp_stats = {
+			PA: 0,
+			H: 0,
+			AB: 0,
+			SO: 0,
+			BB: 0,
+			HBP: 0,
+			AVG: 0,
+			SLG: 0,
+			"1B": 0,
+			"2B": 0,
+			"3B": 0,
+			HR: 0,
+		};
+		for (let i = 0; i < games.length; i++) {
+			temp_stats["H"] += games[i].stats["H"];
+			temp_stats["1B"] += games[i].stats["1B"];
+			temp_stats["2B"] += games[i].stats["2B"];
+			temp_stats["3B"] += games[i].stats["3B"];
+			temp_stats["HR"] += games[i].stats["HR"];
+			temp_stats["AB"] += games[i].stats["AB"];
+			temp_stats["PA"] += games[i].stats["PA"];
+			temp_stats["BB"] += games[i].stats["BB"];
+			temp_stats["HBP"] += games[i].stats["HBP"];
+			if (stat == "AVG")
+				res.push(
+					temp_stats["AB"] ? (temp_stats["H"] / temp_stats["AB"]).toFixed(3) : 0
+				);
+			else if (stat == "SLG")
+				res.push(
+					temp_stats["AB"]
+						? (
+							(temp_stats["1B"] +
+								2 * temp_stats["2B"] +
+								3 * temp_stats["3B"] +
+								4 * temp_stats["HR"]) /
+							temp_stats["AB"]
+						).toFixed(3)
+						: 0
+				);
+			else if (stat == "OBP") {
+				res.push(
+					temp_stats["PA"]
+						? (
+							(temp_stats["H"] +
+								temp_stats["BB"] +
+								temp_stats["HBP"]
+							) /
+							temp_stats["PA"]
+						).toFixed(3)
+						: 0
+				)
+			}
+
+		}
+		return res;
+	};
 	useEffect(() => {
 		if (selectedTeam)
 			fetch(
@@ -254,14 +317,16 @@ export default function TeamInfo() {
 							<div className="grid md:grid-cols-2 gap-4">
 								{[
 									{
-										label: "AVG",
-										value: stats.data ? stats.data.stats.AVG.toFixed(3) : 0.0,
+										label: "G",
+										value: `${stats.data ? stats.data.stats.W + stats.data.stats.L : 0
+											}`
 									},
 									{
 										label: "W-L",
 										value: `${stats.data ? stats.data.stats.W : 0}-${stats.data ? stats.data.stats.L : 0
 											}`,
 									},
+
 								].map((stat, index) => (
 									<div
 										key={index}
@@ -273,6 +338,287 @@ export default function TeamInfo() {
 											</div>
 										</div>
 										<div className="text-5xl font-semibold text-gray-700">
+											{stat.value}
+										</div>
+									</div>
+								))}
+							</div>
+							<div className={`grid grid-cols-1 sm:grid-cols-2 ${isShrinked ? "lg:grid-cols-6" : "lg:grid-cols-5"} gap-3`}>
+								{[
+									{
+										label: "AVG",
+										value: stats.data ? (
+											stats.data.stats.AVG.toFixed(3)
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0.0
+										),
+										coefficient: true
+									},
+									{
+										label: "AB",
+										value: stats.data ? (
+											stats.data.stats.AB
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "OBP",
+										value: stats.data ? (
+											stats.data.stats.OBP.toFixed(3)
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0.0
+										),
+										coefficient: true
+									},
+									{
+										label: "SO",
+										value: stats.data ? (
+											stats.data.stats.SO
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "BB",
+										value: stats.data ? (
+											stats.data.stats.BB
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "H",
+										value: stats.data ? (
+											stats.data.stats.H
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "1B",
+										value: stats.data ? (
+											stats.data.stats["1B"]
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "2B",
+										value: stats.data ? (
+											stats.data.stats["2B"]
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "3B",
+										value: stats.data ? (
+											stats.data.stats["3B"]
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "HR",
+										value: stats.data ? (
+											stats.data.stats.HR
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "PA",
+										value: stats.data ? (
+											stats.data.stats.PA
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+
+									},
+									{
+										label: "SLG",
+										value: stats.data ? (
+											stats.data.stats.SLG.toFixed(3)
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0.0
+										),
+										coefficient: true
+									},
+									{
+										label: "HBP",
+										value: stats.data ? (
+											stats.data.stats.HBP
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "R",
+										value: stats.data ? (
+											stats.data.stats.R
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "RBI",
+										value: stats.data ? (
+											stats.data.stats.RBI
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "IBB",
+										value: stats.data ? (
+											stats.data.stats.IBB
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "OPS",
+										value: stats.data ? (
+											stats.data.stats.OPS.toFixed(3)
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: true
+									},
+									{
+										label: "TB",
+										value: stats.data ? (
+											stats.data.stats.TB
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "XBH",
+										value: stats.data ? (
+											stats.data.stats.XBH
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "ROE",
+										value: stats.data ? (
+											stats.data.stats.ROE
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+								].sort((a, b) => a.coefficient == b.coefficient ? a.label.localeCompare(b.label) : b.coefficient - a.coefficient).map((stat, index) => (
+									<div
+										key={index}
+										className="bg-white p-4 h-28 rounded-2xl shadow-lg flex flex-col justify-between"
+									>
+										<div className="flex flex-col w-fit justify-between items-center">
+											<a className="font-semibold text-gray-800 pr-6" href="/guide">
+												{stat.label}
+											</a>
+											<hr className="border-t-2 border-gray-200 w-full">
+											</hr>
+										</div>
+										<div className="text-4xl font-semibold text-gray-700">
 											{stat.value}
 										</div>
 									</div>
@@ -366,6 +712,10 @@ export default function TeamInfo() {
 															id: "AVG"
 														},
 														{
+															title: "OBP",
+															id: "OBP"
+														},
+														{
 															title: "SLG",
 															id: "SLG"
 														}].map((column) =>
@@ -398,6 +748,7 @@ export default function TeamInfo() {
 															<TableCell>{row.stats.BB}</TableCell>
 															<TableCell>{row.stats.SO}</TableCell>
 															<TableCell>{row.stats.AVG.toFixed(3)}</TableCell>
+															<TableCell>{row.stats.OBP.toFixed(3)}</TableCell>
 															<TableCell>{row.stats.SLG.toFixed(3)}</TableCell>
 														</TableRow>
 													))}
@@ -447,6 +798,11 @@ export default function TeamInfo() {
 														<TableCell>
 															<div className="font-semibold text-black text-sm">
 																{stats.data ? stats.data.stats.AVG.toFixed(3) : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.OBP.toFixed(3) : 0}
 															</div>
 														</TableCell>
 														<TableCell>
@@ -511,9 +867,14 @@ export default function TeamInfo() {
 															id: "AVG"
 														},
 														{
+															title: "OBP",
+															id: "OBP"
+														},
+														{
 															title: "SLG",
 															id: "SLG"
-														}].map((column) =>
+														},
+														].map((column) =>
 															<TableCell onClick={() => { if (sortColumn == column.id) setSortOrder(sortOrder === "ASC" ? "DESC" : "ASC"); else { setSortColumn(column.id); setSortOrder("DESC") } }}>
 																<div className="flex flex-row items-center cursor-pointer min-w-fit gap-0.5">
 																	<div className="text-sm font-semibold">
@@ -540,6 +901,7 @@ export default function TeamInfo() {
 															<TableCell>{row.stats.BB}</TableCell>
 															<TableCell>{row.stats.SO}</TableCell>
 															<TableCell>{row.stats.AVG.toFixed(3)}</TableCell>
+															<TableCell>{row.stats.OBP.toFixed(3)}</TableCell>
 															<TableCell>{row.stats.SLG.toFixed(3)}</TableCell>
 														</TableRow>
 													))}
@@ -592,6 +954,11 @@ export default function TeamInfo() {
 														</TableCell>
 														<TableCell>
 															<div className="font-semibold text-black text-sm">
+																{stats.data ? stats.data.stats.OBP.toFixed(3) : 0}
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="font-semibold text-black text-sm">
 																{stats.data ? stats.data.stats.SLG.toFixed(3) : 0}
 															</div>
 														</TableCell>
@@ -600,6 +967,74 @@ export default function TeamInfo() {
 											</Table>
 										</TableContainer>
 									)}
+							</div>
+							<div className="w-full  drop-shadow-lg min-h-96 bg-white rounded-2xl p-2">
+								<TextField
+									size="small"
+									className="w-1/6"
+									select
+									onChange={(e) => {
+										setGraphStat(e.target.value);
+									}}
+									value={graphStat}
+								>
+									{["AVG", "SLG", "OBP"].map((option) => (
+										<MenuItem key={option} value={option}>
+											{<div className="text-sm">{option}</div>}
+										</MenuItem>
+									))}
+								</TextField>
+								{stats.data && (
+									<LineChart
+										xAxis={[
+											{
+												data: stats.data.games_stats.map(
+													(game) => new Date(game.startTime)
+												),
+												valueFormatter: (date) =>
+													new Date(date).toLocaleDateString(),
+											},
+										]}
+										series={[
+											{
+												data: get_stat_array(
+													graphStat,
+													stats.data.games_stats.sort(
+														(a, b) =>
+															new Date(a.startTime) - new Date(b.startTime)
+													)
+												),
+												label: graphStat,
+												color: "#6A994E",
+												area: true,
+												id: "stat",
+											},
+										]}
+										grid={{ horizontal: true }}
+										height={400}
+										sx={{
+											"--Charts-lineArea-opacity": 1,
+											"& .MuiAreaElement-series-stat": {
+												fill: "url('#gradient')",
+											},
+										}}
+									>
+										<defs>
+											<linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
+												<stop
+													offset="0%"
+													stopColor="#84b867"
+													stopOpacity={0.5}
+												/>
+												<stop
+													offset="100%"
+													stopColor="#84b867"
+													stopOpacity={0}
+												/>
+											</linearGradient>
+										</defs>
+									</LineChart>
+								)}
 							</div>
 							<hr className="border-t-2 border-line"></hr>
 							<h3 className="text-3xl font-semibold">Team H2H</h3>
@@ -623,7 +1058,7 @@ export default function TeamInfo() {
 									<div className="text-2xl font-bold text-gray-800">W-L</div>
 									{teamH2Hstats.data && selectedTeamStats && (
 										<div className="text-5xl font-semibold text-gray-700">
-											{teamH2Hstats.data.W}-{selectedTeamStats.W}
+											{teamH2Hstats.data.stats.W}-{selectedTeamStats.stats.W}
 										</div>
 									)}
 								</div>

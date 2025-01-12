@@ -47,17 +47,17 @@ export default function Roster(props) {
             }))
         setTakenPlayers(roster.data ? roster.data.map((player) => player.player.id) : []);
         setTakenPositions(roster.data ? roster.data.map((player) => player.position) : []);
-        const newPitcher = roster.data ? roster.data.filter((player) => player.position == "P") : [];
-        if (newPitcher.length == 0)
-            setPitcher({
-                id: -1,
-                uniformNumber: "",
-                firstName: "",
-                lastName: "",
-                position: "--"
-            });
-        else
-            setPitcher(newPitcher[0]);
+        // const newPitcher = roster.data ? roster.data.filter((player) => player.position == "P") : [];
+        // if (newPitcher.length == 0)
+        //     setPitcher({
+        //         id: -1,
+        //         uniformNumber: "",
+        //         firstName: "",
+        //         lastName: "",
+        //         position: "--"
+        //     });
+        // else
+        //     setPitcher(newPitcher[0]);
     }, [roster.data]);
     return (
         < div className="w-[36%] bg-white flex flex-col gap-2 rounded-xl shadow-xl p-6" >
@@ -95,7 +95,7 @@ export default function Roster(props) {
                 </div>
                 )}
 
-            <div className="flex flex-row mt-4 items-center bg-primary_2 hover:bg-primary_2_hover cursor-pointer overflow-hidden text-white rounded-lg  shadow-md">
+            {/* <div className="flex flex-row mt-4 items-center bg-primary_2 hover:bg-primary_2_hover cursor-pointer overflow-hidden text-white rounded-lg  shadow-md">
                 <div className="w-1/12 text-center font-semibold bg-primary_1 p-1">
                     P
                 </div>
@@ -113,7 +113,7 @@ export default function Roster(props) {
                     }
                     takenPlayers={takenPlayers}
                 />
-            </div>
+            </div> */}
 
         </div >
     )

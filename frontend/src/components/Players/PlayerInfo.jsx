@@ -131,6 +131,8 @@ export default function PlayerInfo() {
 			temp_stats["HR"] += games[i].stats["HR"];
 			temp_stats["AB"] += games[i].stats["AB"];
 			temp_stats["PA"] += games[i].stats["PA"];
+			temp_stats["BB"] += games[i].stats["BB"];
+			temp_stats["HBP"] += games[i].stats["HBP"];
 			if (stat == "AVG")
 				res.push(
 					temp_stats["AB"] ? (temp_stats["H"] / temp_stats["AB"]).toFixed(3) : 0
@@ -147,6 +149,20 @@ export default function PlayerInfo() {
 						).toFixed(3)
 						: 0
 				);
+			else if (stat == "OBP") {
+				res.push(
+					temp_stats["PA"]
+						? (
+							(temp_stats["H"] +
+								temp_stats["BB"] +
+								temp_stats["HBP"]
+							) /
+							temp_stats["PA"]
+						).toFixed(3)
+						: 0
+				)
+			}
+
 		}
 		return res;
 	};
@@ -813,7 +829,7 @@ export default function PlayerInfo() {
 									}}
 									value={graphStat}
 								>
-									{["AVG", "SLG"].map((option) => (
+									{["AVG", "SLG", "OBP"].map((option) => (
 										<MenuItem key={option} value={option}>
 											{<div className="text-sm">{option}</div>}
 										</MenuItem>

@@ -915,6 +915,11 @@ def get_team_stats(team_id):
         "HR":0,
         "R":0,
         "RBI":0,
+        "IBB":0,
+        "OPS":0,
+        "TB":0,
+        "XBH":0,
+        "ROE":0,
         "W":0,
         "L":0
     }
@@ -937,23 +942,26 @@ def get_team_stats(team_id):
         if (tournament_ids and team_tournament.tournament_id in tournament_ids) or ( not tournament_ids):
             for player in team_tournament.players:
                 player_stats = {
-                    "PA":0,
-                    "H":0,
-                    "AB":0,
-                    "SO":0,
-                    "BB":0,
-                    "HBP":0,
-                    "AVG":0,
-                    "SLG":0,
-                    "1B":0,
-                    "2B":0,
-                    "3B":0,
-                    "HR":0,
-                    "R":0,
-                    "RBI":0,
-                    "W":0,
-                    "L":0
-                }
+                        "PA":0,
+                        "H":0,
+                        "AB":0,
+                        "SO":0,
+                        "BB":0,
+                        "HBP":0,
+                        "AVG":0,
+                        "SLG":0,
+                        "1B":0,
+                        "2B":0,
+                        "3B":0,
+                        "HR":0,
+                        "R":0,
+                        "RBI":0,
+                        "IBB":0,
+                        "OPS":0,
+                        "TB":0,
+                        "XBH":0,
+                        "ROE":0
+                    }
                 for gameTeam in team_tournament.games:
                     gameTeamObject = GameTeam.query.filter_by(game_id = gameTeam.game_id,   home_away = HomeAway.AWAY if gameTeam.home_away == HomeAway.HOME else HomeAway.HOME).first()
                     game_stats = {
@@ -971,8 +979,11 @@ def get_team_stats(team_id):
                         "HR":0,
                         "R":0,
                         "RBI":0,
-                        "W":0,
-                        "L":0
+                        "IBB":0,
+                        "OPS":0,
+                        "TB":0,
+                        "XBH":0,
+                        "ROE":0
                     }
                     if not years and game_id and gameTeam.game_id == game_id or not game_id and years and gameTeam.game.start_time.year in years or game_id and years and gameTeam.game_id == game_id and gameTeam.game.start_time.year in years or not game_id and not years : 
                         if team_ids and gameTeamObject.team_tournament.team_id in team_ids or not team_ids:
@@ -990,22 +1001,47 @@ def get_team_stats(team_id):
                                             res["1B"] +=1
                                             player_stats["1B"] +=1
                                             game_stats["1B"] +=1
+                                            res["TB"] +=1
+                                            player_stats["TB"] +=1
+                                            game_stats["TB"] +=1
                                         elif situation.data["situation"] == "Double":
                                             res["2B"] +=1
                                             player_stats["2B"] +=1
                                             game_stats["2B"] +=1
+                                            res["TB"] +=2
+                                            player_stats["TB"] +=2
+                                            game_stats["TB"] +=2
+                                            res["XBH"] +=1
+                                            player_stats["XBH"] +=1
+                                            game_stats["XBH"] +=1
                                         elif situation.data["situation"] == "Triple":
                                             res["3B"] +=1
                                             player_stats["3B"] +=1
                                             game_stats["3B"] +=1
+                                            res["TB"] +=3
+                                            player_stats["TB"] +=3
+                                            game_stats["TB"] +=3
+                                            res["XBH"] +=1
+                                            player_stats["XBH"] +=1
+                                            game_stats["XBH"] +=1
                                         elif situation.data["situation"] == "Homerun":
                                             res["HR"] +=1
                                             player_stats["HR"] +=1
                                             game_stats["HR"] +=1
+                                            res["TB"] +=4
+                                            player_stats["TB"] +=4
+                                            game_stats["TB"] +=4
+                                            res["XBH"] +=1
+                                            player_stats["XBH"] +=1
+                                            game_stats["XBH"] +=1
                                     if situation.data["situationCategory"] == "walk":
                                         res["BB"] +=1
                                         player_stats["BB"] +=1
                                         game_stats["BB"] +=1
+                                        if situation.data["situation"] == "Intentional walk":
+                                            res["IBB"] +=1
+                                            player_stats["IBB"] +=1
+                                            game_stats["IBB"] +=1
                                     if situation.data["situationCategory"] == "hit by pitch":
                                         res["HBP"] +=1
                                         player_stats["HBP"] +=1
@@ -1018,6 +1054,11 @@ def get_team_stats(team_id):
                                         res["AB"] +=1
                                         player_stats["AB"] +=1
                                         game_stats["AB"] +=1
+                                    if situation.data["situationCategory"] == "error":
+                                        res["ROE"] +=1
+                                        player_stats["ROE"] +=1
+                                        game_stats["ROE"] +=1
+                                
                                     for runner_situation in situation.data["runners"]:
                                         if runner_situation["finalBase"] == "Home":
                                             res["RBI"] += 1
@@ -1066,14 +1107,17 @@ def get_team_stats(team_id):
     res["AVG"] = res["H"]/res["AB"] if res["AB"] != 0 else 0
     res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
     res["SLG"] = (res["1B"] + 2*res["2B"] + 3*res["3B"] + 4*res["HR"])/res["AB"] if res["AB"] != 0 else 0
+    res["OPS"] = (res["OBP"]+res["SLG"])/2
     for game in games_stats:
         game["stats"]["AVG"] = game["stats"]["H"]/game["stats"]["AB"] if game["stats"]["AB"] != 0 else 0
         game["stats"]["OBP"] = (game["stats"]["H"]+game["stats"]["BB"]+game["stats"]["HBP"])/game["stats"]["PA"] if game["stats"]["PA"] != 0 else 0
-        game["stats"]["SLG"] = (game["stats"]["1B"] + 2*game["stats"]["2B"] + 3*game["stats"]["3B"] + 4*game["stats"]["HR"])/game["stats"]["AB"] if game["stats"]["AB"] != 0 else 0
+        game["stats"]["SLG"] = game["stats"]["TB"]/game["stats"]["AB"] if game["stats"]["AB"] != 0 else 0
+        game["stats"]["OPS"] = (game["stats"]["OBP"]+game["stats"]["SLG"])/2
     for player in players_stats:
         player["stats"]["AVG"] = player["stats"]["H"]/player["stats"]["AB"] if player["stats"]["AB"] != 0 else 0
         player["stats"]["OBP"] = (player["stats"]["H"]+player["stats"]["BB"]+player["stats"]["HBP"])/player["stats"]["PA"] if player["stats"]["PA"] != 0 else 0
-        player["stats"]["SLG"] = (player["stats"]["1B"] + 2*player["stats"]["2B"] + 3*player["stats"]["3B"] + 4*player["stats"]["HR"])/player["stats"]["AB"] if player["stats"]["AB"] != 0 else 0    
+        player["stats"]["SLG"] = player["stats"]["TB"]/player["stats"]["AB"] if player["stats"]["AB"] != 0 else 0 
+        player["stats"]["OPS"] = (player["stats"]["OBP"]+player["stats"]["SLG"])/2   
     
     return {"stats":res,"games_stats":games_stats,"players_stats":players_stats}
 

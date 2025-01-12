@@ -403,9 +403,9 @@ export default function GameScorer() {
 
             }
             case 4: {
-                return Object.entries(offense).filter(([key, value]) => !!value).map(([key, value]) => {
+                return [{ basePosition: "Home", player: batter }, ...Object.entries(offense).filter(([key, value]) => !!value).map(([key, value]) => {
                     return { basePosition: (runnersToBases[key]), player: value }
-                });
+                })];
             }
             default:
                 return [];
@@ -666,15 +666,18 @@ export default function GameScorer() {
                 if (situation != "")
                     setRunnersSituations([...runnersSituations, { player: player, situationCategory: situationCategory, situation: situation, finalBase: finalBase, isOut: isOut }]);
                 const newOffense = { ...offense };
+                console.log(newOffense);
+                console.log(finalBase);
                 // console.log(startBase);
                 // console.log(finalBase);
                 if (finalBase != "Home" && (finalBase === "1B" || finalBase == "2B" || finalBase == "3B"))
                     newOffense[finalBase == "1B" ? "firstBaseRunner" : finalBase == "2B" ? "secondBaseRunner" : finalBase == "3B" ? "thirdBaseRunner" : ""] = player;
+
                 if (finalBase == "Home") {
                     if (inningHalf == "UP") {
                         const newPoints = points.away;
                         newPoints[inning - 1] = points.away[inning - 1] + 1;
-
+                        setAwayPoints(awayPoints + 1);
                         await fetch(`http://localhost:6363/game/${id}/change_points_by_inning`, {
                             method: "POST",
                             headers: {
@@ -697,7 +700,7 @@ export default function GameScorer() {
                             })
 
                         });
-                        setAwayPoints(awayPoints + 1);
+
                     } else {
                         const newPoints = points.home;
                         newPoints[inning - 1] = points.home[inning - 1] + 1;
@@ -711,6 +714,7 @@ export default function GameScorer() {
                             })
 
                         });
+                        setHomePoints(homePoints + 1);
                         setPoints({ home: newPoints, away: points.away })
                         await fetch(`http://localhost:6363/game_team/change_score/?game_id=${id}&home_away=HOME`, {
                             method: "POST",
@@ -723,7 +727,7 @@ export default function GameScorer() {
                             })
 
                         });
-                        setHomePoints(homePoints + 1);
+
 
                     }
                 }
@@ -731,17 +735,18 @@ export default function GameScorer() {
                     newOffense[startBase == "1B" ? "firstBaseRunner" : startBase == "2B" ? "secondBaseRunner" : startBase == "3B" ? "thirdBaseRunner" : ""] = null;
                 }
 
-                setOffense(newOffense);
-                await fetch(`http://localhost:6363/game/${id}/change_runners`, {
+
+                fetch(`http://localhost:6363/game/${id}/change_runners`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        runners: { "firstBaseRunner": newOffense.firstBaseRunner, "secondBaseRunner": newOffense.secondBaseRunner, "thirdBaseRunner": newOffense.thirdBaseRunner }
+                        runners: newOffense
                     })
 
                 });
+                setOffense(newOffense);
             }
 
             }
