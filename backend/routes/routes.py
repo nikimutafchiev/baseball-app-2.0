@@ -1145,7 +1145,8 @@ def get_tournament_stats(tournament_id):
                         "2B":0,
                         "3B":0,
                         "HR":0,"R":0,
-                        "RBI":0
+                        "RBI":0,
+                        "OBP":0,
 
                     }
                 for gameTeam in team_tournament.games:
@@ -1180,6 +1181,8 @@ def get_tournament_stats(tournament_id):
                                         if runner_situation["finalBase"] == "Home":
                                             player_stats["R"] += 1
                 player_stats["AVG"] = player_stats["H"]/player_stats["AB"] if player_stats["AB"] != 0 else 0
+                player_stats["OBP"] = (player_stats["H"]+player_stats["BB"]+player_stats["HBP"])/player_stats["PA"] if player_stats["PA"] != 0 else 0
+                player_stats["SLG"] = (player_stats["1B"] + 2*player_stats["2B"] + 3*player_stats["3B"] + 4*player_stats["HR"])/player_stats["AB"] if player_stats["AB"] != 0 else 0
                 res.append({
                     "id":player.id,
                     "teamName": team_tournament.team.name,
@@ -1190,8 +1193,7 @@ def get_tournament_stats(tournament_id):
                                 
                     
     
-    # res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
-    # res["SLG"] = (res["1B"] + 2*res["2B"] + 3*res["3B"] + 4*res["HR"])/res["AB"] if res["AB"] != 0 else 0
+
     return res
 
 

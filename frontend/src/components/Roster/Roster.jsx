@@ -25,7 +25,10 @@ export default function Roster(props) {
             var newData = [...roster.data];
             //needed because players with order 1,2,4 are put 1,2,3 instead
             var missingOrders = getMissingOrders(roster.data);
-            console.log(missingOrders)
+            if (missingOrders.length == 0 && !props.ready)
+                props.rosterReady(true);
+            if (missingOrders.length != 0 && props.ready)
+                props.rosterReady(false);
             while (newData.length < 9)
                 newData.push({
                     id: -1,
@@ -36,6 +39,7 @@ export default function Roster(props) {
                     battingOrder: missingOrders.pop()
                 });
             setPlayers(newData);
+
         }
         else
             setPlayers(new Array(9).fill({

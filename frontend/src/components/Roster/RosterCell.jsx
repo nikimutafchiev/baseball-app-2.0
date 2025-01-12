@@ -63,7 +63,7 @@ export default function RosterCell(props) {
     return (<>
         <div className="flex flex-row flex-1 px-2 justify-between items-center" onClick={nextPage} onMouseOver={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
             <div className="flex flex-row text-sm">
-                <div className="font-bold w-12">{player.uniformNumber == "" ? "" : `#${player.uniformNumber}`}</div>
+                <div className="font-bold w-12">{`#${player.uniformNumber}`}</div>
                 <div>{player.firstName} {player.lastName}</div>
             </div>
             <div className="flex flex-row w-[30%] gap-3 items-center">
