@@ -7,6 +7,104 @@ from models.models import db
 import bcrypt
 route_bp = Blueprint("routes",__name__)
 
+
+    
+def merge_dicts(srcDict,destDict):
+    for key in srcDict:
+        if key in destDict:
+            destDict[key] = destDict[key] + srcDict[key]
+        else:
+            destDict.update({key: srcDict[key]})
+
+def get_stats(situations_list,player_id):
+    res = {
+        "PA":0,
+        "H":0,
+        "AB":0,
+        "SO":0,
+        "BB":0,
+        "HBP":0,
+        "AVG":0,
+        "SLG":0,
+        "1B":0,
+        "2B":0,
+        "3B":0,
+        "HR":0,
+        "R":0,
+        "RBI":0,
+        "IBB":0,
+        "OPS":0,
+        "TB":0,
+        "XBH":0,
+        "ROE":0,
+        "PO":0,
+        "A":0,
+        "E":0,
+        "TC":0,
+        "FIP":0,
+
+    }
+    #TODO Да се оптимизира TB,XBH да се смятат накрая
+    for situation in situations_list:
+        if situation.data["batter"]["player"]["id"] == player_id :
+            if situation.data["situationCategory"] != "":
+                res["PA"] += 1
+            if situation.data["situationCategory"] == "hit":
+                res["H"] += 1
+                if situation.data["situation"] == "Single":
+                    res["1B"] +=1
+                    res["TB"]+=1
+                elif situation.data["situation"] == "Double":
+                    res["2B"] +=1
+                    res["TB"] +=2
+                    res["XBH"] +=1
+                elif situation.data["situation"] == "Triple":
+                    res["3B"] +=1
+                    res["TB"] +=3
+                    res["XBH"] +=1
+                elif situation.data["situation"] == "Homerun":
+                    res["HR"] +=1
+                    res["TB"] +=4
+                    res["XBH"] +=1
+            if situation.data["situationCategory"] == "walk":
+                res["BB"] +=1
+                if situation.data["situation"] == "Intentional walk":
+                    res["IBB"]+=1
+            if situation.data["situationCategory"] == "hit by pitch":
+                res["HBP"] +=1
+            if situation.data["situationCategory"] == "strikeout":
+                res["SO"] +=1
+            if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
+                res["AB"] +=1
+            if situation.data["situationCategory"] == "error":
+                res["ROE"] +=1
+                
+            for runner_situation in situation.data["runners"]:
+                if runner_situation["finalBase"] == "Home":
+                    res["RBI"] += 1
+        for runner_situation in situation.data["runners"]:
+            if runner_situation["player"]["player"]["id"] == player_id:
+                if runner_situation["finalBase"] == "Home":
+                    res["R"] += 1
+        for out in situation.data["defense"]["outs"]:
+            if player_id == out["player"]["id"]:
+                res["PO"]+=1
+        for assist in situation.data["defense"]["assists"]:
+            if player_id == assist["player"]["id"]:
+                res["A"]+=1
+        for error in situation.data["defense"]["errors"]:
+            if player_id == error["player"]["id"]:
+                res["E"]+=1
+    res["TC"] += res["PO"]+res["A"]+res["E"]
+    res["FIP"] += (res["PO"]+res["A"])/res['TC'] if res["TC"] != 0 else 0
+    return res                    
+
+
+
+
+
+
+
 @route_bp.route("/player",methods=['POST'])
 def add_player():
     data = request.json
@@ -497,24 +595,8 @@ def get_game_team_roster():
     res=[]
     for player in game_team.players:
         stats = {
-            "PA":0,
-            "H":0,
-            "AB":0,
-            "SO":0,
-            "BB":0,
-            "HBP":0,
-            "AVG":0,
-            "SLG":0,
-            "1B":0,
-            "2B":0,
-            "3B":0,
-            "HR":0,
-            "RBI":0,
-            "R":0,
-            
-
         }
-        merge_dicts(get_stats(game_team.game.situations,player.id),stats)
+        merge_dicts(get_stats(game_team.game.situations,player.team_tournament_player.player.id),stats)
         # for situation in game_team.game.situations:
         #     if situation.data["batter"]["player"]["id"] == player.id :
         #         if situation.data["situationCategory"] != "":
@@ -757,77 +839,6 @@ def id_in_list(id,list):
         if list[i]["id"] == id:
             return i
     return None
-    
-def merge_dicts(srcDict,destDict):
-    for key in destDict:
-        if key in srcDict:
-            destDict[key] = destDict[key] + srcDict[key]
-
-def get_stats(situations_list,player_id):
-    res = {
-        "PA":0,
-        "H":0,
-        "AB":0,
-        "SO":0,
-        "BB":0,
-        "HBP":0,
-        "AVG":0,
-        "SLG":0,
-        "1B":0,
-        "2B":0,
-        "3B":0,
-        "HR":0,
-        "R":0,
-        "RBI":0,
-        "IBB":0,
-        "OPS":0,
-        "TB":0,
-        "XBH":0,
-        "ROE":0
-    }
-    for situation in situations_list:
-        if situation.data["batter"]["player"]["id"] == player_id :
-            if situation.data["situationCategory"] != "":
-                res["PA"] += 1
-            if situation.data["situationCategory"] == "hit":
-                res["H"] += 1
-                if situation.data["situation"] == "Single":
-                    res["1B"] +=1
-                    res["TB"]+=1
-                elif situation.data["situation"] == "Double":
-                    res["2B"] +=1
-                    res["TB"] +=2
-                    res["XBH"] +=1
-                elif situation.data["situation"] == "Triple":
-                    res["3B"] +=1
-                    res["TB"] +=3
-                    res["XBH"] +=1
-                elif situation.data["situation"] == "Homerun":
-                    res["HR"] +=1
-                    res["TB"] +=4
-                    res["XBH"] +=1
-            if situation.data["situationCategory"] == "walk":
-                res["BB"] +=1
-                if situation.data["situation"] == "Intentional walk":
-                    res["IBB"]+=1
-            if situation.data["situationCategory"] == "hit by pitch":
-                res["HBP"] +=1
-            if situation.data["situationCategory"] == "strikeout":
-                res["SO"] +=1
-            if situation.data["situationCategory"] in ["hit","fielder's choice","error","strikeout","groundout","flyout"]:
-                res["AB"] +=1
-            if situation.data["situationCategory"] == "error":
-                res["ROE"] +=1
-                
-            for runner_situation in situation.data["runners"]:
-                if runner_situation["finalBase"] == "Home":
-                    res["RBI"] += 1
-        for runner_situation in situation.data["runners"]:
-                if runner_situation["player"]["player"]["id"] == player_id:
-                    if runner_situation["finalBase"] == "Home":
-                        res["R"] += 1
-    return res                    
-
 
 @route_bp.route("/player/<int:player_id>/stats/",methods=["GET"])
 def get_player_stats(player_id):
@@ -838,27 +849,7 @@ def get_player_stats(player_id):
     years = eval(str(query.get("years")))
     player = Player.query.get(player_id)
 
-    res = {
-        "PA":0,
-        "H":0,
-        "AB":0,
-        "SO":0,
-        "BB":0,
-        "HBP":0,
-        "AVG":0,
-        "SLG":0,
-        "1B":0,
-        "2B":0,
-        "3B":0,
-        "HR":0,
-        "R":0,
-        "RBI":0,
-        "IBB":0,
-        "OPS":0,
-        "TB":0,
-        "XBH":0,
-        "ROE":0
-    }
+    res = {}
     for team_tournament in player.teams_tournaments:
         if (team_ids and team_tournament.team_tournament.team_id in team_ids and not tournament_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids and not team_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids and team_ids and team_tournament.team_tournament.team_id in team_ids)or (not team_ids and not tournament_ids):
            for gameTeam in team_tournament.team_tournament.games:
@@ -939,25 +930,6 @@ def get_team_stats(team_id):
     team = Team.query.get(team_id)
 
     res = {
-        "PA":0,
-        "H":0,
-        "AB":0,
-        "SO":0,
-        "BB":0,
-        "HBP":0,
-        "AVG":0,
-        "SLG":0,
-        "1B":0,
-        "2B":0,
-        "3B":0,
-        "HR":0,
-        "R":0,
-        "RBI":0,
-        "IBB":0,
-        "OPS":0,
-        "TB":0,
-        "XBH":0,
-        "ROE":0,
         "W":0,
         "L":0
     }
@@ -970,48 +942,10 @@ def get_team_stats(team_id):
         if (tournament_ids and team_tournament.tournament_id in tournament_ids) or ( not tournament_ids):
             for player in team_tournament.players:
                 player_stats = {
-                        "PA":0,
-                        "H":0,
-                        "AB":0,
-                        "SO":0,
-                        "BB":0,
-                        "HBP":0,
-                        "AVG":0,
-                        "SLG":0,
-                        "1B":0,
-                        "2B":0,
-                        "3B":0,
-                        "HR":0,
-                        "R":0,
-                        "RBI":0,
-                        "IBB":0,
-                        "OPS":0,
-                        "TB":0,
-                        "XBH":0,
-                        "ROE":0
                     }
                 for gameTeam in team_tournament.games:
                     gameTeamObject = GameTeam.query.filter_by(game_id = gameTeam.game_id,   home_away = HomeAway.AWAY if gameTeam.home_away == HomeAway.HOME else HomeAway.HOME).first()
                     game_stats = {
-                        "PA":0,
-                        "H":0,
-                        "AB":0,
-                        "SO":0,
-                        "BB":0,
-                        "HBP":0,
-                        "AVG":0,
-                        "SLG":0,
-                        "1B":0,
-                        "2B":0,
-                        "3B":0,
-                        "HR":0,
-                        "R":0,
-                        "RBI":0,
-                        "IBB":0,
-                        "OPS":0,
-                        "TB":0,
-                        "XBH":0,
-                        "ROE":0
                     }
                     if not years and game_id and gameTeam.game_id == game_id or not game_id and years and gameTeam.game.start_time.year in years or game_id and years and gameTeam.game_id == game_id and gameTeam.game.start_time.year in years or not game_id and not years : 
                         if team_ids and gameTeamObject.team_tournament.team_id in team_ids or not team_ids:
@@ -1082,21 +1016,6 @@ def get_tournament_stats(tournament_id):
         #(team_ids and team_tournament.team_id in team_ids)
             for player in team_tournament.players:
                 player_stats  = {
-                        "PA":0,
-                        "H":0,
-                        "AB":0,
-                        "SO":0,
-                        "BB":0,
-                        "HBP":0,
-                        "AVG":0,
-                        "SLG":0,
-                        "1B":0,
-                        "2B":0,
-                        "3B":0,
-                        "HR":0,"R":0,
-                        "RBI":0,
-                        "OBP":0,
-
                     }
                 for gameTeam in team_tournament.games:
                     if game_id and gameTeam.game_id == game_id and not years or years and gameTeam.game.start_time.year in years and not game_id or years and gameTeam.game.start_time.year in years and game_id and gameTeam.game_id == game_id or not game_id and not years:
@@ -1134,20 +1053,6 @@ def get_player_games_stats(player_id):
             for gameTeam in team_tournament.team_tournament.games:
                 if years and gameTeam.game.start_time.year in years or not years:
                     game_stats = {
-                        "PA":0,
-                        "H":0,
-                        "AB":0,
-                        "SO":0,
-                        "BB":0,
-                        "HBP":0,
-                        "AVG":0,
-                        "SLG":0,
-                        "1B":0,
-                        "2B":0,
-                        "3B":0,
-                        "HR":0,
-                        "R":0,
-                        "RBI":0
 
                     }
                     merge_dicts(get_stats(gameTeam.game.situations,player_id),game_stats)

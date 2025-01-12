@@ -310,14 +310,14 @@ export default function GameScorer() {
     }
     const situationAdder = () => {
         const newOuts = outs;
-        setSituations([{ id: Infinity, data: { batter: currentSituation.batter, inning: currentSituation.inning, inningHalf: currentSituation.inningHalf, outs: newOuts, situation: currentSituation.situation, situationCategory: currentSituation.situationCategory, defense: { assists: [], outs: [], errors: [] }, runners: runnersSituations, runs: runnersSituations.filter((runner) => runner.finalBase == "Home").length } }, ...situations]);
+        setSituations([{ id: Infinity, data: { batter: currentSituation.batter, inning: currentSituation.inning, inningHalf: currentSituation.inningHalf, outs: newOuts, situation: currentSituation.situation, situationCategory: currentSituation.situationCategory, defense: currentSituation.defense, runners: runnersSituations, runs: runnersSituations.filter((runner) => runner.finalBase == "Home").length } }, ...situations]);
         fetch(`http://localhost:6363/game/${id}/situation`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                data: { batter: currentSituation.batter, inning: currentSituation.inning, inningHalf: currentSituation.inningHalf, outs: newOuts, situation: currentSituation.situation, situationCategory: currentSituation.situationCategory, defense: { assists: [], outs: [], errors: [] }, runners: runnersSituations, runs: runnersSituations.filter((runner) => runner.finalBase == "Home").length }
+                data: { batter: currentSituation.batter, inning: currentSituation.inning, inningHalf: currentSituation.inningHalf, outs: newOuts, situation: currentSituation.situation, situationCategory: currentSituation.situationCategory, defense: currentSituation.defense, runners: runnersSituations, runs: runnersSituations.filter((runner) => runner.finalBase == "Home").length }
             })
 
         });
@@ -334,8 +334,8 @@ export default function GameScorer() {
             situationAdder();
         }
     }), [isSituationReady, currentSituation]);
-    const addSituation = (situationCategory, situation, isOut = false) => {
-        setCurrentSituation({ batter: batter, inning: inning, inningHalf: inningHalf, isOut: isOut, situation: situation, situationCategory: situationCategory, runners: runnersSituations });
+    const addSituation = (situationCategory, situation, isOut = false, outs = [], assists = [], errors = []) => {
+        setCurrentSituation({ batter: batter, inning: inning, inningHalf: inningHalf, isOut: isOut, situation: situation, situationCategory: situationCategory, runners: runnersSituations, defense: { assists: assists, outs: outs, errors: errors } });
 
         //console.log({ batter: offense.batter, inning: inning, inningHalf: inningHalf, outs: outs, situation: type, runners: runnersSituations })
     }
@@ -371,6 +371,17 @@ export default function GameScorer() {
         "2B": "secondBaseRunner",
         "3B": "thirdBaseRunner",
         "Home": "batter"
+    }
+    const positionNumbers = {
+        "1": "pitcher",
+        "2": "catcher",
+        "3": "firstBaseman",
+        "4": "secondBaseman",
+        "5": "thirdBaseman",
+        "6": "shortstop",
+        "7": "leftFielder",
+        "8": "centerFielder",
+        "9": "rightFielder"
     }
     const getScoringRunners = (bases) => {
         const isFirstOccupied = !!offense.firstBaseRunner, isSecondOccupied = !!offense.secondBaseRunner, isThirdOccupied = !!offense.thirdBaseRunner;
@@ -524,21 +535,21 @@ export default function GameScorer() {
             clearCount={() => clearCount()}
             incrementOuts={() => incrementOuts()}
             moveRunners={(bases) => moveRunners(bases)}
-            addSituation={(situationCategory, situation) => { setRunnersSituations([...runnersSituations, { player: batter, situation: situation, situationCategory: situationCategory, finalBase: null }]); addSituation(situationCategory, situation, true) }} />,
+            addSituation={(situationCategory, situation, outs = [], assists = [], errors = []) => { setRunnersSituations([...runnersSituations, { player: batter, situation: situation, situationCategory: situationCategory, finalBase: null }]); addSituation(situationCategory, situation, true, outs.map((out) => defense[positionNumbers[out]]), assists.map((assist) => defense[positionNumbers[assist]]), errors.map((error) => defense[positionNumbers[error]])) }} />,
         "Strikeout": <GameScorerStrikeoutOptions close={clearOption}
             situationFunction={(strikeoutType) => {
                 setIsSituationReady(false);
-                setRunnersSituations([...runnersSituations, { player: batter, situationCategory: "strikeout", situation: strikeoutType, finalBase: null }])
-                addSituation("strikeout", strikeoutType, true);
+                setRunnersSituations([...runnersSituations, { player: batter, situationCategory: "strikeout", situation: strikeoutType, finalBase: null, }])
+                addSituation("strikeout", strikeoutType, true, [defense.catcher]);
                 clearCount();
                 nextBatter();
                 incrementOuts();
                 setIsSituationReady(true);
             }}
         />,
-        "Groundout": <GameScorerOutOptions close={clearOption} situationFunction={(positions) => {
+        "Groundout": <GameScorerOutOptions close={clearOption} situationFunction={(positions, outs, assists) => {
             setRunnersSituations([...runnersSituations, { player: batter, situationCategory: "groundout", situation: `Groundout ${positions}`, finalBase: null }])
-            addSituation("groundout", `Groundout ${positions}`, true);
+            addSituation("groundout", `Groundout ${positions}`, true, outs.map((out) => defense[positionNumbers[out]]), assists.map((assist) => defense[positionNumbers[assist]]));
             moveRunners(0);
             clearCount();
             nextBatter();
@@ -546,7 +557,7 @@ export default function GameScorer() {
         }} />,
         "Flyout": <GameScorerFlyoutOptions close={clearOption} situation="Flyout" situationCode="F" situationFunction={(position) => {
             setRunnersSituations([...runnersSituations, { player: batter, situationCategory: "flyout", situation: `Flyout ${positionValuesToAbbrevations[position]}`, finalBase: null }])
-            addSituation("flyout", `Flyout ${positionValuesToAbbrevations[position]}`, true);
+            addSituation("flyout", `Flyout ${positionValuesToAbbrevations[position]}`, true, [defense[positionNumbers[position]]]);
             moveRunners(0);
             clearCount();
             nextBatter();
@@ -554,7 +565,7 @@ export default function GameScorer() {
         }} />,
         "Sac flyout": <GameScorerFlyoutOptions close={clearOption} situation="Sacrifice fly" situationCode="SF" situationFunction={(position) => {
             setRunnersSituations([...runnersSituations, { player: batter, situationCategory: "sacrifice flyout", situation: `Sacrificise flyout ${positionValuesToAbbrevations[position]}`, finalBase: null }])
-            addSituation("sacrifice flyout", `Sacrificise flyout ${positionValuesToAbbrevations[position]}`, true);
+            addSituation("sacrifice flyout", `Sacrificise flyout ${positionValuesToAbbrevations[position]}`, true, [defense[positionNumbers[position]]]);
             moveRunners(0);
             clearCount();
             nextBatter();
@@ -562,7 +573,7 @@ export default function GameScorer() {
         }} />,
         "Linedrive": <GameScorerFlyoutOptions close={clearOption} situation="Linedrive" situationCode="L" situationFunction={(position) => {
             setRunnersSituations([...runnersSituations, { player: batter, situationCategory: "flyout", situation: `Linedrive  ${positionValuesToAbbrevations[position]}`, finalBase: null }])
-            addSituation("flyout", `Linedrive ${positionValuesToAbbrevations[position]}`, true);
+            addSituation("flyout", `Linedrive ${positionValuesToAbbrevations[position]}`, true, [defense[positionNumbers[position]]]);
             moveRunners(0);
             clearCount();
             nextBatter();
@@ -571,7 +582,7 @@ export default function GameScorer() {
         } />,
         "Foul fly": <GameScorerFlyoutOptions close={clearOption} situation="Foul fly" situationCode="FF" situationFunction={(position) => {
             setRunnersSituations([...runnersSituations, { player: batter, situationCategory: "flyout", situation: `Foul flyout ${positionValuesToAbbrevations[position]}`, finalBase: null }])
-            addSituation("flyout", `Foul flyout ${positionValuesToAbbrevations[position]}`, true);
+            addSituation("flyout", `Foul flyout ${positionValuesToAbbrevations[position]}`, true, [defense[positionNumbers[position]]]);
             moveRunners(0);
             clearCount();
             nextBatter();
@@ -579,7 +590,7 @@ export default function GameScorer() {
         }} />,
         "Pop fly": <GameScorerFlyoutOptions close={clearOption} situation="Pop fly" situationCode="P" situationFunction={(position) => {
             setRunnersSituations([...runnersSituations, { player: batter, situationCategory: "flyout", situation: `Pop flyout ${positionValuesToAbbrevations[position]}`, finalBase: null }])
-            addSituation("flyout", `Pop flyout ${positionValuesToAbbrevations[position]}`, true);
+            addSituation("flyout", `Pop flyout ${positionValuesToAbbrevations[position]}`, true, [defense[positionNumbers[position]]]);
             moveRunners(0);
             clearCount();
             nextBatter();
@@ -587,7 +598,7 @@ export default function GameScorer() {
         }} />,
         "Infield fly": <GameScorerFlyoutOptions close={clearOption} situation="Infield fly" situationCode="IF" situationFunction={(position) => {
             setRunnersSituations([...runnersSituations, { player: batter, situationCategory: "flyout", situation: `Infield flyout ${positionValuesToAbbrevations[position]}`, finalBase: null }])
-            addSituation("flyout", `Infield flyout ${positionValuesToAbbrevations[position]}`, true);
+            addSituation("flyout", `Infield flyout ${positionValuesToAbbrevations[position]}`, true, defense[positionNumbers[position]]);
             moveRunners(0);
             clearCount();
             nextBatter();
@@ -607,16 +618,16 @@ export default function GameScorer() {
             clearCount();
             nextBatter();
         }} />,
-        "Fielder's choice": <GameScorerOutOptions close={clearOption} situationFunction={(positions) => {
+        "Fielder's choice": <GameScorerOutOptions close={clearOption} situationFunction={(positions, outs, assists) => {
             setRunnersSituations([...runnersSituations, { player: batter, situationCategory: "fielder's choice", situation: `Fielder's choice ${positions}`, finalBase: null }])
             addSituation("fielder's choice", `Fielder's choice ${positions}`);
             moveRunners(1);
             clearCount();
             nextBatter();
         }} />,
-        "Sac bunt": <GameScorerOutOptions close={clearOption} situationFunction={(positions) => {
+        "Sac bunt": <GameScorerOutOptions close={clearOption} situationFunction={(positions, outs, assists) => {
             setRunnersSituations([...runnersSituations, { player: batter, situationCategory: "sacrifice bunt", situation: `Sacrifice bunt ${positions}`, finalBase: null }])
-            addSituation("sacrifice bunt", `Sacrifice bunt ${positions}`, true);
+            addSituation("sacrifice bunt", `Sacrifice bunt ${positions}`, true, outs.map((out) => defense[positionNumbers[out]]), assists.map((assist) => defense[positionNumbers[assist]]));
             moveRunners(0);
             clearCount();
             nextBatter();
@@ -624,11 +635,11 @@ export default function GameScorer() {
         }} />,
         "GDP": <GameScorerOutOptions close={clearOption} />,
         "Error": <GameScorerErrorOptions close={clearOption}
-            situationFunction={(errorSituation) => {
+            situationFunction={(errorSituation, assists, errors) => {
                 // console.log(errorSituation)
                 // setIsSituationReady(false);
                 setRunnersSituations([...runnersSituations, { player: batter, situationCategory: "error", situation: errorSituation, finalBase: null }]);
-                addSituation("error", errorSituation);
+                addSituation("error", errorSituation, false, [], assists.map((assist) => defense[positionNumbers[assist]]), errors.map((error) => defense[positionNumbers[error]]));
                 moveRunners(1);
                 clearCount();
                 nextBatter();

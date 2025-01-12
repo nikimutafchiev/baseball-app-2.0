@@ -38,9 +38,9 @@ export default function GameScorerOutOptions(props) {
                 <button className={`${positions.length === 0 ? "bg-blue-700 text-gray-400 pointer-events-none" : "bg-blue-500 hover:bg-blue-400"} rounded text-center mt-4 p-2 content-center col-span-2 text-lg`} onClick={() => {
                     if (positions.length !== 0) {
                         if (props.isRunner)
-                            props.runnerSituationFunction(positions.join("-"));
+                            props.runnerSituationFunction(positions.join("-"), [positions.at(-1)], positions.slice(0, -1));
                         else
-                            props.situationFunction(positions.join("-"));
+                            props.situationFunction(positions.join("-"), [positions.at(-1)], positions.slice(0, -1));
                     }
                 }}>Confirm</button>
             </div>

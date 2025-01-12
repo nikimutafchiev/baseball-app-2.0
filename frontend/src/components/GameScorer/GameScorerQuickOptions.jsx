@@ -9,7 +9,7 @@ export default function GameScorerQuickOptions(props) {
                 <div className="flex-1 grid grid-cols-3 overflow-y-auto gap-y-4 gap-x-4 text-white text-2xl font-semibold py-4 px-4 z-10">
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer"
                         onClick={() => {
-                            props.addSituation("groundout", `Groundout 6-3`);
+                            props.addSituation("groundout", `Groundout 6-3`, true, [3], [6]);
                             props.incrementOuts();
                             props.moveRunners(0);
                             props.clearCount();
@@ -17,7 +17,7 @@ export default function GameScorerQuickOptions(props) {
                         }}><div>6-3</div><div>Groundout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer transform transition-transform hover:scale-105"
                         onClick={() => {
-                            props.addSituation("groundout", `Groundout 5-3`);
+                            props.addSituation("groundout", `Groundout 5-3`, true, [3], [5]);
                             props.incrementOuts();
                             props.moveRunners(0);
                             props.clearCount();
@@ -25,7 +25,7 @@ export default function GameScorerQuickOptions(props) {
                         }}><div>5-3</div><div>Groundout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer transform transition-transform hover:scale-105"
                         onClick={() => {
-                            props.addSituation("groundout", `Groundout 4-3`);
+                            props.addSituation("groundout", `Groundout 4-3`, true, [3], [4]);
                             props.incrementOuts();
                             props.moveRunners(0);
                             props.clearCount();
@@ -33,7 +33,7 @@ export default function GameScorerQuickOptions(props) {
                         }}><div>4-3</div><div>Groundout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer transform transition-transform hover:scale-105"
                         onClick={() => {
-                            props.addSituation("groundout", `Groundout 1-3`);
+                            props.addSituation("groundout", `Groundout 1-3`, true, [3], [1]);
                             props.incrementOuts();
                             props.moveRunners(0);
                             props.clearCount();
@@ -41,7 +41,7 @@ export default function GameScorerQuickOptions(props) {
                         }}><div>1-3</div><div>Groundout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer transform transition-transform hover:scale-105"
                         onClick={() => {
-                            props.addSituation("groundout", `Groundout 2-3`);
+                            props.addSituation("groundout", `Groundout 2-3`, true, [3], [2]);
                             props.incrementOuts();
                             props.moveRunners(0);
                             props.clearCount();
@@ -49,7 +49,7 @@ export default function GameScorerQuickOptions(props) {
                         }}><div>2-3</div><div>Groundout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer transform transition-transform hover:scale-105"
                         onClick={() => {
-                            props.addSituation("groundout", `Groundout 3-1`);
+                            props.addSituation("groundout", `Groundout 3-1`, true, [1], [3]);
                             props.incrementOuts();
                             props.moveRunners(0);
                             props.clearCount();
@@ -57,7 +57,7 @@ export default function GameScorerQuickOptions(props) {
                         }}><div>3-1</div><div>Groundout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer transform transition-transform hover:scale-105"
                         onClick={() => {
-                            props.addSituation("groundout", `Groundout 3`);
+                            props.addSituation("groundout", `Groundout 3`, true, [3]);
                             props.incrementOuts();
                             props.moveRunners(0);
                             props.clearCount();
@@ -65,7 +65,7 @@ export default function GameScorerQuickOptions(props) {
                         }}><div>U3</div><div>Groundout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer transform transition-transform hover:scale-105"
                         onClick={() => {
-                            props.addSituation("flyout", `Flyout LF`);
+                            props.addSituation("flyout", `Flyout LF`, true, [7]);
                             props.incrementOuts();
                             props.moveRunners(0);
                             props.clearCount();
@@ -73,7 +73,7 @@ export default function GameScorerQuickOptions(props) {
                         }}><div>F7</div><div>Flyout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer transform transition-transform hover:scale-105"
                         onClick={() => {
-                            props.addSituation("flyout", `Flyout CF`);
+                            props.addSituation("flyout", `Flyout CF`, true, [8]);
                             props.incrementOuts();
                             props.moveRunners(0);
                             props.clearCount();
@@ -81,7 +81,7 @@ export default function GameScorerQuickOptions(props) {
                         }}><div>F8</div><div>Flyout</div></div>
                     <div className="bg-red-500 hover:bg-red-400 p-2 px-4 rounded flex flex-row justify-between items-center cursor-pointer transform transition-transform hover:scale-105"
                         onClick={() => {
-                            props.addSituation("flyout", `Flyout RF`);
+                            props.addSituation("flyout", `Flyout RF`, true, [9]);
                             props.incrementOuts();
                             props.moveRunners(0);
                             props.clearCount();

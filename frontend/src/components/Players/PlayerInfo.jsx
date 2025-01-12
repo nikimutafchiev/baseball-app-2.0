@@ -31,6 +31,7 @@ export default function PlayerInfo() {
 	const [tournamentIDs, setTournamentIDs] = useState([]);
 	const [yearsSelect, setYearsSelect] = useState([]);
 	const [selectClicked, setSelectClicked] = useState(false);
+	const [overviewOption, setOverviewOption] = useState("Batting");
 	const query_params = {
 		tournament_query:
 			tournamentIDs.length != 0 ? `tournament_ids=[${tournamentIDs}]` : "",
@@ -264,7 +265,7 @@ export default function PlayerInfo() {
 
 					<div className="flex flex-row flex-1 gap-8">
 						<div className="flex flex-col flex-1 text-black gap-4 h-fit">
-							<div className="flex flex-col md:flex-row justify-around mb-4 h-40 md:h-12">
+							<div className="flex flex-col md:flex-row justify-around  h-40 md:h-12">
 								<div className="md:w-1/4 rounded drop-shadow-lg">
 									<Autocomplete
 										multiple
@@ -328,8 +329,21 @@ export default function PlayerInfo() {
 								</div>
 							</div>
 							<h3 className="text-3xl font-semibold">Stats overview</h3>
+							<div className="bg-white rounded self-center drop-shadow-lg mb-4">
+								<ToggleButtonGroup exclusive
+									value={overviewOption}
+									onChange={(e, newValue) => {
+										if (newValue) {
+											setOverviewOption(newValue);
+										}
+									}}>
+									<ToggleButton value="Batting">Batting</ToggleButton>
+									{/* <ToggleButton value="Pitching">Pitching</ToggleButton> */}
+									<ToggleButton value="Fielding">Fielding</ToggleButton>
+								</ToggleButtonGroup>
+							</div>
 							<div className={`grid grid-cols-1 sm:grid-cols-2 ${isShrinked ? "lg:grid-cols-6" : "lg:grid-cols-5"} gap-3`}>
-								{[
+								{(overviewOption == "Batting" ? [
 									{
 										label: "AVG",
 										value: stats.data ? (
@@ -591,7 +605,72 @@ export default function PlayerInfo() {
 										),
 										coefficient: false
 									},
-								].sort((a, b) => a.coefficient == b.coefficient ? a.label.localeCompare(b.label) : b.coefficient - a.coefficient).map((stat, index) => (
+
+								] : [{
+									label: "PO",
+									value: stats.data ? (
+										stats.data.PO
+									) : stats.isLoading ? (
+										<div >
+											<CircularProgress color="success" />
+										</div>
+									) : (
+										0
+									),
+									coefficient: false
+								},
+								{
+									label: "A",
+									value: stats.data ? (
+										stats.data.A
+									) : stats.isLoading ? (
+										<div >
+											<CircularProgress color="success" />
+										</div>
+									) : (
+										0
+									),
+									coefficient: false
+								},
+								{
+									label: "E",
+									value: stats.data ? (
+										stats.data.E
+									) : stats.isLoading ? (
+										<div >
+											<CircularProgress color="success" />
+										</div>
+									) : (
+										0
+									),
+									coefficient: false
+								},
+								{
+									label: "FIP",
+									value: stats.data ? (
+										stats.data.FIP.toFixed(3)
+									) : stats.isLoading ? (
+										<div >
+											<CircularProgress color="success" />
+										</div>
+									) : (
+										0
+									),
+									coefficient: true
+								},
+								{
+									label: "TC",
+									value: stats.data ? (
+										stats.data.TC
+									) : stats.isLoading ? (
+										<div >
+											<CircularProgress color="success" />
+										</div>
+									) : (
+										0
+									),
+									coefficient: false
+								},]).sort((a, b) => a.coefficient == b.coefficient ? a.label.localeCompare(b.label) : b.coefficient - a.coefficient).map((stat, index) => (
 									<div
 										key={index}
 										className="bg-white p-4 h-28 rounded-2xl shadow-lg flex flex-col justify-between"

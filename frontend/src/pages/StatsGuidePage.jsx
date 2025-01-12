@@ -206,6 +206,50 @@ export default function StatsGuidePage() {
 						formula: "1B + 2*2B + 3*3B + 4*HR",
 						seeAlso: ["1B", "2B", "3B", "HR"]
 					},
+					{
+						abbreviation: "PO",
+						name: "Putout",
+						description: (
+							<div>
+								A fielder is credited with a putout when he is the fielder who physically records the act of completing an out -- whether it be by stepping on the base for a forceout, tagging a runner, catching a batted ball, or catching a third strike. A fielder can also receive a putout when he is the fielder deemed by the official scorer to be the closest to a runner called out for interference.</div>
+						),
+					},
+					{
+						abbreviation: "A",
+						name: "Assist",
+						description: (
+							<div>
+								An assist is awarded to a fielder who touches the ball before a putout is recorded by another fielder.</div>
+						),
+					},
+					{
+						abbreviation: "E",
+						name: "Error",
+						description: (
+							<div>
+								A fielder is given an error if, in the judgment of the official scorer, he fails to convert an out on a play that an average fielder should have made. Fielders can also be given errors if they make a poor play that allows one or more runners to advance on the bases.</div>
+						),
+					},
+					{
+						abbreviation: "FIP",
+						name: "Fielding percentage",
+						description: (
+							<div>
+								Fielding percentage answers the question: How often does a fielder or team make the play when tasked with fielding a batted ball, throwing a ball, or receiving a thrown ball for an out.</div>
+						),
+						formula: "(PO + A)/TC",
+						seeAlso: ["PO", "A", "TC"]
+					},
+					{
+						abbreviation: "TC",
+						name: "Total chances",
+						description: (
+							<div>
+								In theory, a defender's total chances represent the number of opportunities he has to record an out.</div>
+						),
+						formula: "PO + A + E",
+						seeAlso: ["PO", "A", "E"]
+					},
 
 
 				]

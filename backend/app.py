@@ -20,7 +20,7 @@ app.register_blueprint(route_bp)
 
 with app.app_context():
     # db.drop_all()
-    # db.session.execute(text("DROP TABLE Situation"))
+    # db.session.execute(text("DELETE FROM Situation WHERE id = (SELECT Count(*) from Situation)"))
     # db.session.commit()
     db.create_all()
     
