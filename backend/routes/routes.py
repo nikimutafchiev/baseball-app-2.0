@@ -887,11 +887,14 @@ def get_team_tournaments(team_id):
     team = Team.query.get(team_id)
     res = []
     for team_tournament in team.tournaments:
+        for gameTeam in team_tournament.games:
+            gameTeamObject = GameTeam.query.filter_by(game_id = gameTeam.game_id,   home_away = HomeAway.AWAY if gameTeam.home_away == HomeAway.HOME else HomeAway.HOME).first()
+            if (team_ids and gameTeamObject.team_tournament.team.id in team_ids or not team_ids) and id_in_list(team_tournament.tournament.id,res) == None:
+                res.append({
+                    'id':team_tournament.tournament.id,
+                    'name': team_tournament.tournament.name,
+                    })
         # if team_ids and team_tournament.team_tournament.tournament_id in team_ids or not team_ids:
-        res.append({
-        'id':team_tournament.tournament.id,
-        'name': team_tournament.tournament.name,
-        })
     return res
 
 @route_bp.route("/team/<int:team_id>/years/",methods=["GET"])
@@ -957,10 +960,12 @@ def get_team_stats(team_id):
             for player in team_tournament.players:
                 player_stats = {
                     }
+                merge_dicts(get_stats([],None),player_stats)
                 for gameTeam in team_tournament.games:
                     gameTeamObject = GameTeam.query.filter_by(game_id = gameTeam.game_id,   home_away = HomeAway.AWAY if gameTeam.home_away == HomeAway.HOME else HomeAway.HOME).first()
                     game_stats = {
                     }
+                    merge_dicts(get_stats([],None),game_stats)
                     if not years and game_id and gameTeam.game_id == game_id or not game_id and years and gameTeam.game.start_time.year in years or game_id and years and gameTeam.game_id == game_id and gameTeam.game.start_time.year in years or not game_id and not years : 
                         if team_ids and gameTeamObject.team_tournament.team_id in team_ids or not team_ids:
                             res_stats = get_stats(gameTeam.game.situations,player.player.id)
@@ -1068,7 +1073,6 @@ def get_player_games_stats(player_id):
             for gameTeam in team_tournament.team_tournament.games:
                 if years and gameTeam.game.start_time.year in years or not years:
                     game_stats = {
-
                     }
                     merge_dicts(get_stats(gameTeam.game.situations,player_id),game_stats)
                     game_stats["AVG"] = game_stats["H"]/game_stats["AB"] if game_stats["AB"] != 0 else 0
