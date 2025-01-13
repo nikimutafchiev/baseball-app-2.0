@@ -1111,6 +1111,16 @@ export default function TeamInfo() {
 														? selectedTeamStats.stats.SLG.toFixed(3)
 														: undefined,
 											},
+											{
+												team1: teamH2Hstats.data
+													? teamH2Hstats.data.stats.FIP.toFixed(3)
+													: 0,
+												type: "FIP",
+												team2:
+													selectedTeam && selectedTeamStats
+														? selectedTeamStats.stats.FIP.toFixed(3)
+														: undefined,
+											}
 										].map((stat) => (
 											<>
 												<div

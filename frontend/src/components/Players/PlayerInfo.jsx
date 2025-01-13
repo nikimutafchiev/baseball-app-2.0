@@ -172,7 +172,7 @@ export default function PlayerInfo() {
 			{player.data && (
 				<div className="flex flex-col md:flex-row w-full gap-8 text-white text-sm ">
 					{!isShrinked && (
-						<div className="relative md:w-1/4">
+						<div className="relative md:w-1/5">
 							<div className="flex flex-col h-fit bg-gradient-to-br p-4 gap-4 justify-between items-center min-h-[80vh] from-accent_3 via-accent_2 to-accent_1 rounded ">
 								<button
 									className=" left-1 top-1 absolute rounded-full p-1 bg-accent_1 hover:bg-accent_2 "
@@ -342,7 +342,7 @@ export default function PlayerInfo() {
 									<ToggleButton value="Fielding">Fielding</ToggleButton>
 								</ToggleButtonGroup>
 							</div>
-							<div className={`grid grid-cols-1 sm:grid-cols-2 ${isShrinked ? "lg:grid-cols-6" : "lg:grid-cols-5"} gap-3`}>
+							<div className={`grid grid-cols-1 sm:grid-cols-2 ${isShrinked ? "lg:grid-cols-7" : "lg:grid-cols-6"} gap-3`}>
 								{(overviewOption == "Batting" ? [
 									{
 										label: "AVG",
@@ -565,6 +565,19 @@ export default function PlayerInfo() {
 											0
 										),
 										coefficient: true
+									},
+									{
+										label: "SB",
+										value: stats.data ? (
+											stats.data.SB
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
 									},
 									{
 										label: "TB",

@@ -678,9 +678,10 @@ export default function GameScorer() {
                 setIsSituationReady(true);
             }
         }} runner={runnersToMove[runnerWindowCount - 1]}
-            situationFunction={async (player, situationCategory, situation, startBase, finalBase, isOut = false) => {
-                if (situation != "")
-                    setRunnersSituations([...runnersSituations, { player: player, situationCategory: situationCategory, situation: situation, finalBase: finalBase, isOut: isOut }]);
+            situationFunction={async (player, situationCategory, situation, startBase, finalBase, isOut = false, outs = [], assists = [], errors = []) => {
+                addSituation(situationCategory, situation, isOut, outs.map((out) => defense[positionNumbers[out]]), assists.map((assist) => defense[positionNumbers[assist]]), errors.map((error) => defense[positionNumbers[error]]));
+                //if(situation=='')
+                setRunnersSituations([...runnersSituations, { player: player, situationCategory: situationCategory, situation: situation, finalBase: finalBase, isOut: isOut }]);
                 const newOffense = { ...offense };
                 console.log(newOffense);
                 console.log(finalBase);
@@ -1277,7 +1278,7 @@ export default function GameScorer() {
                                         if (strikeCount == 2) {
                                             setIsSituationReady(false);
                                             setRunnersSituations([...runnersSituations, { player: batter, situationCategory: "strikeout", situation: "Strikeout looking", finalBase: null }])
-                                            addSituation("strikeout", "Strikeout looking", true);
+                                            addSituation("strikeout", "Strikeout looking", true, [defense.catcher]);
                                             nextBatter();
                                             incrementOuts();
                                             clearCount();
@@ -1290,7 +1291,7 @@ export default function GameScorer() {
                                         if (strikeCount == 2) {
                                             setIsSituationReady(false);
                                             setRunnersSituations([...runnersSituations, { player: batter, situationCategory: "strikeout", situation: "Strikeout swinging", finalBase: null }])
-                                            addSituation("strikeout", "Strikeout swinging", true);
+                                            addSituation("strikeout", "Strikeout swinging", true, [defense.catcher]);
                                             nextBatter();
                                             incrementOuts();
                                             clearCount();

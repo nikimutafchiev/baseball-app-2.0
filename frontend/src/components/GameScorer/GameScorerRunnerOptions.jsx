@@ -8,12 +8,12 @@ export default function GameScorerRunnerOptions(props) {
     useEffect((() => setBasePosition(props.runner.newBasePosition)), [props.runner]);
     const [situationOption, setSituationOption] = useState("");
     const runnerOptionsComponents = {
-        "Error": <GameScorerErrorOptions runnerSituationFunction={(errorSituation) => { props.situationFunction(props.runner.player, errorSituation, props.runner.oldBasePosition, basePosition); setSituationOption(""); props.close() }}
+        "Error": <GameScorerErrorOptions runnerSituationFunction={(errorSituation, outs = [], assists = [], errors) => { props.situationFunction(props.runner.player, errorSituation, props.runner.oldBasePosition, basePosition, true, outs, assists, errors); setSituationOption(""); props.close() }}
             isRunner={true} />,
-        "Force out": <GameScorerOutOptions runnerSituationFunction={(positions) => { props.situationFunction(props.runner.player, "groundout", `Force out ${positions}`, props.runner.oldBasePosition, null, true); setSituationOption(""); props.incrementOuts(); props.close() }} isRunner={true} />,
-        "Tagged out": <GameScorerOutOptions runnerSituationFunction={(positions) => { props.situationFunction(props.runner.player, "groundout", `Tagged out ${positions}`, props.runner.oldBasePosition, null, true); setSituationOption(""); props.incrementOuts(); props.close() }} isRunner={true} />,
-        "Caught stealing": <GameScorerOutOptions runnerSituationFunction={(positions) => { props.situationFunction(props.runner.player, "caught stealing", `Caught stealing ${positions}`, props.runner.oldBasePosition, null, true); setSituationOption(""); props.incrementOuts(); props.close() }} isRunner={true} />,
-        "Pick off": <GameScorerOutOptions runnerSituationFunction={(positions) => { props.situationFunction(props.runner.player, "", `Pick off ${positions}`, props.runner.oldBasePosition, null, true); setSituationOption(""); props.incrementOuts(); props.close() }} isRunner={true} />
+        "Force out": <GameScorerOutOptions runnerSituationFunction={(positions, outs, assists) => { props.situationFunction(props.runner.player, "groundout", `Force out ${positions}`, props.runner.oldBasePosition, null, true, outs, assists); setSituationOption(""); props.incrementOuts(); props.close() }} isRunner={true} />,
+        "Tagged out": <GameScorerOutOptions runnerSituationFunction={(positions, outs, assists) => { props.situationFunction(props.runner.player, "groundout", `Tagged out ${positions}`, props.runner.oldBasePosition, null, true, outs, assists); setSituationOption(""); props.incrementOuts(); props.close() }} isRunner={true} />,
+        "Caught stealing": <GameScorerOutOptions runnerSituationFunction={(positions, outs, assists) => { props.situationFunction(props.runner.player, "caught stealing", `Caught stealing ${positions}`, props.runner.oldBasePosition, null, true, outs, assists); setSituationOption(""); props.incrementOuts(); props.close() }} isRunner={true} />,
+        "Pick off": <GameScorerOutOptions runnerSituationFunction={(positions, outs, assists) => { props.situationFunction(props.runner.player, "", `Pick off ${positions}`, props.runner.oldBasePosition, null, true, outs, assists); setSituationOption(""); props.incrementOuts(); props.close() }} isRunner={true} />
     }
     return (<>
         <div className="fixed inset-0 z-10 bg-black bg-opacity-50">

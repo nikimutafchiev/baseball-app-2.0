@@ -42,7 +42,7 @@ def get_stats(situations_list,player_id):
         "E":0,
         "TC":0,
         "FIP":0,
-
+        "SB":0
     }
     #TODO Да се оптимизира TB,XBH да се смятат накрая
     for situation in situations_list:
@@ -86,6 +86,20 @@ def get_stats(situations_list,player_id):
             if runner_situation["player"]["player"]["id"] == player_id:
                 if runner_situation["finalBase"] == "Home":
                     res["R"] += 1
+                if runner_situation["situation"] == 'SB':
+                    res["SB"] +=1
+            if runner_situation.get("outs"):
+                for out in runner_situation["outs"]:
+                    if player_id == out["player"]["id"]:
+                        res["PO"]+=1
+            if runner_situation.get("assists"):
+                for assist in situation.data["assists"]:
+                    if player_id == assist["player"]["id"]:
+                        res["A"]+=1
+            if runner_situation.get("errors"):
+                for error in situation.data["errors"]:
+                    if player_id == error["player"]["id"]:
+                        res["E"]+=1
         for out in situation.data["defense"]["outs"]:
             if player_id == out["player"]["id"]:
                 res["PO"]+=1
@@ -96,7 +110,6 @@ def get_stats(situations_list,player_id):
             if player_id == error["player"]["id"]:
                 res["E"]+=1
     res["TC"] += res["PO"]+res["A"]+res["E"]
-    res["FIP"] += (res["PO"]+res["A"])/res['TC'] if res["TC"] != 0 else 0
     return res                    
 
 
@@ -861,6 +874,7 @@ def get_player_stats(player_id):
     res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
     res["SLG"] = res["TB"]/res["AB"] if res["AB"] != 0 else 0
     res["OPS"] = (res["OBP"]+res["SLG"])/2
+    res["FIP"] += (res["PO"]+res["A"])/res['TC'] if res["TC"] != 0 else 0
     return res
 
 
@@ -991,6 +1005,7 @@ def get_team_stats(team_id):
     res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
     res["SLG"] = (res["1B"] + 2*res["2B"] + 3*res["3B"] + 4*res["HR"])/res["AB"] if res["AB"] != 0 else 0
     res["OPS"] = (res["OBP"]+res["SLG"])/2
+    res["FIP"] += (res["PO"]+res["A"])/res['TC'] if res["TC"] != 0 else 0
     for game in games_stats:
         game["stats"]["AVG"] = game["stats"]["H"]/game["stats"]["AB"] if game["stats"]["AB"] != 0 else 0
         game["stats"]["OBP"] = (game["stats"]["H"]+game["stats"]["BB"]+game["stats"]["HBP"])/game["stats"]["PA"] if game["stats"]["PA"] != 0 else 0
