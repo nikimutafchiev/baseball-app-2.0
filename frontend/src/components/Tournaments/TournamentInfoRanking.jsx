@@ -10,10 +10,10 @@ export default function TournamentInfoRanking() {
             <Table sx={{ minWidth: "100 %" }} size="small">
                 <TableHead>
                     <TableRow>
-                        <TableCell>#</TableCell>
-                        <TableCell>Team</TableCell>
-                        <TableCell>W</TableCell>
-                        <TableCell>L</TableCell>
+                        <TableCell><div className="font-semibold">#</div></TableCell>
+                        <TableCell><div className="font-semibold">Team</div></TableCell>
+                        <TableCell><div className="font-semibold">W</div></TableCell>
+                        <TableCell><div className="font-semibold">L</div></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>

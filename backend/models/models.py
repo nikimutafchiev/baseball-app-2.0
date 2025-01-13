@@ -1,4 +1,4 @@
-from sqlalchemy import String, Enum, Date, JSON, DateTime, Integer, ForeignKey,Text,Boolean
+from sqlalchemy import String, Enum, Date, JSON, DateTime, Integer, ForeignKey,Text,Boolean,LargeBinary
 from sqlalchemy.orm import Mapped, mapped_column,relationship
 from typing import Optional,List
 from models.enums import Handedness, HomeAway, Genders, GameStatuses, UserRoles
@@ -134,13 +134,13 @@ class GameTeamTeamTournamentPlayer(db.Model):
     position: Mapped[str] = mapped_column(String(60))
     batting_order: Mapped[int] = mapped_column(Integer)
     is_playing: Mapped[bool] = mapped_column(Boolean, default=True)
-    game_stats: Mapped[Optional[JSON]] = mapped_column(JSON)
+    # game_stats: Mapped[Optional[JSON]] = mapped_column(JSON)
 
 class User(db.Model):
     __tablename__="User"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     username: Mapped[str] = mapped_column(String(60),nullable=False,unique=True)
-    password: Mapped[str] = mapped_column(String(60),nullable=False)
+    password: Mapped[bytes] = mapped_column(LargeBinary,nullable=False)
     first_name: Mapped[str] = mapped_column(String(60),nullable=False)
     last_name: Mapped[str] = mapped_column(String(60),nullable=False)
     role: Mapped[UserRoles] = mapped_column(Enum(UserRoles), nullable=False)

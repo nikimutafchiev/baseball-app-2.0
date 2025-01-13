@@ -4,7 +4,7 @@ export default function StatsGuidePage() {
 			<h1 className="text-5xl font-semibold mb-4">
 				Stats guide
 			</h1>
-			<div className="w-full p-2 h-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-3 gap-y-8">
+			<div className="w-full p-2 h-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-8">
 				{[
 					{
 						abbreviation: "AVG",

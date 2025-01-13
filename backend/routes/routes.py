@@ -803,14 +803,9 @@ def get_player_teams(player_id):
     tournament_ids = eval(str(query.get("tournament_ids")))
     player = Player.query.get(player_id)
     res = []
-    def id_in_list(id,list):
-        for element in list:
-            if element["id"] == id:
-                return True
-        return False
     for team_tournament in player.teams_tournaments:
         if tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids or not tournament_ids:
-            if not id_in_list(team_tournament.team_tournament.team.id,res):
+            if id_in_list(team_tournament.team_tournament.team.id,res) == None:
                 res.append({
                 'id':team_tournament.team_tournament.team.id,
                 'name': team_tournament.team_tournament.team.name,
@@ -919,16 +914,11 @@ def get_team_opponents(team_id):
     year_ids = eval(str(query.get("year_ids")))
     team = Team.query.get(team_id)
     res = []
-    def id_in_list(id,list):
-        for element in list:
-            if element["id"] == id:
-                return True
-        return False
     for team_tournament in team.tournaments:
         if tournament_ids and team_tournament.tournament_id in tournament_ids or not tournament_ids:
             for gameTeam in team_tournament.games:
-                gameTeamObject = GameTeam.query.filter_by(game_id = gameTeam.game_id,   home_away = HomeAway.AWAY if gameTeam.home_away == HomeAway.HOME else HomeAway.HOME).first()
-                if not id_in_list(gameTeamObject.team_tournament.team.id,res):
+                gameTeamObject = GameTeam.query.filter_by(game_id = gameTeam.game_id,home_away = HomeAway.AWAY if gameTeam.home_away == HomeAway.HOME else HomeAway.HOME).first()
+                if id_in_list(gameTeamObject.team_tournament.team.id,res) == None:
                     res.append(
                         {"id":gameTeamObject.team_tournament.team.id,
                         "name":gameTeamObject.team_tournament.team.name
@@ -944,8 +934,10 @@ def get_team_stats(team_id):
     tournament_ids = eval(str(query.get("tournament_ids")))
     game_id = query.get("game_id")
     years = eval(str(query.get("years")))
-    team = Team.query.get(team_id)
+    print(f"team id->{team_id}")
 
+    team = Team.query.get(team_id)
+    print(f"team name->{team.name}")
     res = {
         "W":0,
         "L":0
@@ -953,7 +945,7 @@ def get_team_stats(team_id):
     players_stats = []
     games_stats = []
 
-
+    merge_dicts(get_stats([],None),res)
     for team_tournament in team.tournaments:
         #(team_ids and team_tournament.team_id in team_ids)
         if (tournament_ids and team_tournament.tournament_id in tournament_ids) or ( not tournament_ids):

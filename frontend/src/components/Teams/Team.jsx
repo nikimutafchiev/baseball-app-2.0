@@ -1,6 +1,4 @@
-import { useState } from "react";
 import { FaFacebook, FaInstagram, FaLink, FaYoutube } from "react-icons/fa";
-import { RiStarLine, RiStarFill } from "react-icons/ri";
 import { Link } from "react-router-dom";
 export default function Team(props) {
     const icons = {
@@ -9,7 +7,6 @@ export default function Team(props) {
         website: <FaLink size={20} />,
         youtube: <FaYoutube size={20} />
     }
-    const [favorite, setFavorite] = useState(false);
     return (
         <div className="max-h-[350px] px-4 flex flex-col gap-2 items-center justify-between bg-white drop-shadow-xl py-2">
             {/* <button className='absolute top-1 left-1 text-yellow-500' onClick={() => setFavorite(!favorite)}>{!favorite && <RiStarLine size={25} />}{favorite && <RiStarFill size={25} />}</button> */}
