@@ -55,9 +55,14 @@ export default function InputFormTournament(props) {
                         <label for="input-image-player" className="w-[120px] h-fit bg-blue-400 rounded p-3 text-white text-sm font-semibold text-center">Upload photo</label>
                         <input type="file" id="input-image-player" className="hidden" accept=".jpeg, .png, .jpg" onChange={async (e) => {
                             if (e.target.files.length != 0) {
-                                const base64 = await convertToBase64(e.target.files[0]);
-                                setImage(base64);
-                                setImageURL(base64)
+                                if (e.target.files[0].size <= 131072) {
+                                    const base64 = await convertToBase64(e.target.files[0]);
+                                    setImage(base64);
+                                    setImageURL(base64)
+                                }
+                                else {
+                                    alert("File is too big! Max size is 128KB!");
+                                }
                             }
                             else {
                                 setImageURL("http://placehold.co/200x200")
