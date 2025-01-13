@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { RiCloseCircleLine } from "react-icons/ri";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../../AuthContext";
 export default function TeamSelectList(props) {
+  const { token } = useAuth();
   const [teamSelected, setTeamSelected] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const addTeam = async () => {
@@ -9,6 +11,9 @@ export default function TeamSelectList(props) {
       `http://localhost:6363/tournament_teams/?tournament_id=${props.tournament_id}&team_id=${selectedTeam.id}`,
       {
         method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
       }
     );
     setTeamSelected(false);
@@ -45,7 +50,7 @@ export default function TeamSelectList(props) {
                     className="size-[60px]"
                     src={team.image ? team.image : "https://placehold.co/60x60"}
                   ></img>
-                  <div className="">{team.name}</div>
+                  <div className="font-semibold">{team.name}</div>
                 </div>
                 <div>{team.address}</div>
               </button>

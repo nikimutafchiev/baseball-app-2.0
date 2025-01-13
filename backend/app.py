@@ -14,13 +14,14 @@ app.config['JWT_TOKEN_LOCATION'] = ['headers']
 CORS(app)
 
 db.init_app(app)
-jwt = JWTManager(app)
+
 
 app.register_blueprint(route_bp)
+jwt = JWTManager(app)
 
 with app.app_context():
     # db.drop_all()
-    # db.session.execute(text("DELETE FROM Situation WHERE id = (SELECT Count(*) from Situation)"))
+    # db.session.execute(text("DROP TABLE User"))
     # db.session.commit()
     db.create_all()
     
