@@ -618,6 +618,59 @@ export default function PlayerInfo() {
 										),
 										coefficient: false
 									},
+									{
+										label: "CS",
+										value: stats.data ? (
+											stats.data.CS
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "SF",
+										value: stats.data ? (
+											stats.data.SF
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "BABIP",
+										value: stats.data ? (
+											stats.data.BABIP.toFixed(3)
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: true
+									},
+									{
+										label: "RC",
+										value: stats.data ? (
+											stats.data.RC.toFixed(3)
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: true
+									},
+
 
 								] : [{
 									label: "PO",
@@ -1018,6 +1071,13 @@ export default function PlayerInfo() {
 								<div className="grid grid-cols-3 font-semibold bg-white px-6 py-3 rounded drop-shadow-lg">
 									{[
 										{
+											player_1: stats.data ? stats.data.AB : 0,
+											type: "AB",
+											player_2:
+												selectedPlayer && selectedPlayerStats
+													? selectedPlayerStats.AB
+													: undefined,
+										}, {
 											player_1: stats.data ? stats.data.H : 0,
 											type: "H",
 											player_2:

@@ -59,7 +59,7 @@ export default function TeamInfo() {
 		if (h2h) res += `${res.length == 0 ? "?" : "&"}team_ids=[${h2h}]`;
 		return res;
 	};
-
+	const [overviewOption, setOverviewOption] = useState("Batting");
 	const years = useSWR(
 		`http://localhost:6363/team/${id}/years/${get_query(true, true, false)}`,
 		(url) => fetch(url).then((res) => res.json())
@@ -343,8 +343,21 @@ export default function TeamInfo() {
 									</div>
 								))}
 							</div>
+							<div className="bg-white rounded self-center drop-shadow-lg my-2">
+								<ToggleButtonGroup exclusive
+									value={overviewOption}
+									onChange={(e, newValue) => {
+										if (newValue) {
+											setOverviewOption(newValue);
+										}
+									}}>
+									<ToggleButton value="Batting">Batting</ToggleButton>
+									{/* <ToggleButton value="Pitching">Pitching</ToggleButton> */}
+									<ToggleButton value="Fielding">Fielding</ToggleButton>
+								</ToggleButtonGroup>
+							</div>
 							<div className={`grid grid-cols-1 sm:grid-cols-2 ${isShrinked ? "lg:grid-cols-6" : "lg:grid-cols-5"} gap-3`}>
-								{[
+								{(overviewOption == "Batting" ? [
 									{
 										label: "AVG",
 										value: stats.data ? (
@@ -606,7 +619,98 @@ export default function TeamInfo() {
 										),
 										coefficient: false
 									},
-								].sort((a, b) => a.coefficient == b.coefficient ? a.label.localeCompare(b.label) : b.coefficient - a.coefficient).map((stat, index) => (
+									{
+										label: "CS",
+										value: stats.data ? (
+											stats.data.stats.CS
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "SF",
+										value: stats.data ? (
+											stats.data.stats.SF
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									}] : [
+									{
+										label: "PO",
+										value: stats.data ? (
+											stats.data.stats.PO
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "A",
+										value: stats.data ? (
+											stats.data.stats.A
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "E",
+										value: stats.data ? (
+											stats.data.stats.E
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "TC",
+										value: stats.data ? (
+											stats.data.stats.TC
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
+										label: "FIP",
+										value: stats.data ? (
+											stats.data.stats.FIP.toFixed(3)
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: true
+									},
+								]).sort((a, b) => a.coefficient == b.coefficient ? a.label.localeCompare(b.label) : b.coefficient - a.coefficient).map((stat, index) => (
 									<div
 										key={index}
 										className="bg-white p-4 h-28 rounded-2xl shadow-lg flex flex-col justify-between"
@@ -1074,6 +1178,13 @@ export default function TeamInfo() {
 									<div className="grid grid-cols-3 font-semibold bg-white px-6 py-3 rounded drop-shadow-lg">
 										{[
 											{
+												team1: teamH2Hstats.data ? teamH2Hstats.data.stats.AB : 0,
+												type: "AB",
+												team2:
+													selectedTeam && selectedTeamStats
+														? selectedTeamStats.stats.AB
+														: undefined,
+											}, , {
 												team1: teamH2Hstats.data ? teamH2Hstats.data.stats.H : 0,
 												type: "H",
 												team2:

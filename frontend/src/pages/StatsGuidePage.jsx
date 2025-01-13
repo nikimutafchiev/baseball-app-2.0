@@ -66,6 +66,7 @@ export default function StatsGuidePage() {
 							<div>
 								An extra-base hit is defined as any hit that is not a single, meaning doubles, triples and home runs are all considered extra-base hits.</div>
 						),
+						formula: "2B + 3B + HR",
 						seeAlso: ["2B", "3B", "HR"]
 					},
 					{
@@ -250,6 +251,35 @@ export default function StatsGuidePage() {
 						formula: "PO + A + E",
 						seeAlso: ["PO", "A", "E"]
 					},
+					{
+						abbreviation: "SF",
+						name: "Sacrifice fly",
+						description: (
+							<div>
+								A sacrifice fly occurs when a batter hits a fly-ball out to the outfield or foul territory that allows a runner to score. The batter is given credit for an RBI.</div>
+						),
+					},
+					{
+						abbreviation: "BABIP",
+						name: "Batting average on balls in play",
+						description: (
+							<div>
+								In theory, a defender's total chances represent the number of opportunities he has to record an out.</div>
+						),
+						formula: "(H - HR)/(AB - SO - HR + SF)",
+						seeAlso: ["H", "HR", "AB", "SO", "SF"]
+					},
+					{
+						abbreviation: "RC",
+						name: "Runs created",
+						description: (
+							<div>
+								Runs Created estimates a player's offensive contribution in terms of total runs. It combines a player's ability to get on base with his ability to hit for extra bases.</div>
+						),
+						formula: "TB x (H + BB) / (AB + BB)",
+						seeAlso: ["TB", "H", "BB", "AB"]
+					},
+
 
 
 				]
@@ -278,7 +308,7 @@ export default function StatsGuidePage() {
 
 									<div className="font-semibold">See also: </div>
 									<div className="flex flex-row flex-wrap gap-2">
-										{stat.seeAlso.map((a) => <a onClick={() => {
+										{stat.seeAlso.sort((a, b) => a.localeCompare(b)).map((a) => <a onClick={() => {
 											const element = document.getElementById(`guide-${a}`);
 											if (element) {
 												element.style.animation = "none";

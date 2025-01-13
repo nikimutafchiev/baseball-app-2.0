@@ -9,14 +9,14 @@ route_bp = Blueprint("routes",__name__)
 
 
     
-def merge_dicts(srcDict,destDict):
+def merge_dicts(srcDict:dict,destDict:dict):
     for key in srcDict:
         if key in destDict:
             destDict[key] = destDict[key] + srcDict[key]
         else:
             destDict.update({key: srcDict[key]})
 
-def get_stats(situations_list,player_id):
+def get_stats(situations_list:list,player_id:int):
     res = {
         "PA":0,
         "H":0,
@@ -42,30 +42,28 @@ def get_stats(situations_list,player_id):
         "E":0,
         "TC":0,
         "FIP":0,
-        "SB":0
+        "SB":0,
+        "SF":0,
+        "CS":0,
+        "BABIP":0,
+        "RC":0
     }
     #TODO Да се оптимизира TB,XBH да се смятат накрая
     for situation in situations_list:
         if situation.data["batter"]["player"]["id"] == player_id :
+            
             if situation.data["situationCategory"] != "":
                 res["PA"] += 1
             if situation.data["situationCategory"] == "hit":
                 res["H"] += 1
                 if situation.data["situation"] == "Single":
                     res["1B"] +=1
-                    res["TB"]+=1
                 elif situation.data["situation"] == "Double":
                     res["2B"] +=1
-                    res["TB"] +=2
-                    res["XBH"] +=1
                 elif situation.data["situation"] == "Triple":
                     res["3B"] +=1
-                    res["TB"] +=3
-                    res["XBH"] +=1
                 elif situation.data["situation"] == "Homerun":
                     res["HR"] +=1
-                    res["TB"] +=4
-                    res["XBH"] +=1
             if situation.data["situationCategory"] == "walk":
                 res["BB"] +=1
                 if situation.data["situation"] == "Intentional walk":
@@ -78,7 +76,8 @@ def get_stats(situations_list,player_id):
                 res["AB"] +=1
             if situation.data["situationCategory"] == "error":
                 res["ROE"] +=1
-                
+            if situation.data["situationCategory"] == "sacrifice flyout":
+                res["SF"]+=1 
             for runner_situation in situation.data["runners"]:
                 if runner_situation["finalBase"] == "Home":
                     res["RBI"] += 1
@@ -86,8 +85,10 @@ def get_stats(situations_list,player_id):
             if runner_situation["player"]["player"]["id"] == player_id:
                 if runner_situation["finalBase"] == "Home":
                     res["R"] += 1
-                if runner_situation["situation"] == 'SB':
+                if runner_situation["situationCategory"] == 'stolen base':
                     res["SB"] +=1
+                if runner_situation["situationCategory"] == 'caught stealing':
+                    res["CS"]+=1
             if runner_situation.get("outs"):
                 for out in runner_situation["outs"]:
                     if player_id == out["player"]["id"]:
@@ -109,6 +110,8 @@ def get_stats(situations_list,player_id):
         for error in situation.data["defense"]["errors"]:
             if player_id == error["player"]["id"]:
                 res["E"]+=1
+    res["XBH"] += res["2B"]+res["3B"]+res["HR"]
+    res["TB"] += res["1B"]+2*res["2B"]+3*res['3B']+4*res["HR"]
     res["TC"] += res["PO"]+res["A"]+res["E"]
     return res                    
 
@@ -121,6 +124,8 @@ def get_stats(situations_list,player_id):
 @route_bp.route("/player",methods=['POST'])
 def add_player():
     data = request.json
+    if data.get("firstName") == None or data.get("lastName") == None or data.get("dateOfBirth") == None:
+        return {"message":"Invalid data type"},400
     new_player = Player(first_name=data['firstName'],last_name=data['lastName'],date_of_birth= date(int(data['dateOfBirth']["year"]),int(data['dateOfBirth']["month"]),int(data['dateOfBirth']["day"])), height=data['height'],weigth = data['weigth'], throwing_arm = data['throwingArm'], batting_side=data["battingSide"], gender=data['gender'],country=data['country'],image=data['image'])
     db.session.add(new_player)
     db.session.commit()
@@ -869,7 +874,9 @@ def get_player_stats(player_id):
     res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
     res["SLG"] = res["TB"]/res["AB"] if res["AB"] != 0 else 0
     res["OPS"] = (res["OBP"]+res["SLG"])/2
-    res["FIP"] += (res["PO"]+res["A"])/res['TC'] if res["TC"] != 0 else 0
+    res["FIP"] = (res["PO"]+res["A"])/res['TC'] if res["TC"] != 0 else 0
+    res["BABIP"] = (res["H"] - res["HR"])/(res["AB"] - res["SO"] - res["HR"] + res["SF"]) if res["AB"] - res["SO"] - res["HR"] + res["SF"] != 0 else 0
+    res["RC"] = res["TB"]*(res["H"] + res["BB"]) / (res["AB"] + res["BB"]) if res["AB"] + res["BB"] != 0 else 0
     return res
 
 
@@ -1002,17 +1009,19 @@ def get_team_stats(team_id):
     res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
     res["SLG"] = (res["1B"] + 2*res["2B"] + 3*res["3B"] + 4*res["HR"])/res["AB"] if res["AB"] != 0 else 0
     res["OPS"] = (res["OBP"]+res["SLG"])/2
-    res["FIP"] += (res["PO"]+res["A"])/res['TC'] if res["TC"] != 0 else 0
+    res["FIP"] = (res["PO"]+res["A"])/res['TC'] if res["TC"] != 0 else 0
     for game in games_stats:
         game["stats"]["AVG"] = game["stats"]["H"]/game["stats"]["AB"] if game["stats"]["AB"] != 0 else 0
         game["stats"]["OBP"] = (game["stats"]["H"]+game["stats"]["BB"]+game["stats"]["HBP"])/game["stats"]["PA"] if game["stats"]["PA"] != 0 else 0
         game["stats"]["SLG"] = game["stats"]["TB"]/game["stats"]["AB"] if game["stats"]["AB"] != 0 else 0
         game["stats"]["OPS"] = (game["stats"]["OBP"]+game["stats"]["SLG"])/2
+        game["stats"]["FIP"] = (game["stats"]["PO"]+game["stats"]["A"])/game["stats"]['TC'] if game["stats"]["TC"] != 0 else 0
     for player in players_stats:
         player["stats"]["AVG"] = player["stats"]["H"]/player["stats"]["AB"] if player["stats"]["AB"] != 0 else 0
         player["stats"]["OBP"] = (player["stats"]["H"]+player["stats"]["BB"]+player["stats"]["HBP"])/player["stats"]["PA"] if player["stats"]["PA"] != 0 else 0
         player["stats"]["SLG"] = player["stats"]["TB"]/player["stats"]["AB"] if player["stats"]["AB"] != 0 else 0 
-        player["stats"]["OPS"] = (player["stats"]["OBP"]+player["stats"]["SLG"])/2   
+        player["stats"]["OPS"] = (player["stats"]["OBP"]+player["stats"]["SLG"])/2
+        player["stats"]["FIP"] = (player["stats"]["PO"]+player["stats"]["A"])/player["stats"]['TC'] if player["stats"]["TC"] != 0 else 0   
     
     return {"stats":res,"games_stats":games_stats,"players_stats":players_stats}
 
@@ -1029,12 +1038,14 @@ def get_tournament_stats(tournament_id):
             for player in team_tournament.players:
                 player_stats  = {
                     }
+                merge_dicts(get_stats([],None),player_stats)
                 for gameTeam in team_tournament.games:
                     if game_id and gameTeam.game_id == game_id and not years or years and gameTeam.game.start_time.year in years and not game_id or years and gameTeam.game.start_time.year in years and game_id and gameTeam.game_id == game_id or not game_id and not years:
                         merge_dicts(get_stats(gameTeam.game.situations,player.player.id),player_stats)
                 player_stats["AVG"] = player_stats["H"]/player_stats["AB"] if player_stats["AB"] != 0 else 0
                 player_stats["OBP"] = (player_stats["H"]+player_stats["BB"]+player_stats["HBP"])/player_stats["PA"] if player_stats["PA"] != 0 else 0
                 player_stats["SLG"] = (player_stats["1B"] + 2*player_stats["2B"] + 3*player_stats["3B"] + 4*player_stats["HR"])/player_stats["AB"] if player_stats["AB"] != 0 else 0
+                player_stats["FIP"] = (player_stats["PO"]+player_stats["A"])/player_stats['TC'] if player_stats["TC"] != 0 else 0
                 res.append({
                     "id":player.id,
                     "teamName": team_tournament.team.name,
@@ -1108,9 +1119,5 @@ def get_tournament_ranking(tournament_id):
             "teamImage":team_tournament.team.image,
             "stats":team_stats})
                                 
-                    
-    
-    # res["OBP"] = (res["H"]+res["BB"]+res["HBP"])/res["PA"] if res["PA"] != 0 else 0
-    # res["SLG"] = (res["1B"] + 2*res["2B"] + 3*res["3B"] + 4*res["HR"])/res["AB"] if res["AB"] != 0 else 0
     return res
 

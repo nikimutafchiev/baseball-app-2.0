@@ -40,6 +40,7 @@ export default function ProfileToDoGames() {
                     Score game
                 </button>
             </div>)}
+            {toDoGames.data && toDoGames.data.length == 0 && <div className="text-lg">No games to do!</div>}
         </div>
     </div>)
 }
