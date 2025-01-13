@@ -1,5 +1,5 @@
 import { BiBaseball } from "react-icons/bi";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import { IoNotificationsOutline, IoReorderThreeOutline } from "react-icons/io5";
 import { useAuth } from "../../AuthContext";
@@ -31,6 +31,7 @@ export default function NavBar() {
 		{ name: "Guide", path: "/guide", logo: <TbNotebook size={27} /> },
 		{ name: "Profile", path: "/profile/info", logo: <RiUserLine size={27} /> },
 	];
+	const location = useLocation();
 	const { logout, token } = useAuth();
 	const [isExtendClicked, setIsExtendClicked] = useState(false);
 	return (
@@ -50,7 +51,7 @@ export default function NavBar() {
 						<div className="lg:flex lg:flex-row lg:gap-1 lg:text-base hidden">
 							{pages.map((page) => (
 								<Link
-									className=" rounded cursor-pointer content-center px-4 py-2 hover:bg-white hover:text-primary_2 duration-200 ease-in-out font-semibold"
+									className={`${location.pathname === page.path ? "bg-white text-primary_2" : "hover:bg-white hover:text-primary_2"} rounded cursor-pointer content-center px-4 py-2 hover:bg-white hover:text-primary_2 duration-200 ease-in-out font-semibold`}
 									to={page.path}
 								>
 									{page.name}
