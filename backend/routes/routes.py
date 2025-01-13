@@ -1,7 +1,7 @@
 from models.models import Player, Team, TeamTournament,TeamTournamentPlayer, Tournament, Game, User, UserGame, GameTeam,GameTeamTeamTournamentPlayer, Situation
 from models.enums import HomeAway, GameStatuses
 from flask import request, Blueprint
-from flask_jwt_extended import  create_access_token
+from flask_jwt_extended import  create_access_token,jwt_required
 from datetime import date,datetime,timezone
 from models.models import db
 import bcrypt
@@ -124,8 +124,10 @@ def get_stats(situations_list:list,player_id:int):
 @route_bp.route("/player",methods=['POST'])
 def add_player():
     data = request.json
-    if data.get("firstName") == None or data.get("lastName") == None or data.get("dateOfBirth") == None:
+
+    if "firstName" not in data or "lastName" not in data or  "dateOfBirth" not in data or "height" not in data or "weigth" not in data or "throwingArm" not in data or"battingSide" not in data or "gender" not in data or "country" not in data or "image" not in data:
         return {"message":"Invalid data type"},400
+    
     new_player = Player(first_name=data['firstName'],last_name=data['lastName'],date_of_birth= date(int(data['dateOfBirth']["year"]),int(data['dateOfBirth']["month"]),int(data['dateOfBirth']["day"])), height=data['height'],weigth = data['weigth'], throwing_arm = data['throwingArm'], batting_side=data["battingSide"], gender=data['gender'],country=data['country'],image=data['image'])
     db.session.add(new_player)
     db.session.commit()
@@ -170,6 +172,8 @@ def get_player_by_id(player_id):
 @route_bp.route("/team",methods=['POST'])
 def add_team():
     data = request.json
+    if "name" not in data or "tlc" not in data or "address" not in data or "contact" not in data or "socialMedia" not in data or "manager" not in data or "headCoach" not in data or "image" not in data:
+        return {"message":"Invalid data"},400
     new_team = Team(name=data['name'],tlc=data['tlc'],address=data['address'],contact=data['contact'],social_media=data['socialMedia'],manager=data['manager'],head_coach=data['headCoach'],image=data["image"])
     db.session.add(new_team)
     db.session.commit()
@@ -306,9 +310,9 @@ def login():
     password = data['password']
 
     user = User.query.filter_by(username=username).first()
-
+    #str ->422
     if user and bcrypt.checkpw(password.encode('utf-8'),user.password):
-        access_token = create_access_token(identity=user.id,additional_claims={"user":{"id":user.id,"username":user.username,"firstName":user.first_name,"lastName":user.last_name,"role":user.role.value}})
+        access_token = create_access_token(identity=str(user.id),additional_claims={"user":{"id":user.id,"username":user.username,"firstName":user.first_name,"lastName":user.last_name,"role":user.role.value}})
         return {'access_token': access_token}
     else:
         return {},400
@@ -327,6 +331,7 @@ def is_logged():
 
 
 @route_bp.route("/tournament_teams/",methods=["POST"])
+@jwt_required()
 def add_team_to_tournament():
     query = request.args.to_dict()
     team = Team.query.get(query["team_id"])
@@ -863,6 +868,7 @@ def get_player_stats(player_id):
     player = Player.query.get(player_id)
 
     res = {}
+    merge_dicts(get_stats([],None),res)
     for team_tournament in player.teams_tournaments:
         if (team_ids and team_tournament.team_tournament.team_id in team_ids and not tournament_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids and not team_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids and team_ids and team_tournament.team_tournament.team_id in team_ids)or (not team_ids and not tournament_ids):
            for gameTeam in team_tournament.team_tournament.games:
