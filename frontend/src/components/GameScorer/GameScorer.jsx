@@ -685,7 +685,7 @@ export default function GameScorer() {
                 // if (situation == '')
                 if (Object.keys(currentSituation).length == 0)
                     addSituation(batter, "", "");
-                setRunnersSituations([...runnersSituations, { player: player, situationCategory: situationCategory, situation: situation, finalBase: finalBase, isOut: isOut }]);
+                setRunnersSituations([...runnersSituations, { player: player, situationCategory: situationCategory, situation: situation, finalBase: finalBase, isOut: isOut, defense: { outs: outs.map((out) => defense[positionNumbers[out]]), assists: assists.map((assist) => defense[positionNumbers[assist]]), errors: errors.map((error) => defense[positionNumbers[error]]) } }]);
                 const newOffense = { ...offense };
                 console.log(newOffense);
                 console.log(finalBase);
