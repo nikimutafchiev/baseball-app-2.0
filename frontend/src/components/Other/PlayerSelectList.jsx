@@ -11,7 +11,7 @@ export default function PlayerSelectList(props) {
             <TextField value={searchInput} onChange={(e) => setSearchInput(e.target.value)} label={<div className="flex flex-row gap-1 items-center"><FiSearch /><div>Search</div></div>} className="bg-white w-1/4 rounded" />
             <button className="" onClick={() => props.close()}><RiCloseCircleLine size={30} color="gray" /></button>
         </div>
-        {props.players.filter((player) => player.firstName.toLowerCase().includes(searchInput.toLowerCase()) || player.lastName.toLowerCase().includes(searchInput.toLowerCase())).map((player) => {
+        {props.players.filter((player) => (player.firstName + " " + player.lastName).toLowerCase().includes(searchInput.toLowerCase())).map((player) => {
             if (props.rosterSelect == true)
                 return <PlayerRosterSelect player={player} close={() => { props.close() }} />
             else

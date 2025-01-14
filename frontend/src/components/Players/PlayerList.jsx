@@ -24,7 +24,7 @@ export default function PlayerList(props) {
                             <hr className="w-full mt-2 border-t-2 border-gray-800"></hr>
                         </div>
                         <div className="flex flex-row flex-wrap  gap-6 py-2">
-                            {letter.value.map((player) =>
+                            {letter.value.sort((a, b) => a.lastName.localeCompare(b.lastName)).map((player) =>
                                 <Player {...player} />)
                             }
                         </div>
