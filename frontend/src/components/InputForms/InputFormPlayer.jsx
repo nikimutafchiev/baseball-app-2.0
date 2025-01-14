@@ -7,7 +7,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import convertToBase64 from "../../global/ImageToBase64"
+import { useAuth } from "../../AuthContext";
+
 export default function InputFormPlayer(props) {
+    const { token } = useAuth();
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [date, setDate] = useState(dayjs());
@@ -18,8 +21,6 @@ export default function InputFormPlayer(props) {
     const [gender, setGender] = useState(null);
     const [country, setCountry] = useState("");
     const [isSubmitted, setIsSubmitted] = useState(false);
-
-
 
     const arms = [{
         value: "LEFTY",
@@ -90,6 +91,7 @@ export default function InputFormPlayer(props) {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     firstName: firstName,
