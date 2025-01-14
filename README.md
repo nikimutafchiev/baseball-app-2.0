@@ -12,4 +12,5 @@ __Latest version of python__ - [Python download](https://www.python.org/download
 
 ## Run backend
 1. `cd backend`
-2. `py app.py`
+2. `py -m pip install -r requirements.txt`
+3. `py app.py`
