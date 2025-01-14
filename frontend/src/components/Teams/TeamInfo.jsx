@@ -191,7 +191,7 @@ export default function TeamInfo() {
 									<IoReorderThree size={20} />
 								</button>
 								<div className="w-full flex flex-col items-center gap-4">
-									<img src="https://placehold.co/150x150"></img>
+									<img className="size-[150px]" src={team.data.image ? team.data.image : "https://placehold.co/150x150"}></img>
 									<h3 className="text-xl font-semibold">{team.data.name}</h3>
 								</div>
 								<hr className="border-t-2 w-full"></hr>
