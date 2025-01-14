@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
                 body: JSON.stringify(userData),
             });
             const res = await response.json();
-            if (response.status == 200) {
+            if (response.ok) {
                 console.log(response.status);
                 setToken(res.access_token);
                 setUser(jwtDecode(res.access_token).user);
@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
                     navigate("/");
                 return 0;
             }
-            if (response.status == 400) {
+            else {
                 if (user)
                     logout();
                 return -1;
