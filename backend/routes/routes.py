@@ -132,7 +132,7 @@ def add_player():
     new_player = Player(first_name=data['firstName'],last_name=data['lastName'],date_of_birth= date(int(data['dateOfBirth']["year"]),int(data['dateOfBirth']["month"]),int(data['dateOfBirth']["day"])), height=data['height'],weigth = data['weigth'], throwing_arm = data['throwingArm'], batting_side=data["battingSide"], gender=data['gender'],country=data['country'],image=data['image'])
     db.session.add(new_player)
     db.session.commit()
-    return "Successfully added player",200
+    return "Successfully added player",201
 
 
 @route_bp.route("/players",methods=['GET'])
@@ -178,7 +178,7 @@ def add_team():
     new_team = Team(name=data['name'],tlc=data['tlc'],address=data['address'],contact=data['contact'],social_media=data['socialMedia'],manager=data['manager'],head_coach=data['headCoach'],image=data["image"])
     db.session.add(new_team)
     db.session.commit()
-    return "Successfully added team",200
+    return "Successfully added team",201
 
 @route_bp.route("/teams",methods=['GET'])
 def get_teams():
@@ -221,7 +221,7 @@ def add_tournament():
     new_tournament = Tournament(name=data['name'],place=data['place'],start_date=date(data['startDate']['year'], data['startDate']['month'],data['startDate']['date'] ),end_date=date(data['endDate']['year'],data['endDate']['month'],data['endDate']['date']),image=data['image'])
     db.session.add(new_tournament)
     db.session.commit()
-    return "Successfully added tournament",200
+    return "Successfully added tournament",201
 
 
 @route_bp.route("/tournaments",methods=['GET'])
@@ -270,7 +270,7 @@ def add_game_to_tournament():
     away_game_association = GameTeam(game=new_game,team_tournament= TeamTournament.query.filter_by(team_id = data["awayTeam"]["id"],tournament_id = tournament.id).first(),home_away = HomeAway.AWAY)
     db.session.add(away_game_association)
     db.session.commit()
-    return "Successfully added game",200
+    return "Successfully added game",201
 
 @route_bp.route("/tournament_games/",methods=['GET'])
 def get_games_by_tournament():
@@ -312,7 +312,7 @@ def signup():
     new_user = User(username=data['username'],password=hash,first_name=data['firstName'], last_name= data['lastName'], role=data['role'])
     db.session.add(new_user)
     db.session.commit()
-    return ""
+    return "",201
 
 @route_bp.route("/login",methods=["POST"])
 def login():
@@ -357,7 +357,7 @@ def add_team_to_tournament():
     team_tournament_association = TeamTournament(team=team,tournament=tournament)
     db.session.add(team_tournament_association)
     db.session.commit()
-    return ""
+    return "",201
 
 
 @route_bp.route("/tournament_teams/",methods=["GET"])
@@ -587,7 +587,7 @@ def add_player_to_team_tournament():
     teamTournamentPlayerAssociation = TeamTournamentPlayer(team_tournament=teamTournament, player=player, uniform_number = int(data["uniformNumber"]))
     db.session.add(teamTournamentPlayerAssociation)
     db.session.commit()
-    return ""
+    return "",201
 
 @route_bp.route("/team_tournament/roster/",methods=["GET"])
 def get_players_by_team_tournament():
@@ -726,7 +726,7 @@ def add_player_to_game_roster():
     db.session.add(association)
     db.session.commit()
 
-    return ""
+    return "",201
 
 @route_bp.route("/game/<int:game_id>/situation",methods=["POST"])
 def add_game_situation(game_id):
@@ -737,7 +737,7 @@ def add_game_situation(game_id):
     db.session.add(situation)
     db.session.commit()
 
-    return "Succefully added situation"
+    return "Succefully added situation",201
 
 @route_bp.route("/game/<int:game_id>/situations", methods=["GET"])
 def get_game_situations(game_id):
