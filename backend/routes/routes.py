@@ -122,6 +122,7 @@ def get_stats(situations_list:list,player_id:int):
 
 
 @route_bp.route("/player",methods=['POST'])
+@jwt_required()
 def add_player():
     data = request.json
 
@@ -215,6 +216,8 @@ def get_team_by_id(team_id):
 @route_bp.route("/tournament",methods=['POST'])
 def add_tournament():
     data = request.json
+    if "name" not in data or "place" not in data or "startDate" not in data or "endDate" not in data or "image" not in data:
+        return {"message":"Invalid data"},400
     new_tournament = Tournament(name=data['name'],place=data['place'],start_date=date(data['startDate']['year'], data['startDate']['month'],data['startDate']['date'] ),end_date=date(data['endDate']['year'],data['endDate']['month'],data['endDate']['date']),image=data['image'])
     db.session.add(new_tournament)
     db.session.commit()
@@ -252,6 +255,10 @@ def get_tournament_by_id(tournament_id):
 def add_game_to_tournament():
     query = request.args.to_dict()
     data = request.json
+
+    if "tournament_id" not in query or "startTime" not in data or "homeTeam" not in data or "awayTeam" not in data or "venue" not in data or "venueLink" not in data:
+        return {"message":"Invalid data or query parameters"},400
+    
     tournament = Tournament.query.get(query["tournament_id"])
     new_game = Game(start_time = datetime(year=data['startTime']["year"],month=data['startTime']["month"],day=data['startTime']["day"],hour=data['startTime']["hour"],minute=data['startTime']["minutes"],tzinfo=timezone.utc),tournament_id = int(query["tournament_id"]),venue=data["venue"],venue_link=data['venueLink'])
     db.session.add(new_game)
@@ -268,6 +275,8 @@ def add_game_to_tournament():
 @route_bp.route("/tournament_games/",methods=['GET'])
 def get_games_by_tournament():
     query = request.args.to_dict()
+    if "tournament_id" not in query:
+        return {"message":"Invalid query parameters"},400
     tournament = Tournament.query.get(query["tournament_id"])
     res = []
     for game in tournament.games:
@@ -292,6 +301,8 @@ def get_games_by_tournament():
 @route_bp.route("/signup", methods=["POST"])
 def signup():
     data = request.json    
+    if "password" not in data or "username" not in data or "firstName" not in data or "lastName" not in data or "role" not in data:
+        return {"message":"Invalid data"},400
     bytes = data["password"].encode('utf-8') 
     salt = bcrypt.gensalt() 
     hash = bcrypt.hashpw(bytes, salt) 
@@ -306,6 +317,8 @@ def signup():
 @route_bp.route("/login",methods=["POST"])
 def login():
     data = request.json
+    if "username" not in data or "password" not in data:
+        return {"message":"Invalid data"},400
     username = data['username']
     password = data['password']
 
@@ -320,6 +333,8 @@ def login():
 @route_bp.route("/is_logged/",methods=["GET"])
 def is_logged():
     query = request.args.to_dict()
+    if "username" not in query or "password" not in query:
+        return {"message":"Invalid query parameters"},400
     username = query['username']
     password = query['password']
     user = User.query.filter_by(username=username).first()
@@ -334,6 +349,8 @@ def is_logged():
 @jwt_required()
 def add_team_to_tournament():
     query = request.args.to_dict()
+    if "team_id" not in query or "tournament_id" not in query:
+        return {"message":"Invalid query params"},400
     team = Team.query.get(query["team_id"])
     tournament = Tournament.query.get(query["tournament_id"])
 
@@ -346,6 +363,8 @@ def add_team_to_tournament():
 @route_bp.route("/tournament_teams/",methods=["GET"])
 def get_teams_by_tournament():
     query = request.args.to_dict()
+    if "tournament_id" not in query:
+        return {"message":"Invalid query parameters"},400
     tournament = Tournament.query.get(query["tournament_id"])
     return [ {
         'id':association.team.id,
@@ -362,6 +381,8 @@ def get_teams_by_tournament():
 @route_bp.route("/game/assign/", methods=["POST"])
 def assign_game():
     query = request.args.to_dict()
+    if "game_id" not in query or "username" not in query:
+        return {"message":"Invalid query paramters"},400
     game = Game.query.get(query["game_id"])
     user = User.query.filter_by(username=query["username"]).first()
     if not user:
@@ -387,6 +408,8 @@ def assign_game():
 @route_bp.route("/assigned_games/",methods=["GET"])
 def get_assigned_games():
     query = request.args.to_dict()
+    if "user_id" not in query:
+        return {"message":"Invalid query parameters"},400
     userGames = UserGame.query.filter_by(user_id = query["user_id"]).all()
     res=[]
     for userGame in userGames:
@@ -414,6 +437,8 @@ def get_assigned_games():
 @route_bp.route("/game/to_do/", methods=["POST"])
 def to_do_game():
     query = request.args.to_dict()
+    if "user_id" not in query or "game_id" not in query:
+        return {"message":"Invalid query parameters"},400
     game = Game.query.get(query["game_id"])
     user = User.query.get(query["user_id"])
     gameUser = UserGame.query.filter_by(game_id = query["game_id"],user_id = query["user_id"]).first()
@@ -430,6 +455,8 @@ def to_do_game():
 @route_bp.route("/to_do_games/",methods=["GET"])
 def get_to_do_games():
     query = request.args.to_dict()
+    if "user_id" not in query:
+        return {"message":"Invalid query parameters"},400
     userGames = UserGame.query.filter_by(user_id = query["user_id"]).all()
     res=[]
     for userGame in userGames:
@@ -455,6 +482,8 @@ def get_to_do_games():
 @route_bp.route("/game/like/",methods=["POST"])
 def like_game():
     query = request.args.to_dict()
+    if "game_id" not in query or "user_id" not in query:
+        return {"message":"Invalid query parameters"},400
     game = Game.query.get(query["game_id"])
     user = User.query.get(query["user_id"])
     gameUser = UserGame.query.filter_by(game_id = query["game_id"],user_id = query["user_id"]).first()
@@ -470,6 +499,8 @@ def like_game():
 @route_bp.route("/liked_games/",methods=["GET"])
 def get_liked_games():
     query = request.args.to_dict()
+    if "user_id" not in query:
+        return {"message":"Invalid query parameters"},400
     userGames = UserGame.query.filter_by(user_id = query["user_id"]).all()
     res=[]
     for userGame in userGames:
@@ -495,6 +526,8 @@ def get_liked_games():
 @route_bp.route("/game/liked/", methods=["GET"])
 def is_game_liked():
     query = request.args.to_dict()
+    if "user_id" not in query or "game_id" not in query:
+        return {"message":"Invalid query parameters"},400
     liked_game = UserGame.query.filter_by(game_id = query["game_id"],user_id = query["user_id"]).first()
     return {"isLiked": liked_game.is_liked  if liked_game else False}
 
@@ -544,6 +577,10 @@ def get_game_by_id(game_id):
 def add_player_to_team_tournament():
     query = request.args.to_dict()
     data =request.json
+    if "team_id" not in query or "tournament_id" not in query:
+        return {"message":"Invalid query parameters"},400
+    if "uniformNumber" not in data:
+        return {"message":"Invalid data"},400
     teamTournament = TeamTournament.query.filter_by(team_id = query["team_id"],tournament_id = query["tournament_id"]).first()
     player = Player.query.get(query["player_id"])
 
@@ -555,6 +592,8 @@ def add_player_to_team_tournament():
 @route_bp.route("/team_tournament/roster/",methods=["GET"])
 def get_players_by_team_tournament():
     query = request.args.to_dict()
+    if "team_id" not in query or "tournament_id" not in query:
+        return {"message":"Invalid query parameters"},400
     teamTournament = TeamTournament.query.filter_by(team_id = query["team_id"],tournament_id = query["tournament_id"]).first()
     res = []
     for association in teamTournament.players:
@@ -573,6 +612,8 @@ def get_players_by_team_tournament():
 @route_bp.route("/tournament/taken_players/",methods=["GET"])
 def get_taken_players():
     query = request.args.to_dict()
+    if "tournament_id" not in query:
+        return {"message":"Invalid query parameters"},400
     teams_tournament = TeamTournament.query.filter_by(tournament_id = query["tournament_id"]).all()
     res = []
     for teams in teams_tournament:
@@ -583,6 +624,8 @@ def get_taken_players():
 @route_bp.route("/schedule/",methods=["GET"])
 def get_games_by_date():
     query = request.args.to_dict()
+    if "day" not in query or "month" not in query or "year" not in query:
+        return {"message":"Invalid query parameters"},400
     day,month,year = query["day"],query["month"],query["year"]
     games = Game.query.all()
     res = []
@@ -614,6 +657,8 @@ def get_games_by_date():
 @route_bp.route("/game/team/roster/",methods=["GET"])
 def get_game_team_roster():
     query = request.args.to_dict()
+    if "game_id" not in query or "home_away" not in query:
+        return {"message":"Invalid query parameters"},400
     game_team = GameTeam.query.filter_by(game_id=query["game_id"],home_away=query["home_away"]).first()
     res=[]
     for player in game_team.players:
@@ -671,6 +716,8 @@ def get_game_team_roster():
 @route_bp.route("/game/team/roster/player", methods=["POST"])
 def add_player_to_game_roster():
     data = request.json
+    if "game_id" not in data or "tournament_id" not in data or "team_id" not in data or "home_away" not in data or"position" not in data or "battingOrder" not in data:
+        return {"message":"Invalid data"},400
     gameTeam = GameTeam.query.filter_by(game_id=data["game_id"],home_away=data["home_away"]).first()
     teamTournament = TeamTournament.query.filter_by(team_id=data["team_id"],tournament_id = data["tournament_id"]).first()
     teamTournamentPlayer = TeamTournamentPlayer.query.filter_by(team_tournament_id = teamTournament.id, player_id = data["player_id"]).first()
@@ -684,6 +731,8 @@ def add_player_to_game_roster():
 @route_bp.route("/game/<int:game_id>/situation",methods=["POST"])
 def add_game_situation(game_id):
     data = request.json
+    if "data" not in data:
+        return {"message":"Invalid data"},400
     situation = Situation(data = data["data"],game_id = game_id)
     db.session.add(situation)
     db.session.commit()
@@ -726,6 +775,10 @@ def change_inning(game_id):
 def change_score():
     data = request.json
     query = request.args.to_dict()
+    if "game_id" not in query or "home_away" not in query:
+        return {"message":"Invalid query parameters"},400
+    if "points" not in data:
+        return {"message":"Invalid data"},400
     game_team = GameTeam.query.filter_by(game_id=query["game_id"],home_away=query["home_away"]).first()
     game_team.result += data["points"]
     db.session.commit()
@@ -734,6 +787,8 @@ def change_score():
 @route_bp.route("/game/<int:game_id>/change_batting_turn",methods=["POST"])
 def change_batting_order(game_id):
     data = request.json
+    if "homeAway" not in data or "battingTurn" not in data:
+        return {"message":"Invalid data"},400
     home_away = data["homeAway"]
     game = Game.query.get(game_id)
     if home_away == "HOME":
@@ -746,8 +801,10 @@ def change_batting_order(game_id):
 @route_bp.route("/game/<int:game_id>/change_outs", methods=["POST"])
 def change_outs(game_id):
     data = request.json
+    if "outs" not in data:
+        return {"message":"Invalid data"},400
     game = Game.query.get(game_id)
-
+    
     game.outs = data["outs"]
     db.session.commit()
     return ""
@@ -756,6 +813,10 @@ def change_outs(game_id):
 def change_lob():
     data = request.json
     query = request.args.to_dict()
+    if "game_id" not in query or "home_away" not in query:
+        return {"message":"Invalid query parameters"},400
+    if "lob" not in data:
+        return {"message":"Invalid data"},400
     game_team = GameTeam.query.filter_by(game_id=query["game_id"],home_away=query["home_away"]).first()
     game_team.lob = data["lob"]
 
@@ -766,6 +827,10 @@ def change_lob():
 def change_hits():
     data = request.json
     query = request.args.to_dict()
+    if "game_id" not in query or "home_away" not in query:
+        return {"message":"Invalid query parameters"},400
+    if "hits" not in data:
+         return {"message":"Invalid data"},400
     game_team = GameTeam.query.filter_by(game_id=query["game_id"],home_away=query["home_away"]).first()
     game_team.hits = data["hits"]
 
@@ -776,6 +841,10 @@ def change_hits():
 def change_errors():
     data = request.json
     query = request.args.to_dict()
+    if "game_id" not in query or "home_away" not in query:
+         return {"message":"Invalid query parameters"},400
+    if "errors" not in data:
+         return {"message":"Invalid data"},400
     game_team = GameTeam.query.filter_by(game_id=query["game_id"],home_away=query["home_away"]).first()
     game_team.errors = data["errors"]
 
@@ -785,6 +854,8 @@ def change_errors():
 @route_bp.route("/game/<int:game_id>/change_points_by_inning", methods=["POST"])
 def change_points_by_inning(game_id):
     data = request.json
+    if "points" not in data:
+         return {"message":"Invalid data"},400
     game = Game.query.get(game_id)
     game.pointsByInning = data["points"]
     db.session.commit()
@@ -800,6 +871,8 @@ def start_game(game_id):
 @route_bp.route("/game/<int:game_id>/change_runners", methods=["POST"])
 def change_runners(game_id):
     data = request.json
+    if "runners" not in data:
+         return {"message":"Invalid data"},400
     game = Game.query.get(game_id)
     game.runners = data["runners"]
     db.session.commit()
