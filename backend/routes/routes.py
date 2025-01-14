@@ -134,6 +134,16 @@ def add_player():
     db.session.commit()
     return "Successfully added player",201
 
+@route_bp.route("/player/<int:player_id>",methods=["PATCH"])
+@jwt_required()
+def edit_player(player_id):
+    data = request.json
+    player = Player.query.get(player_id)
+    player.country = data["country"]
+    db.session.commit()
+
+    return "Successfully edited player"
+
 
 @route_bp.route("/players",methods=['GET'])
 def get_players():
@@ -836,7 +846,7 @@ def change_hits():
 
     db.session.commit()
     return ""
-
+#TODO PATCH
 @route_bp.route("/game_team/change_errors/", methods=["POST"])
 def change_errors():
     data = request.json

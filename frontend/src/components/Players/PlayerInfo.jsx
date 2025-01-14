@@ -21,6 +21,7 @@ import {
 	TableBody,
 	TableFooter,
 } from "@mui/material";
+import InputFormPlayer from "../InputForms/InputFormPlayer";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa"
 import useSWR from "swr";
 import PlayerSelectList from "../Other/PlayerSelectList";
@@ -168,7 +169,7 @@ export default function PlayerInfo() {
 		return res;
 	};
 	return (
-		<>
+		<div>
 			{player.data && (
 				<div className="flex flex-col md:flex-row w-full gap-8 text-white text-sm ">
 					{!isShrinked && (
@@ -1154,10 +1155,13 @@ export default function PlayerInfo() {
 								<div className="fixed inset-0 z-10 bg-black bg-opacity-50"></div>
 							)}
 						</div>
+						{isEdit && <InputFormPlayer close={() => setIsEdit(false)} isEdit={true} player={player.data ? player.data : {}} />}
+						{isEdit && <div className="fixed inset-0 z-10 bg-black bg-opacity-50" ></div>}
 					</div >
 				</div >
 			)
 			}
-		</>
+
+		</div>
 	);
 }

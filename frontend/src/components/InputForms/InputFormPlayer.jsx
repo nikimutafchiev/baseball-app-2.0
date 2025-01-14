@@ -11,15 +11,15 @@ import { useAuth } from "../../AuthContext";
 
 export default function InputFormPlayer(props) {
     const { token } = useAuth();
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [date, setDate] = useState(dayjs());
-    const [height, setHeight] = useState("");
-    const [weigth, setWeigth] = useState("");
-    const [throwingArm, setThrowingArm] = useState(null);
-    const [battingSide, setBattingSide] = useState(null);
-    const [gender, setGender] = useState(null);
-    const [country, setCountry] = useState("");
+    const [firstName, setFirstName] = useState(props.isEdit ? props.player.firstName : "");
+    const [lastName, setLastName] = useState(props.isEdit ? props.player.lastName : "");
+    const [date, setDate] = useState(props.isEdit ? dayjs(props.player.dateOfBirth) : dayjs());
+    const [height, setHeight] = useState(props.isEdit ? props.player.height : "");
+    const [weigth, setWeigth] = useState(props.isEdit ? props.player.weigth : "");
+    const [throwingArm, setThrowingArm] = useState(props.isEdit ? props.player.throwingArm : null);
+    const [battingSide, setBattingSide] = useState(props.isEdit ? props.player.battingSide : null);
+    const [gender, setGender] = useState(props.isEdit ? props.player.gender : null);
+    const [country, setCountry] = useState(props.isEdit ? props.player.country : "");
     const [isSubmitted, setIsSubmitted] = useState(false);
 
     const arms = [{
@@ -87,8 +87,8 @@ export default function InputFormPlayer(props) {
     useEffect((() => {
         if (isSubmitted) {
             const dateOfBirth = new Date(date);
-            fetch("http://localhost:6363/player", {
-                method: "POST",
+            fetch(`http://localhost:6363/player${props.isEdit ? "/" + props.player.id.toString() : ""}`, {
+                method: (props.isEdit ? "PATCH" : "POST"),
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -110,6 +110,8 @@ export default function InputFormPlayer(props) {
                     image: image
                 }),
             }).catch(() => console.log("hello"));
+            if (props.isEdit)
+                props.close();
             setFirstName("");
             setLastName("");
             setDate(dayjs());
@@ -131,7 +133,7 @@ export default function InputFormPlayer(props) {
     const errorSubmit = errorHeight || errorWeigth || firstName === "" || lastName === "" || date.year() >= dayjs().year() - 1 || date.year() <= 1920;
     const months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     return (
-        <div className=" top-2 md:top-6 fixed self-center z-20 w-11/12 md:w-8/12  bg-white rounded border-black border-[1px] drop-shadow-xl">
+        <div className=" top-2 md:top-6 fixed self-center z-20 w-11/12 md:w-8/12   bg-white rounded border-black border-[1px] drop-shadow-xl">
             <button className="absolute end-4" onClick={() => props.close()}><RiCloseCircleLine size={40} color="gray" /></button>
             <div className="w-full flex flex-col py-10 px-4">
                 <div className="w-full flex flex-col md:flex-row gap-4 sm:gap-10 md:gap-20 py-10 px-4">
@@ -156,14 +158,14 @@ export default function InputFormPlayer(props) {
                     </div>
                     <div className="py-2 flex flex-col  gap-4">
                         <div className="flex flex-row gap-2">
-                            <TextField label={<div className="text-sm">First name*</div>} variant="outlined" className="w-1/2" onChange={(e) => { const newValue = e.target.value; if (/^[a-zA-Z]*$/.test(newValue.charAt(newValue.length - 1))) setFirstName(e.target.value) }} value={firstName} size="small"></TextField>
-                            <TextField label={<div className="text-sm">Last name*</div>} variant="outlined" className="w-1/2" onChange={(e) => { const newValue = e.target.value; if (/^[a-zA-Z]*$/.test(newValue.charAt(newValue.length - 1))) setLastName(e.target.value) }} value={lastName} size="small"></TextField>
+                            <TextField disabled={props.isEdit} label={<div className="text-sm">First name*</div>} variant="outlined" className="w-1/2" onChange={(e) => { const newValue = e.target.value; if (/^[a-zA-Z]*$/.test(newValue.charAt(newValue.length - 1))) setFirstName(e.target.value) }} value={firstName} size="small"></TextField>
+                            <TextField disabled={props.isEdit} label={<div className="text-sm">Last name*</div>} variant="outlined" className="w-1/2" onChange={(e) => { const newValue = e.target.value; if (/^[a-zA-Z]*$/.test(newValue.charAt(newValue.length - 1))) setLastName(e.target.value) }} value={lastName} size="small"></TextField>
                         </div>
 
 
                         <div className=" w-4/5 flex flex-col gap-1 ">
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DatePicker value={date} shouldDisableYear={(date) => {
+                                <DatePicker disabled={props.isEdit} value={date} shouldDisableYear={(date) => {
                                     const currentYear = dayjs().year();
                                     return date.year() >= currentYear - 1;
                                 }} onChange={(newValue) => setDate(newValue)} format="DD/MM/YYYY" label="Date of birth" className="bg-white rounded" />
@@ -258,7 +260,7 @@ export default function InputFormPlayer(props) {
                 <button className={`bg-primary_2 w-1/2 self-center px-2 py-1 align-middle  text-lg font-semibold rounded ${errorSubmit ? "cursor-not-allowed bg-primary_1 text-gray-400" : "hover:bg-primary_3 text-white"}`} onClick={() => {
                     if (!errorSubmit)
                         setIsSubmitted(true);
-                }}>Submit</button>
+                }}>{props.isEdit ? "Save" : "Submit"}</button>
             </div>
 
 

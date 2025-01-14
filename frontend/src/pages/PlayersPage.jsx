@@ -22,7 +22,7 @@ export default function PlayersPage() {
                 </button>}
                 <TextField value={searchInput} onChange={(e) => setSearchInput(e.target.value)} label={<div className="flex flex-row gap-1 items-center"><FiSearch /><div>Search</div></div>} className="bg-white w-1/3 md:w-1/4 rounded" />
             </div>
-            {addClicked && <InputFormPlayer close={() => setAddClicked(false)} />}
+            {addClicked && <InputFormPlayer close={() => setAddClicked(false)} isEdit={false} />}
             {addClicked && <div className="fixed inset-0 z-10 bg-black bg-opacity-50" ></div>}
             <PlayerList players={players} searchInput={searchInput} />
         </div>)
