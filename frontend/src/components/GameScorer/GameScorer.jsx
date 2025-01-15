@@ -19,6 +19,7 @@ import GameScorerPlayByPlay from "./GameScorerPlayByPlay";
 import GameScorerSettings from "./GameScorerSettings";
 import GameScorerOutByRuleOptions from "./GameScorerOutByRuleOptions";
 import useSWR from "swr";
+import { useAuth } from "../../AuthContext";
 export default function GameScorer() {
     const { id } = useParams();
     const [situationOption, setSituationOption] = useState("");
@@ -81,6 +82,7 @@ export default function GameScorer() {
     const [runnersSituations, setRunnersSituations] = useState([]);
     const [currentSituation, setCurrentSituation] = useState({});
     const [isSituationReady, setIsSituationReady] = useState(null);
+    const { token } = useAuth();
     const nextBatter = () => {
         const newBatterTurn = battingTurn >= 9 ? 1 : battingTurn + 1;
         if (inningHalf == "UP")
@@ -91,6 +93,7 @@ export default function GameScorer() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify({
                 homeAway: inningHalf == "UP" ? "AWAY" : "HOME",
@@ -235,6 +238,7 @@ export default function GameScorer() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     outs: 0
@@ -246,6 +250,7 @@ export default function GameScorer() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     runners: { "firstBaseRunner": null, "secondBaseRunner": null, "thirdBaseRunner": null }
@@ -261,6 +266,7 @@ export default function GameScorer() {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify({
                         lob: homeLOB + Object.entries(offense).filter(([position, player]) => player !== null).length
@@ -276,6 +282,7 @@ export default function GameScorer() {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify({
                         lob: awayLOB + Object.entries(offense).filter(([position, player]) => player !== null).length
@@ -289,6 +296,7 @@ export default function GameScorer() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 }
 
             });
@@ -299,6 +307,7 @@ export default function GameScorer() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     outs: outs + 1
@@ -315,6 +324,7 @@ export default function GameScorer() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify({
                 data: { batter: currentSituation.batter, inning: currentSituation.inning, inningHalf: currentSituation.inningHalf, outs: newOuts, situation: currentSituation.situation, situationCategory: currentSituation.situationCategory, defense: currentSituation.defense, runners: runnersSituations, runs: runnersSituations.filter((runner) => runner.finalBase == "Home").length }
@@ -509,6 +519,7 @@ export default function GameScorer() {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify({
                         hits: awayHits + 1
@@ -521,7 +532,9 @@ export default function GameScorer() {
                 fetch(`http://localhost:6363/game_team/change_hits/?game_id=${id}&home_away=HOME`, {
                     method: "POST",
                     headers: {
+
                         "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify({
                         hits: homeHits + 1
@@ -650,6 +663,7 @@ export default function GameScorer() {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
                         },
                         body: JSON.stringify({
                             errors: awayErrors + 1
@@ -663,6 +677,7 @@ export default function GameScorer() {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
                         },
                         body: JSON.stringify({
                             errors: homeErrors + 1
@@ -703,6 +718,7 @@ export default function GameScorer() {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
                             },
                             body: JSON.stringify({
                                 points: { home: points.home, away: newPoints }
@@ -714,6 +730,7 @@ export default function GameScorer() {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
                             },
                             body: JSON.stringify({
                                 homeAway: "AWAY",
@@ -731,6 +748,7 @@ export default function GameScorer() {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
                             },
                             body: JSON.stringify({
                                 points: { home: newPoints, away: points.away }
@@ -742,6 +760,7 @@ export default function GameScorer() {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
                             },
                             body: JSON.stringify({
                                 homeAway: "HOME",
@@ -762,6 +781,7 @@ export default function GameScorer() {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify({
                         runners: newOffense
@@ -792,6 +812,7 @@ export default function GameScorer() {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
                         },
                         body: JSON.stringify({
                             outs: 0
@@ -802,6 +823,7 @@ export default function GameScorer() {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
                         },
                         body: JSON.stringify({
                             runners: { "firstBaseRunner": null, "secondBaseRunner": null, "thirdBaseRunner": null }
@@ -819,6 +841,7 @@ export default function GameScorer() {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
                             },
                             body: JSON.stringify({
                                 lob: homeLOB + Object.entries(offense).filter(([position, player]) => player !== null).length
@@ -832,6 +855,7 @@ export default function GameScorer() {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
                             },
                             body: JSON.stringify({
                                 lob: awayLOB + Object.entries(offense).filter(([position, player]) => player !== null).length
@@ -845,6 +869,7 @@ export default function GameScorer() {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
                         }
                     });
                 }
@@ -854,6 +879,7 @@ export default function GameScorer() {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
                         },
                         body: JSON.stringify({
                             outs: outs + 1

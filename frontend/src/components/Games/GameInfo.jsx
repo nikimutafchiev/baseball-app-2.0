@@ -16,9 +16,8 @@ import { useEffect, useState } from "react";
 import validator from "validator"
 import GameScorerPlayByPlay from "../GameScorer/GameScorerPlayByPlay";
 import { CircularProgress, Alert } from "@mui/material";
-
 export default function GameInfo() {
-    const { user } = useAuth();
+    const { user, token } = useAuth();
     const statusIcons = {
         live: <RiLiveLine size={25} />,
         scheduled: <RiCalendarScheduleLine size={25} />,
@@ -53,6 +52,7 @@ export default function GameInfo() {
                                     method: "POST",
                                     headers: {
                                         "Content-Type": "application/json",
+                                        "Authorization": `Bearer ${token}`
                                     },
 
                                 }).then(response => response.json()).then(data => alert(data.message));

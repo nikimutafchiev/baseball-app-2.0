@@ -7,9 +7,11 @@ import { useState, useEffect } from "react"
 import { Autocomplete } from "@mui/material"
 import dayjs from "dayjs"
 import { useParams } from "react-router-dom"
-import validator from "validator"
+import validator from "validator";
+import { useAuth } from "../../AuthContext"
 export default function InputFormGame(props) {
     const { id } = useParams();
+    const { token } = useAuth();
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [homeTeam, setHomeTeam] = useState({ id: -1, name: "" });
     const [awayTeam, setAwayTeam] = useState({ id: -1, name: "" });
@@ -26,6 +28,7 @@ export default function InputFormGame(props) {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     homeTeam: homeTeam,

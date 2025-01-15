@@ -3,6 +3,7 @@ import RosterPositionPicker from "./RosterPositionPicker";
 import RosterPlayerPicker from "./RosterPlayerPicker";
 import { IoClose } from "react-icons/io5";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../../AuthContext";
 
 export default function RosterCell(props) {
     const { id } = useParams();
@@ -39,12 +40,14 @@ export default function RosterCell(props) {
             position: "--"
         })
     };
+    const { token } = useAuth();
     useEffect(() => {
         if (submitted && clicked == 0 && player.id !== -1) {
             fetch("http://localhost:6363/game/team/roster/player", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     home_away: props.homeAway,

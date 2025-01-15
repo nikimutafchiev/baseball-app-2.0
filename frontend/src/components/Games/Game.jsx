@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import useSWR from 'swr';
 import { useAuth } from '../../AuthContext';
 export default function Game(props) {
-    const { user } = useAuth();
+    const { user, token } = useAuth();
     const statusIcons = {
         live: <RiLiveLine size={props.size == "small" ? 20 : 25} />,
         scheduled: <RiCalendarScheduleLine size={props.size == "small" ? 20 : 25} />,
@@ -24,6 +24,7 @@ export default function Game(props) {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
                     },
 
                 });

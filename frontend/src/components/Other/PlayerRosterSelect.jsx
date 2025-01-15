@@ -1,14 +1,17 @@
 import { TextField, InputAdornment } from "@mui/material";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../../AuthContext";
 export default function PlayerRosterSelect(props) {
     const [uniformNumber, setUniformNumber] = useState("");
     const { team_id, id } = useParams();
+    const { token } = useAuth();
     const add_player = async () => {
         await fetch(`http://localhost:6363/team_tournament/player/?tournament_id=${id}&team_id=${team_id}&player_id=${props.player.id}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify({
                 uniformNumber: uniformNumber

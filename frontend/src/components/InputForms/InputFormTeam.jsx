@@ -4,6 +4,7 @@ import { FaFacebook, FaInstagram, FaLink, FaYoutube } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import validator from "validator";
 import convertToBase64 from "../../global/ImageToBase64";
+import { useAuth } from "../../AuthContext";
 export default function InputFormTeam(props) {
     const icons = {
         facebook: <FaFacebook size={30} />,
@@ -30,12 +31,14 @@ export default function InputFormTeam(props) {
     const [headCoach, setHeadCoach] = useState("");
     const [isSubmitted, setIsSubmitted] = useState(false);
     const errorSubmit = name === "" || tlc.length != 3 || Object.entries(links).map(([media, url]) => { return !validator.isURL(url) && url.length != 0 }).includes(true);
+    const { token } = useAuth();
     useEffect((() => {
         if (isSubmitted) {
             fetch("http://localhost:6363/team", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     name: name,

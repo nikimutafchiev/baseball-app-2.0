@@ -6,7 +6,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from "dayjs";
 import convertToBase64 from "../../global/ImageToBase64";
-
+import { useAuth } from "../../AuthContext";
 export default function InputFormTournament(props) {
     const [name, setName] = useState("");
     const [place, setPlace] = useState("");
@@ -16,6 +16,7 @@ export default function InputFormTournament(props) {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [image, setImage] = useState(null);
     const [imageURL, setImageURL] = useState("http://placehold.co/200x200");
+    const { token } = useAuth();
     useEffect((() => {
         if (isSubmitted) {
             const start_date = new Date(startDate), end_date = new Date(endDate);
@@ -23,6 +24,7 @@ export default function InputFormTournament(props) {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     name: name,

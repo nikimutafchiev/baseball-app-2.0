@@ -2,7 +2,7 @@ import { MdClose, MdCheck } from "react-icons/md"
 import useSWR from "swr";
 import { useAuth } from "../../AuthContext";
 export default function ProfileGameAssignments() {
-    const { user } = useAuth();
+    const { user, token } = useAuth();
     const assignedGames = useSWR(`http://localhost:6363/assigned_games/?user_id=${user.id}`, (url) => fetch(url).then((res) => res.json()));
     return (<div className="w-full flex flex-col">
         <h2 className="text-2xl font-semibold">Scoresheet assignments</h2>
@@ -45,6 +45,7 @@ export default function ProfileGameAssignments() {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
                             },
 
                         });
@@ -58,6 +59,7 @@ export default function ProfileGameAssignments() {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
                             },
 
                         });

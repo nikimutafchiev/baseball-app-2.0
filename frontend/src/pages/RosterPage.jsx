@@ -2,11 +2,13 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Roster from "../components/Roster/Roster";
 import useSWR from "swr";
 import { useState } from "react";
+import { useAuth } from "../AuthContext";
 export default function RosterPage() {
     const { id } = useParams();
     const navigate = useNavigate()
     const game = useSWR(`http://localhost:6363/game/${id}`, (url) => fetch(url).then((res) => res.json()));
     const [rostersReady, setRostersReady] = useState([false, false]);
+    const { token } = useAuth();
     return (<>{
         game.data && <div className=" min-h-[90vh] flex flex-row justify-around p-2 ">
             <Link className="rounded font-semibold bg-accent_2 hover:bg-accent_3 text-white drop-shadow-lg h-fit p-2" to={".."} relative="path">Back</Link>
@@ -15,7 +17,10 @@ export default function RosterPage() {
             <button onClick={async () => {
                 if (rostersReady[0] == true && rostersReady[1] == true) {
                     await fetch(`http://localhost:6363/game/${id}/start`, {
-                        method: "POST"
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
 
                     });
                     navigate(`/score/${id}`);

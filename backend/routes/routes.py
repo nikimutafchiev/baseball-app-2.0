@@ -182,6 +182,7 @@ def get_player_by_id(player_id):
     }
 
 @route_bp.route("/team",methods=['POST'])
+@jwt_required()
 def add_team():
     data = request.json
     if "name" not in data or "tlc" not in data or "address" not in data or "contact" not in data or "socialMedia" not in data or "manager" not in data or "headCoach" not in data or "image" not in data:
@@ -225,6 +226,7 @@ def get_team_by_id(team_id):
 
 
 @route_bp.route("/tournament",methods=['POST'])
+@jwt_required()
 def add_tournament():
     data = request.json
     if "name" not in data or "place" not in data or "startDate" not in data or "endDate" not in data or "image" not in data:
@@ -263,6 +265,7 @@ def get_tournament_by_id(tournament_id):
 
 
 @route_bp.route("/tournament_game/",methods=['POST'])
+@jwt_required()
 def add_game_to_tournament():
     query = request.args.to_dict()
     data = request.json
@@ -390,6 +393,7 @@ def get_teams_by_tournament():
     } for association in tournament.teams]
 
 @route_bp.route("/game/assign/", methods=["POST"])
+@jwt_required()
 def assign_game():
     query = request.args.to_dict()
     if "game_id" not in query or "username" not in query:
@@ -446,6 +450,7 @@ def get_assigned_games():
     return res,200
 
 @route_bp.route("/game/to_do/", methods=["POST"])
+@jwt_required()
 def to_do_game():
     query = request.args.to_dict()
     if "user_id" not in query or "game_id" not in query:
@@ -491,6 +496,7 @@ def get_to_do_games():
     return res,200
 
 @route_bp.route("/game/like/",methods=["POST"])
+@jwt_required()
 def like_game():
     query = request.args.to_dict()
     if "game_id" not in query or "user_id" not in query:
@@ -585,6 +591,7 @@ def get_game_by_id(game_id):
         "pointsByInning":game.pointsByInning
     }
 @route_bp.route("/team_tournament/player/",methods=["POST"])
+@jwt_required()
 def add_player_to_team_tournament():
     query = request.args.to_dict()
     data =request.json
@@ -725,6 +732,7 @@ def get_game_team_roster():
     return res
 
 @route_bp.route("/game/team/roster/player", methods=["POST"])
+@jwt_required()
 def add_player_to_game_roster():
     data = request.json
     if "game_id" not in data or "tournament_id" not in data or "team_id" not in data or "home_away" not in data or"position" not in data or "battingOrder" not in data:
@@ -740,6 +748,7 @@ def add_player_to_game_roster():
     return "",201
 
 @route_bp.route("/game/<int:game_id>/situation",methods=["POST"])
+@jwt_required()
 def add_game_situation(game_id):
     data = request.json
     if "data" not in data:
@@ -762,6 +771,7 @@ def get_game_situations(game_id):
     return res
 
 @route_bp.route("/game/<int:game_id>/change_inning", methods=["POST"])
+@jwt_required()
 def change_inning(game_id):
     game = Game.query.get(game_id)
     if game.inning_half == "UP":
@@ -783,6 +793,7 @@ def change_inning(game_id):
 
 
 @route_bp.route("/game_team/change_score/", methods=["POST"])
+@jwt_required()
 def change_score():
     data = request.json
     query = request.args.to_dict()
@@ -796,6 +807,7 @@ def change_score():
     return ""
 
 @route_bp.route("/game/<int:game_id>/change_batting_turn",methods=["POST"])
+@jwt_required()
 def change_batting_order(game_id):
     data = request.json
     if "homeAway" not in data or "battingTurn" not in data:
@@ -810,6 +822,7 @@ def change_batting_order(game_id):
     return ""
 
 @route_bp.route("/game/<int:game_id>/change_outs", methods=["POST"])
+@jwt_required()
 def change_outs(game_id):
     data = request.json
     if "outs" not in data:
@@ -821,6 +834,7 @@ def change_outs(game_id):
     return ""
 
 @route_bp.route("/game_team/change_lob/", methods=["POST"])
+@jwt_required()
 def change_lob():
     data = request.json
     query = request.args.to_dict()
@@ -835,6 +849,7 @@ def change_lob():
     return ""
 
 @route_bp.route("/game_team/change_hits/", methods=["POST"])
+@jwt_required()
 def change_hits():
     data = request.json
     query = request.args.to_dict()
@@ -849,6 +864,7 @@ def change_hits():
     return ""
 #TODO PATCH
 @route_bp.route("/game_team/change_errors/", methods=["POST"])
+@jwt_required()
 def change_errors():
     data = request.json
     query = request.args.to_dict()
@@ -863,6 +879,7 @@ def change_errors():
     return ""
 
 @route_bp.route("/game/<int:game_id>/change_points_by_inning", methods=["POST"])
+@jwt_required()
 def change_points_by_inning(game_id):
     data = request.json
     if "points" not in data:
@@ -873,6 +890,7 @@ def change_points_by_inning(game_id):
     return ""
 
 @route_bp.route("/game/<int:game_id>/start",methods=["POST"])
+@jwt_required()
 def start_game(game_id):
     game = Game.query.get(game_id)
     game.status = GameStatuses.LIVE
@@ -880,6 +898,7 @@ def start_game(game_id):
     return ""
     
 @route_bp.route("/game/<int:game_id>/change_runners", methods=["POST"])
+@jwt_required()
 def change_runners(game_id):
     data = request.json
     if "runners" not in data:
