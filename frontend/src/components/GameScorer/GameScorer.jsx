@@ -82,7 +82,7 @@ export default function GameScorer() {
     const [runnersSituations, setRunnersSituations] = useState([]);
     const [currentSituation, setCurrentSituation] = useState({});
     const [isSituationReady, setIsSituationReady] = useState(null);
-    const { token } = useAuth();
+    const { token, logout } = useAuth();
     const nextBatter = () => {
         const newBatterTurn = battingTurn >= 9 ? 1 : battingTurn + 1;
         if (inningHalf == "UP")
@@ -100,7 +100,7 @@ export default function GameScorer() {
                 battingTurn: newBatterTurn
             })
 
-        });
+        }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));
         setBattingTurn(newBatterTurn);
     };
 
@@ -244,7 +244,7 @@ export default function GameScorer() {
                     outs: 0
                 })
 
-            });
+            }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));
 
             await fetch(`http://localhost:6363/game/${id}/change_runners`, {
                 method: "POST",
@@ -256,7 +256,7 @@ export default function GameScorer() {
                     runners: { "firstBaseRunner": null, "secondBaseRunner": null, "thirdBaseRunner": null }
                 })
 
-            });
+            }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));
 
 
             if (inningHalf == "DOWN") {
@@ -272,7 +272,7 @@ export default function GameScorer() {
                         lob: homeLOB + Object.entries(offense).filter(([position, player]) => player !== null).length
                     })
 
-                });
+                }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));
 
             }
 
@@ -288,7 +288,7 @@ export default function GameScorer() {
                         lob: awayLOB + Object.entries(offense).filter(([position, player]) => player !== null).length
                     })
 
-                });
+                }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
 
             }
             setInningHalf(inningHalf == "UP" ? "DOWN" : "UP");
@@ -299,7 +299,7 @@ export default function GameScorer() {
                     "Authorization": `Bearer ${token}`
                 }
 
-            });
+            }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
         }
         else {
             setOuts(outs + 1);
@@ -313,7 +313,7 @@ export default function GameScorer() {
                     outs: outs + 1
                 })
 
-            });
+            }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
 
         }
     }
@@ -330,7 +330,7 @@ export default function GameScorer() {
                 data: { batter: currentSituation.batter, inning: currentSituation.inning, inningHalf: currentSituation.inningHalf, outs: newOuts, situation: currentSituation.situation, situationCategory: currentSituation.situationCategory, defense: currentSituation.defense, runners: runnersSituations, runs: runnersSituations.filter((runner) => runner.finalBase == "Home").length }
             })
 
-        });
+        }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
         if (newOuts === 3) {
             setOuts(0);
         }
@@ -525,7 +525,7 @@ export default function GameScorer() {
                         hits: awayHits + 1
                     })
 
-                });
+                }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
                 setAwayHits(awayHits + 1);
             }
             else {
@@ -540,7 +540,7 @@ export default function GameScorer() {
                         hits: homeHits + 1
                     })
 
-                });
+                }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
                 setHomeHits(homeHits + 1);
             }
 
@@ -669,7 +669,7 @@ export default function GameScorer() {
                             errors: awayErrors + 1
                         })
 
-                    });
+                    }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
                     setAwayErrors(awayErrors + 1);
                 }
                 else {
@@ -683,7 +683,7 @@ export default function GameScorer() {
                             errors: homeErrors + 1
                         })
 
-                    });
+                    }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
                     setHomeErrors(homeErrors + 1);
                 }
             }} />,
@@ -724,7 +724,7 @@ export default function GameScorer() {
                                 points: { home: points.home, away: newPoints }
                             })
 
-                        });
+                        }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
                         setPoints({ home: points.home, away: newPoints })
                         await fetch(`http://localhost:6363/game_team/change_score/?game_id=${id}&home_away=AWAY`, {
                             method: "POST",
@@ -737,7 +737,7 @@ export default function GameScorer() {
                                 points: 1
                             })
 
-                        });
+                        }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
 
                     } else {
                         const newPoints = points.home;
@@ -754,7 +754,7 @@ export default function GameScorer() {
                                 points: { home: newPoints, away: points.away }
                             })
 
-                        });
+                        }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
 
                         await fetch(`http://localhost:6363/game_team/change_score/?game_id=${id}&home_away=HOME`, {
                             method: "POST",
@@ -767,7 +767,7 @@ export default function GameScorer() {
                                 points: 1
                             })
 
-                        });
+                        }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
 
 
                     }
@@ -787,7 +787,7 @@ export default function GameScorer() {
                         runners: newOffense
                     })
 
-                });
+                }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
 
             }
 
@@ -818,7 +818,7 @@ export default function GameScorer() {
                             outs: 0
                         })
 
-                    });
+                    }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
                     await fetch(`http://localhost:6363/game/${id}/change_runners`, {
                         method: "POST",
                         headers: {
@@ -829,7 +829,7 @@ export default function GameScorer() {
                             runners: { "firstBaseRunner": null, "secondBaseRunner": null, "thirdBaseRunner": null }
                         })
 
-                    });
+                    }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
 
                     addSituation(batter, "", "");
                     setSituationOption("");
@@ -847,7 +847,7 @@ export default function GameScorer() {
                                 lob: homeLOB + Object.entries(offense).filter(([position, player]) => player !== null).length
                             })
 
-                        });
+                        }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
                     }
                     else {
                         setAwayLOB(awayLOB + Object.entries(offense).filter(([position, player]) => player !== null).length);
@@ -861,7 +861,7 @@ export default function GameScorer() {
                                 lob: awayLOB + Object.entries(offense).filter(([position, player]) => player !== null).length
                             })
 
-                        });
+                        }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
 
                     }
                     setInningHalf(inningHalf == "UP" ? "DOWN" : "UP");
@@ -871,7 +871,7 @@ export default function GameScorer() {
                             "Content-Type": "application/json",
                             "Authorization": `Bearer ${token}`
                         }
-                    });
+                    }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
                 }
                 else {
                     setOuts(outs + 1);
@@ -885,7 +885,7 @@ export default function GameScorer() {
                             outs: outs + 1
                         })
 
-                    });
+                    }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
                 }
             }
             } />,

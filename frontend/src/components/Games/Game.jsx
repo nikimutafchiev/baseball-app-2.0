@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import useSWR from 'swr';
 import { useAuth } from '../../AuthContext';
 export default function Game(props) {
-    const { user, token } = useAuth();
+    const { user, token, logout } = useAuth();
     const statusIcons = {
         live: <RiLiveLine size={props.size == "small" ? 20 : 25} />,
         scheduled: <RiCalendarScheduleLine size={props.size == "small" ? 20 : 25} />,
@@ -27,7 +27,7 @@ export default function Game(props) {
                         "Authorization": `Bearer ${token}`
                     },
 
-                });
+                }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));
                 setIsLiked(!isLiked);
             }}>{!isLiked && <RiStarLine size={30} />}{isLiked && <RiStarFill size={30} />}</button>}
             <div className="md:col-span-2 flex flex-col gap-2 items-center"><div className={`flex flex-row gap-2 items-center ${props.size == "normal" ? "text-normal" : "text-xs"}`}>{statusIcons[props.status]}{props.status}</div><div className=" font-semibold text-2xs" >{new Date(props.startTime).toLocaleString()}</div></div>

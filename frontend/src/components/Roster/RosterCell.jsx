@@ -40,7 +40,7 @@ export default function RosterCell(props) {
             position: "--"
         })
     };
-    const { token } = useAuth();
+    const { token, logout } = useAuth();
     useEffect(() => {
         if (submitted && clicked == 0 && player.id !== -1) {
             fetch("http://localhost:6363/game/team/roster/player", {
@@ -59,7 +59,7 @@ export default function RosterCell(props) {
                     battingOrder: props.order
 
                 }),
-            })
+            }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));
             setSubmitted(false);
         }
     }, [submitted, player, clicked]);

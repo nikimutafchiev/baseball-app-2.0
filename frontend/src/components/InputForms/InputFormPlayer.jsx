@@ -109,7 +109,7 @@ export default function InputFormPlayer(props) {
                     country: country,
                     image: image
                 }),
-            }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch(() => console.log("hello"));
+            }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));
             if (props.isEdit)
                 props.close();
             setFirstName("");

@@ -31,7 +31,7 @@ export default function InputFormTeam(props) {
     const [headCoach, setHeadCoach] = useState("");
     const [isSubmitted, setIsSubmitted] = useState(false);
     const errorSubmit = name === "" || tlc.length != 3 || Object.entries(links).map(([media, url]) => { return !validator.isURL(url) && url.length != 0 }).includes(true);
-    const { token } = useAuth();
+    const { token, logout } = useAuth();
     useEffect((() => {
         if (isSubmitted) {
             fetch("http://localhost:6363/team", {
@@ -50,7 +50,7 @@ export default function InputFormTeam(props) {
                     headCoach: headCoach,
                     image: image
                 }),
-            });
+            }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
             setName("");
             setTLC("");
             setAddress("");

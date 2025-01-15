@@ -5,7 +5,7 @@ import { useAuth } from "../../AuthContext";
 export default function PlayerRosterSelect(props) {
     const [uniformNumber, setUniformNumber] = useState("");
     const { team_id, id } = useParams();
-    const { token } = useAuth();
+    const { token, logout } = useAuth();
     const add_player = async () => {
         await fetch(`http://localhost:6363/team_tournament/player/?tournament_id=${id}&team_id=${team_id}&player_id=${props.player.id}`, {
             method: "POST",
@@ -16,7 +16,7 @@ export default function PlayerRosterSelect(props) {
             body: JSON.stringify({
                 uniformNumber: uniformNumber
             })
-        });
+        }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
         props.close();
     }
     return (<>

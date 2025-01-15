@@ -16,7 +16,7 @@ export default function InputFormTournament(props) {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [image, setImage] = useState(null);
     const [imageURL, setImageURL] = useState("http://placehold.co/200x200");
-    const { token } = useAuth();
+    const { token, logout } = useAuth();
     useEffect((() => {
         if (isSubmitted) {
             const start_date = new Date(startDate), end_date = new Date(endDate);
@@ -37,7 +37,7 @@ export default function InputFormTournament(props) {
                     },
                     image: image
                 }),
-            });
+            }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
             setName("");
             setPlace("");
             setStartDate(dayjs());

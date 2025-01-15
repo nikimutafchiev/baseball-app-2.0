@@ -2,7 +2,7 @@ import { MdClose, MdCheck } from "react-icons/md"
 import useSWR from "swr";
 import { useAuth } from "../../AuthContext";
 export default function ProfileGameAssignments() {
-    const { user, token } = useAuth();
+    const { user, token, logout } = useAuth();
     const assignedGames = useSWR(`http://localhost:6363/assigned_games/?user_id=${user.id}`, (url) => fetch(url).then((res) => res.json()));
     return (<div className="w-full flex flex-col">
         <h2 className="text-2xl font-semibold">Scoresheet assignments</h2>
@@ -48,7 +48,7 @@ export default function ProfileGameAssignments() {
                                 "Authorization": `Bearer ${token}`
                             },
 
-                        });
+                        }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
                         alert("Succefully rejected assignment")
                         assignedGames.mutate();
                     }}>
@@ -62,7 +62,7 @@ export default function ProfileGameAssignments() {
                                 "Authorization": `Bearer ${token}`
                             },
 
-                        });
+                        }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
                         alert("Succefully accepted assignment")
                         assignedGames.mutate();
                     }}>

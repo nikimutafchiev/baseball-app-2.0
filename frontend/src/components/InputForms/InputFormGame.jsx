@@ -11,7 +11,7 @@ import validator from "validator";
 import { useAuth } from "../../AuthContext"
 export default function InputFormGame(props) {
     const { id } = useParams();
-    const { token } = useAuth();
+    const { token, logout } = useAuth();
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [homeTeam, setHomeTeam] = useState({ id: -1, name: "" });
     const [awayTeam, setAwayTeam] = useState({ id: -1, name: "" });
@@ -43,7 +43,7 @@ export default function InputFormGame(props) {
                     venue: venue,
                     venueLink: venueLink
                 }),
-            });
+            }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
             setHomeTeam({ id: -1, name: "" });
             setAwayTeam({ id: -1, name: "" });
             setVenue("");

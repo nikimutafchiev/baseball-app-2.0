@@ -8,7 +8,7 @@ export default function RosterPage() {
     const navigate = useNavigate()
     const game = useSWR(`http://localhost:6363/game/${id}`, (url) => fetch(url).then((res) => res.json()));
     const [rostersReady, setRostersReady] = useState([false, false]);
-    const { token } = useAuth();
+    const { token, logout } = useAuth();
     return (<>{
         game.data && <div className=" min-h-[90vh] flex flex-row justify-around p-2 ">
             <Link className="rounded font-semibold bg-accent_2 hover:bg-accent_3 text-white drop-shadow-lg h-fit p-2" to={".."} relative="path">Back</Link>
@@ -22,7 +22,7 @@ export default function RosterPage() {
                             "Authorization": `Bearer ${token}`
                         }
 
-                    });
+                    }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
                     navigate(`/score/${id}`);
                 }
                 else {

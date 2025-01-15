@@ -3,7 +3,7 @@ import { RiCloseCircleLine } from "react-icons/ri";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
 export default function TeamSelectList(props) {
-  const { token } = useAuth();
+  const { token, logout } = useAuth();
   const [teamSelected, setTeamSelected] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const addTeam = async () => {
@@ -15,7 +15,7 @@ export default function TeamSelectList(props) {
           "Authorization": `Bearer ${token}`
         }
       }
-    );
+    ).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch((e) => console.error(e));;
     setTeamSelected(false);
     setSelectedTeam(null);
     props.close();
