@@ -10,7 +10,7 @@ import convertToBase64 from "../../global/ImageToBase64"
 import { useAuth } from "../../AuthContext";
 
 export default function InputFormPlayer(props) {
-    const { token } = useAuth();
+    const { token, logout } = useAuth();
     const [firstName, setFirstName] = useState(props.isEdit ? props.player.firstName : "");
     const [lastName, setLastName] = useState(props.isEdit ? props.player.lastName : "");
     const [date, setDate] = useState(props.isEdit ? dayjs(props.player.dateOfBirth) : dayjs());
@@ -109,7 +109,7 @@ export default function InputFormPlayer(props) {
                     country: country,
                     image: image
                 }),
-            }).catch(() => console.log("hello"));
+            }).then(response => { if (response.status === 401) { logout(); alert("Session expired. Please login again.") } }).catch(() => console.log("hello"));
             if (props.isEdit)
                 props.close();
             setFirstName("");

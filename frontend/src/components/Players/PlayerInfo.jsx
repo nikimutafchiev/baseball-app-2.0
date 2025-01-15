@@ -346,6 +346,19 @@ export default function PlayerInfo() {
 							<div className={`grid grid-cols-1 sm:grid-cols-2 ${isShrinked ? "lg:grid-cols-7" : "lg:grid-cols-6"} gap-3`}>
 								{(overviewOption == "Batting" ? [
 									{
+										label: "G",
+										value: stats.data ? (
+											stats.data.G
+										) : stats.isLoading ? (
+											<div >
+												<CircularProgress color="success" />
+											</div>
+										) : (
+											0
+										),
+										coefficient: false
+									},
+									{
 										label: "AVG",
 										value: stats.data ? (
 											stats.data.AVG.toFixed(3)
@@ -737,7 +750,7 @@ export default function PlayerInfo() {
 										0
 									),
 									coefficient: false
-								},]).sort((a, b) => a.coefficient == b.coefficient ? a.label.localeCompare(b.label) : b.coefficient - a.coefficient).map((stat, index) => (
+								},]).sort((a, b) => b.label === "G" ? 1 : a.coefficient == b.coefficient ? a.label.localeCompare(b.label) : b.coefficient - a.coefficient).map((stat, index) => (
 									<div
 										key={index}
 										className="bg-white p-4 h-28 rounded-2xl shadow-lg flex flex-col justify-between"

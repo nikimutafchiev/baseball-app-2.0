@@ -46,7 +46,8 @@ def get_stats(situations_list:list,player_id:int):
         "SF":0,
         "CS":0,
         "BABIP":0,
-        "RC":0
+        "RC":0,
+        "G":0
     }
     #TODO Да се оптимизира TB,XBH да се смятат накрая
     for situation in situations_list:
@@ -956,6 +957,7 @@ def get_player_stats(player_id):
         if (team_ids and team_tournament.team_tournament.team_id in team_ids and not tournament_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids and not team_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids and team_ids and team_tournament.team_tournament.team_id in team_ids)or (not team_ids and not tournament_ids):
            for gameTeam in team_tournament.team_tournament.games:
                 if game_id and gameTeam.game_id == game_id or not game_id or years and gameTeam.game.start_time.year in years:
+                    res["G"]+=1
                     merge_dicts(get_stats(gameTeam.game.situations,player.id),res)
                              
                     
