@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 import useSWR from 'swr';
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -23,7 +24,6 @@ export const AuthProvider = ({ children }) => {
             });
             const res = await response.json();
             if (response.ok) {
-                console.log(response.status);
                 setToken(res.access_token);
                 setUser(jwtDecode(res.access_token).user);
                 localStorage.setItem("access_token", res.access_token);
@@ -54,10 +54,10 @@ export const AuthProvider = ({ children }) => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ ...userData, role: "ADMIN" }),
+                body: JSON.stringify({ ...userData, role: "USER" }),
             });
-            if (response.status == 200) {
-                alert("Succefully signed up")
+            if (response.ok) {
+                alert("Successfully signed up")
                 navigate("/login");
                 return 0;
             }
@@ -66,6 +66,7 @@ export const AuthProvider = ({ children }) => {
             console.error(err);
         }
     }
+
     // const is_logged = async () => {
     //     if (logged.error)
     //         logout();

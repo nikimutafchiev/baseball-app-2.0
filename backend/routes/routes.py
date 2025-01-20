@@ -5,6 +5,7 @@ from flask_jwt_extended import  create_access_token,jwt_required
 from datetime import date,datetime,timezone
 from models.models import db
 import bcrypt
+
 route_bp = Blueprint("routes",__name__)
 
 
@@ -337,9 +338,16 @@ def login():
     password = data['password']
 
     user = User.query.filter_by(username=username).first()
-    #str ->422
+    
     if user and bcrypt.checkpw(password.encode('utf-8'),user.password):
-        access_token = create_access_token(identity=str(user.id),additional_claims={"user":{"id":user.id,"username":user.username,"firstName":user.first_name,"lastName":user.last_name,"role":user.role.value}})
+        access_token = create_access_token(
+            identity=str(user.id),
+            additional_claims={"user":
+                               {"id":user.id
+                                ,"username":user.username,
+                                "firstName":user.first_name,
+                                "lastName":user.last_name
+                                ,"role":user.role.value}})
         return {'access_token': access_token}
     else:
         return {},400

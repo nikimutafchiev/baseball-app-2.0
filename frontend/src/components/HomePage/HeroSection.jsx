@@ -8,10 +8,10 @@ export default function HeroSection() {
                     <h1 className="text-balance text-5xl font-semibold tracking-tight text-black ">
                         Система за въвеждане и анализ на бейзболни мачове
                     </h1>
-                    <p className="mt-8 text-pretty text-lg font-medium text-gray-700">
+                    {/* <p className="mt-8 text-pretty text-lg font-medium text-gray-700">
                         Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt amet
                         fugiat veniam occaecat.
-                    </p>
+                    </p> */}
                     <div className="mt-14 ">
                         <Link
                             to={"/schedule"}

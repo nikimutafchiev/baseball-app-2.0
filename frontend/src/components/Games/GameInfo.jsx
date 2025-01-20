@@ -44,7 +44,7 @@ export default function GameInfo() {
 
             <div className="flex flex-col bg-white rounded-2xl drop-shadow-lg min-h-[82vh] max-h-[85vh] md:w-1/3 p-10 items-center justify-between">
                 {game.data && <>
-                    {user && <div className="flex flex-row  justify-center gap-4 mb-2">
+                    {user && user.role == "admin" && <div className="flex flex-row  justify-center gap-4 mb-2">
                         <TextField label={<div className="text-sm">Username</div>} variant="outlined" value={assignee} onChange={(e) => setAssignee(e.target.value)} className="w-1/2" size="small" helperText={!validator.isURL(assignee) && assignee.length != 0 ? "Invalid username" : ""}></TextField>
                         <button className="p-2 py-3 h-fit text-white bg-blue-500 hover:bg-blue-600 text-xs rounded drop-shadow-md font-semibold"
                             onClick={() => {
