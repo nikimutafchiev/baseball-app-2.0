@@ -149,16 +149,13 @@ export default function GameScorer() {
             setHomeRoster(homeRosterData.data);
         if (awayRosterData.data)
             setAwayRoster(awayRosterData.data);
-        console.log(homeRosterData.data)
     }, [homeRosterData.data, awayRosterData.data]);
     useEffect(() => {
         if (situationsData.data) {
             let newSituations = situationsData.data;
             newSituations = newSituations.sort((a, b) => b.id - a.id);
-            console.log(newSituations)
             setSituations(newSituations);
         }
-        console.log(situationsData.data)
     }, [situationsData.data]);
     useEffect(() => {
         if (game.data) {
@@ -345,16 +342,17 @@ export default function GameScorer() {
         }
     }), [isSituationReady, currentSituation]);
     const addSituation = (currentBatter, situationCategory, situation, isOut = false, outs = [], assists = [], errors = []) => {
-        console.log(currentBatter)
         setCurrentSituation({ batter: currentBatter, inning: inning, inningHalf: inningHalf, isOut: isOut, situation: situation, situationCategory: situationCategory, runners: runnersSituations, defense: { assists: assists, outs: outs, errors: errors } });
 
-        //console.log({ batter: offense.batter, inning: inning, inningHalf: inningHalf, outs: outs, situation: type, runners: runnersSituations })
     }
     const [runnerWindowCount, setRunnerWindowCount] = useState(0);
     const [runnersToMove, setRunnersToMove] = useState([]);
     const moveRunners = (bases, isBatterMoving = true) => {
         const movedRunnerFirst = getMovedRunner("1B", bases), movedRunnerSecond = getMovedRunner("2B", bases), movedRunnerThird = getMovedRunner("3B", bases);
-        let runnersMove = [{ newBasePosition: "1B", player: movedRunnerFirst.player, oldBasePosition: movedRunnerFirst.basePosition }, { newBasePosition: "2B", player: movedRunnerSecond.player, oldBasePosition: movedRunnerSecond.basePosition }, { newBasePosition: "3B", player: movedRunnerThird.player, oldBasePosition: movedRunnerThird.basePosition }, ...getScoringRunners(bases).map((player) => { return { newBasePosition: "Home", player: player.player, oldBasePosition: player.basePosition } })].filter((value) => !!value.player);
+        let runnersMove = [{ newBasePosition: "1B", player: movedRunnerFirst.player, oldBasePosition: movedRunnerFirst.basePosition },
+        { newBasePosition: "2B", player: movedRunnerSecond.player, oldBasePosition: movedRunnerSecond.basePosition },
+        { newBasePosition: "3B", player: movedRunnerThird.player, oldBasePosition: movedRunnerThird.basePosition },
+        ...getScoringRunners(bases).map((player) => { return { newBasePosition: "Home", player: player.player, oldBasePosition: player.basePosition } })].filter((value) => !!value.player);
         if (!isBatterMoving)
             runnersMove = runnersMove.filter((runner) => runner.oldBasePosition != "Home");
         setRunnersToMove(runnersMove);
@@ -367,8 +365,6 @@ export default function GameScorer() {
         }
         else
             setSituationOption("");
-        //console.log("3");
-        // const newOffense = { batter: roster.filter((player) => player.battingOrder == (batterTurn >= 9 ? 1 : batterTurn + 1))[0], firstBaseRunner: getMovedRunner("1B", bases), secondBaseRunner: getMovedRunner("2B", bases), thirdBaseRunner: getMovedRunner("3B", bases) }
 
     }
     const runnersToBases = {
@@ -476,7 +472,6 @@ export default function GameScorer() {
     const loadDefenseOffense = () => {
         let attackRoster, defenseRoster
 
-        console.log(battingTurn)
         if (inningHalf == "UP") {
             setRoster(awayRoster);
             attackRoster = awayRoster;
@@ -495,9 +490,6 @@ export default function GameScorer() {
             else
                 newDefense[position] = newPositionPlayer[0];
         });
-        console.log(newDefense);
-        console.log(defenseRoster)
-        console.log(attackRoster)
         setDefense(newDefense);
         const newBatter =
             attackRoster.filter((player) => player.battingOrder == battingTurn)[0];
@@ -509,7 +501,6 @@ export default function GameScorer() {
     const situationComponents = {
         "Hit": <GameScorerHitOptions close={clearOption} situationFunction={(bases, hitType) => {
             setRunnersSituations([...runnersSituations, { player: batter, situationCategory: "hit", situation: hitType, finalBase: null }])
-            console.log(batter)
             addSituation(batter, "hit", hitType);
             moveRunners(bases);
             clearCount();
@@ -651,8 +642,6 @@ export default function GameScorer() {
         "GDP": <GameScorerOutOptions close={clearOption} />,
         "Error": <GameScorerErrorOptions close={clearOption}
             situationFunction={(errorSituation, assists, errors) => {
-                // console.log(errorSituation)
-                // setIsSituationReady(false);
                 setRunnersSituations([...runnersSituations, { player: batter, situationCategory: "error", situation: errorSituation, finalBase: null }]);
                 addSituation(batter, "error", errorSituation, false, [], assists.map((assist) => defense[positionNumbers[assist]]), errors.map((error) => defense[positionNumbers[error]]));
                 moveRunners(1);
@@ -702,10 +691,6 @@ export default function GameScorer() {
                     addSituation(batter, "", "");
                 setRunnersSituations([...runnersSituations, { player: player, situationCategory: situationCategory, situation: situation, finalBase: finalBase, isOut: isOut, defense: { outs: outs.map((out) => defense[positionNumbers[out]]), assists: assists.map((assist) => defense[positionNumbers[assist]]), errors: errors.map((error) => defense[positionNumbers[error]]) } }]);
                 const newOffense = { ...offense };
-                console.log(newOffense);
-                console.log(finalBase);
-                // console.log(startBase);
-                // console.log(finalBase);
                 if (finalBase != "Home" && (finalBase === "1B" || finalBase == "2B" || finalBase == "3B"))
                     newOffense[finalBase == "1B" ? "firstBaseRunner" : finalBase == "2B" ? "secondBaseRunner" : finalBase == "3B" ? "thirdBaseRunner" : ""] = player;
 

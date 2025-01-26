@@ -12,7 +12,6 @@ export default function Schedule() {
     const [date, setDate] = useState(dayjs());
     const games = useSWR(`http://localhost:6363/schedule/?year=${new Date(date).getFullYear()}&month=${new Date(date).getMonth() + 1}&day=${new Date(date).getDate()}`, (url) => fetch(url).then((res) => res.json()));
     const tournaments = games.data ? new Map(games.data.map((game) => [game.tournament.id, game.tournament.name])) : new Map();
-    // useEffect(() => console.log(tournaments), []);
     return (
         <div className="flex flex-col">
             <div className="w-full flex flex-row mb-10 px-4">

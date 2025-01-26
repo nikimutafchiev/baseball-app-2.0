@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IoReorderThree } from "react-icons/io5";
 import { MdCheck, } from 'react-icons/md';
 import { RiStarLine } from "react-icons/ri";
@@ -16,7 +16,6 @@ export default function Profile() {
 
     const [isShrinked, setIsShrinked] = useState(false);
 
-    useEffect(() => console.log(user));
     return (
         <div className="h-full w-full flex flex-col md:flex-row gap-8 p-10">
             {
