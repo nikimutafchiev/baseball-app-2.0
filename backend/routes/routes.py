@@ -168,6 +168,8 @@ def get_players():
 @route_bp.route("/player/<int:player_id>",methods=['GET'])
 def get_player_by_id(player_id):
     player = Player.query.get(player_id)
+    if player == None:
+        return {"Error":"Invalid player id"},400
     return {
         'id':player.id,
         'firstName': player.first_name,
@@ -213,6 +215,8 @@ def get_teams():
 @route_bp.route("/team/<int:team_id>",methods=['GET'])
 def get_team_by_id(team_id):
     team = Team.query.get(team_id)
+    if team == None:
+        return {},400
     return {
         'id':team.id,
         'name': team.name,
@@ -559,6 +563,8 @@ def is_game_liked():
 @route_bp.route("/game/<int:game_id>",methods=["GET"])
 def get_game_by_id(game_id):
     game = Game.query.get(game_id)
+    if game == None:
+        return {},400
     game_teams = GameTeam.query.filter_by(game_id = game.id).all();
     home_team = list(filter(lambda x: x.home_away.value == "home",game_teams))[0]
     away_team = list(filter(lambda x: x.home_away.value == "away",game_teams))[0]
@@ -770,6 +776,8 @@ def add_game_situation(game_id):
 @route_bp.route("/game/<int:game_id>/situations", methods=["GET"])
 def get_game_situations(game_id):
     game = Game.query.get(game_id)
+    if game == None:
+        return {},400
     res = []
     for situation in game.situations:
         res.append({
@@ -923,6 +931,8 @@ def get_player_teams(player_id):
     year_ids = eval(str(query.get("year_ids")))
     tournament_ids = eval(str(query.get("tournament_ids")))
     player = Player.query.get(player_id)
+    if player == None:
+        return {},400
     res = []
     for team_tournament in player.teams_tournaments:
         if tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids or not tournament_ids:
@@ -940,6 +950,8 @@ def get_player_tournaments(player_id):
     year_ids = eval(str(query.get("year_ids")))
     team_ids = eval(str(query.get("team_ids")))
     player = Player.query.get(player_id)
+    if player == None:
+        return {},400
     res = []
     for team_tournament in player.teams_tournaments:
          if team_ids and team_tournament.team_tournament.team_id in team_ids or not team_ids:
@@ -955,6 +967,8 @@ def get_player_years(player_id):
     team_ids = eval(str(query.get("team_ids")))
     tournament_ids = eval(str(query.get("tournament_ids")))
     player = Player.query.get(player_id)
+    if player == None:
+        return {},400
     res = set()
     for team_tournament in player.teams_tournaments:
         if (team_ids and team_tournament.team_tournament.team_id in team_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids) or (not team_ids and not tournament_ids):
@@ -977,7 +991,8 @@ def get_player_stats(player_id):
     game_id = query.get("game_id")
     years = eval(str(query.get("years")))
     player = Player.query.get(player_id)
-
+    if player == None:
+        return {},400
     res = {}
     merge_dicts(get_stats([],None),res)
     for team_tournament in player.teams_tournaments:
@@ -1005,6 +1020,8 @@ def get_team_tournaments(team_id):
     year_ids = eval(str(query.get("year_ids")))
     team_ids = eval(str(query.get("team_ids")))
     team = Team.query.get(team_id)
+    if team == None:
+        return {},400
     res = []
     for team_tournament in team.tournaments:
         for gameTeam in team_tournament.games:
@@ -1024,6 +1041,8 @@ def get_team_years(team_id):
     tournament_ids = eval(str(query.get("tournament_ids")))
     team_ids = eval(str(query.get("tournament_ids")))
     team = Team.query.get(team_id)
+    if team == None:
+        return {},400
     res = set()
     for team_tournament in team.tournaments:
         # if team_ids and team_tournament.team_tournament.tournament_id in team_ids or not team_ids:
@@ -1038,6 +1057,8 @@ def get_team_opponents(team_id):
     tournament_ids = eval(str(query.get("tournament_ids")))
     year_ids = eval(str(query.get("year_ids")))
     team = Team.query.get(team_id)
+    if team == None:
+        return {},400
     res = []
     for team_tournament in team.tournaments:
         if tournament_ids and team_tournament.tournament_id in tournament_ids or not tournament_ids:
@@ -1059,10 +1080,10 @@ def get_team_stats(team_id):
     tournament_ids = eval(str(query.get("tournament_ids")))
     game_id = query.get("game_id")
     years = eval(str(query.get("years")))
-    print(f"team id->{team_id}")
 
     team = Team.query.get(team_id)
-    print(f"team name->{team.name}")
+    if team == None:
+        return {},400
     res = {
         "W":0,
         "L":0
@@ -1149,7 +1170,8 @@ def get_tournament_stats(tournament_id):
     game_id = query.get("game_id")
     years = eval(str(query.get("years")))
     tournament = Tournament.query.get(tournament_id)
-
+    if tournament == None:
+        return {},400
     res = []
     for team_tournament in tournament.teams:
         #(team_ids and team_tournament.team_id in team_ids)
@@ -1187,7 +1209,8 @@ def get_player_games_stats(player_id):
     tournament_ids = eval(str(query.get("tournament_ids")))
     years = eval(str(query.get("years")))
     player = Player.query.get(player_id)
-
+    if player == None:
+        return {},400
     res = []
     for team_tournament in player.teams_tournaments:
         if (team_ids and team_tournament.team_tournament.team_id in team_ids and not tournament_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids and not team_ids) or (tournament_ids and team_tournament.team_tournament.tournament_id in tournament_ids and team_ids and team_tournament.team_tournament.team_id in team_ids)or (not team_ids and not tournament_ids):
@@ -1216,7 +1239,8 @@ def get_player_games_stats(player_id):
 @route_bp.route("/tournament/<int:tournament_id>/ranking",methods=["GET"])
 def get_tournament_ranking(tournament_id):
     tournament = Tournament.query.get(tournament_id)
-
+    if tournament == None:
+        return {},400
     res = []
     for team_tournament in tournament.teams:
         #(team_ids and team_tournament.team_id in team_ids)

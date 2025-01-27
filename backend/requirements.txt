@@ -4,3 +4,4 @@ Flask_JWT_Extended==4.7.1
 flask_sqlalchemy==3.1.1
 SQLAlchemy==2.0.36
 bcrypt==4.2.1
+pytest==7.4.4
