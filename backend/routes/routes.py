@@ -140,7 +140,7 @@ def add_player():
 @jwt_required()
 def edit_player(player_id):
     data = request.json
-    player = Player.query.get(player_id)
+    player = db.session.get(Player,player_id)
     player.country = data["country"]
     db.session.commit()
 
@@ -167,7 +167,7 @@ def get_players():
 
 @route_bp.route("/player/<int:player_id>",methods=['GET'])
 def get_player_by_id(player_id):
-    player = Player.query.get(player_id)
+    player = db.session.get(Player,player_id)
     if player == None:
         return {"Error":"Invalid player id"},400
     return {
@@ -214,7 +214,7 @@ def get_teams():
 
 @route_bp.route("/team/<int:team_id>",methods=['GET'])
 def get_team_by_id(team_id):
-    team = Team.query.get(team_id)
+    team = db.session.get(Team,team_id)
     if team == None:
         return {},400
     return {
@@ -258,7 +258,9 @@ def get_tournaments():
 
 @route_bp.route("/tournament/<int:tournament_id>",methods=['GET'])
 def get_tournament_by_id(tournament_id):
-    tournament = Tournament.query.get(tournament_id)
+    tournament = db.session.get(Tournament,tournament_id)
+    if tournament == None:
+        return {},400
     return {
         'id':tournament.id,
         'name': tournament.name,
@@ -278,7 +280,7 @@ def add_game_to_tournament():
     if "tournament_id" not in query or "startTime" not in data or "homeTeam" not in data or "awayTeam" not in data or "venue" not in data or "venueLink" not in data:
         return {"message":"Invalid data or query parameters"},400
     
-    tournament = Tournament.query.get(query["tournament_id"])
+    tournament = db.session.get(Tournament,query["tournament_id"])
     new_game = Game(start_time = datetime(year=data['startTime']["year"],month=data['startTime']["month"],day=data['startTime']["day"],hour=data['startTime']["hour"],minute=data['startTime']["minutes"],tzinfo=timezone.utc),tournament_id = int(query["tournament_id"]),venue=data["venue"],venue_link=data['venueLink'])
     db.session.add(new_game)
     tournament.games.append(new_game)
@@ -296,7 +298,9 @@ def get_games_by_tournament():
     query = request.args.to_dict()
     if "tournament_id" not in query:
         return {"message":"Invalid query parameters"},400
-    tournament = Tournament.query.get(query["tournament_id"])
+    tournament = db.session.get(Tournament,query["tournament_id"])
+    if tournament == None:
+        return {},400
     res = []
     for game in tournament.games:
         game_teams = GameTeam.query.filter_by(game_id = game.id).all();
@@ -377,8 +381,8 @@ def add_team_to_tournament():
     query = request.args.to_dict()
     if "team_id" not in query or "tournament_id" not in query:
         return {"message":"Invalid query params"},400
-    team = Team.query.get(query["team_id"])
-    tournament = Tournament.query.get(query["tournament_id"])
+    team = db.session.get(Team,query["team_id"])
+    tournament = db.session.get(Tournament,query["tournament_id"])
 
     team_tournament_association = TeamTournament(team=team,tournament=tournament)
     db.session.add(team_tournament_association)
@@ -391,7 +395,7 @@ def get_teams_by_tournament():
     query = request.args.to_dict()
     if "tournament_id" not in query:
         return {"message":"Invalid query parameters"},400
-    tournament = Tournament.query.get(query["tournament_id"])
+    tournament = db.session.get(Tournament,query["tournament_id"])
     return [ {
         'id':association.team.id,
         'name': association.team.name,
@@ -410,7 +414,7 @@ def assign_game():
     query = request.args.to_dict()
     if "game_id" not in query or "username" not in query:
         return {"message":"Invalid query paramters"},400
-    game = Game.query.get(query["game_id"])
+    game = db.session.get(Game,query["game_id"])
     user = User.query.filter_by(username=query["username"]).first()
     if not user:
         return {"message":"There is no such user"}
@@ -444,7 +448,7 @@ def get_assigned_games():
             game_teams = GameTeam.query.filter_by(game_id = userGame.game.id).all();
             home_team = list(filter(lambda x: x.home_away.value == "home",game_teams))[0]
             away_team = list(filter(lambda x: x.home_away.value == "away",game_teams))[0]
-            assigner = User.query.get(userGame.assigner_id)
+            assigner = db.session.get(User,userGame.assigner_id)
             res.append({
             'id':userGame.game.id,
             'homeTeam': home_team.team_tournament.team.name,
@@ -467,8 +471,8 @@ def to_do_game():
     query = request.args.to_dict()
     if "user_id" not in query or "game_id" not in query:
         return {"message":"Invalid query parameters"},400
-    game = Game.query.get(query["game_id"])
-    user = User.query.get(query["user_id"])
+    game = db.session.get(Game,query["game_id"])
+    user = db.session.get(User,query["user_id"])
     gameUser = UserGame.query.filter_by(game_id = query["game_id"],user_id = query["user_id"]).first()
     if gameUser:
         gameUser.is_to_do =  not gameUser.is_to_do
@@ -513,8 +517,8 @@ def like_game():
     query = request.args.to_dict()
     if "game_id" not in query or "user_id" not in query:
         return {"message":"Invalid query parameters"},400
-    game = Game.query.get(query["game_id"])
-    user = User.query.get(query["user_id"])
+    game = db.session.get(Game,query["game_id"])
+    user = db.session.get(User,query["user_id"])
     gameUser = UserGame.query.filter_by(game_id = query["game_id"],user_id = query["user_id"]).first()
     if gameUser:
         gameUser.is_liked =  not gameUser.is_liked
@@ -562,7 +566,7 @@ def is_game_liked():
 
 @route_bp.route("/game/<int:game_id>",methods=["GET"])
 def get_game_by_id(game_id):
-    game = Game.query.get(game_id)
+    game = db.session.get(Game,game_id)
     if game == None:
         return {},400
     game_teams = GameTeam.query.filter_by(game_id = game.id).all();
@@ -614,7 +618,7 @@ def add_player_to_team_tournament():
     if "uniformNumber" not in data:
         return {"message":"Invalid data"},400
     teamTournament = TeamTournament.query.filter_by(team_id = query["team_id"],tournament_id = query["tournament_id"]).first()
-    player = Player.query.get(query["player_id"])
+    player = db.session.get(Player,query["player_id"])
 
     teamTournamentPlayerAssociation = TeamTournamentPlayer(team_tournament=teamTournament, player=player, uniform_number = int(data["uniformNumber"]))
     db.session.add(teamTournamentPlayerAssociation)
@@ -775,7 +779,7 @@ def add_game_situation(game_id):
 
 @route_bp.route("/game/<int:game_id>/situations", methods=["GET"])
 def get_game_situations(game_id):
-    game = Game.query.get(game_id)
+    game = db.session.get(Game,game_id)
     if game == None:
         return {},400
     res = []
@@ -789,7 +793,7 @@ def get_game_situations(game_id):
 @route_bp.route("/game/<int:game_id>/change_inning", methods=["POST"])
 @jwt_required()
 def change_inning(game_id):
-    game = Game.query.get(game_id)
+    game = db.session.get(Game,game_id)
     if game.inning_half == "UP":
         game.inning_half = "DOWN"
     elif game.inning < 9:
@@ -829,7 +833,7 @@ def change_batting_order(game_id):
     if "homeAway" not in data or "battingTurn" not in data:
         return {"message":"Invalid data"},400
     home_away = data["homeAway"]
-    game = Game.query.get(game_id)
+    game = db.session.get(Game,game_id)
     if home_away == "HOME":
         game.home_batting_order = data["battingTurn"]
     else:
@@ -843,7 +847,7 @@ def change_outs(game_id):
     data = request.json
     if "outs" not in data:
         return {"message":"Invalid data"},400
-    game = Game.query.get(game_id)
+    game = db.session.get(Game,game_id)
     
     game.outs = data["outs"]
     db.session.commit()
@@ -900,7 +904,7 @@ def change_points_by_inning(game_id):
     data = request.json
     if "points" not in data:
          return {"message":"Invalid data"},400
-    game = Game.query.get(game_id)
+    game = db.session.get(Game,game_id)
     game.pointsByInning = data["points"]
     db.session.commit()
     return ""
@@ -908,7 +912,7 @@ def change_points_by_inning(game_id):
 @route_bp.route("/game/<int:game_id>/start",methods=["POST"])
 @jwt_required()
 def start_game(game_id):
-    game = Game.query.get(game_id)
+    game = db.session.get(Game,game_id)
     game.status = GameStatuses.LIVE
     db.session.commit()
     return ""
@@ -919,7 +923,7 @@ def change_runners(game_id):
     data = request.json
     if "runners" not in data:
          return {"message":"Invalid data"},400
-    game = Game.query.get(game_id)
+    game = db.session.get(Game,game_id)
     game.runners = data["runners"]
     db.session.commit()
     return ""
@@ -930,7 +934,7 @@ def get_player_teams(player_id):
     #TODO
     year_ids = eval(str(query.get("year_ids")))
     tournament_ids = eval(str(query.get("tournament_ids")))
-    player = Player.query.get(player_id)
+    player = db.session.get(Player,player_id)
     if player == None:
         return {},400
     res = []
@@ -949,7 +953,7 @@ def get_player_tournaments(player_id):
     #TODO
     year_ids = eval(str(query.get("year_ids")))
     team_ids = eval(str(query.get("team_ids")))
-    player = Player.query.get(player_id)
+    player = db.session.get(Player,player_id)
     if player == None:
         return {},400
     res = []
@@ -966,7 +970,7 @@ def get_player_years(player_id):
     query = request.args.to_dict()
     team_ids = eval(str(query.get("team_ids")))
     tournament_ids = eval(str(query.get("tournament_ids")))
-    player = Player.query.get(player_id)
+    player = db.session.get(Player,player_id)
     if player == None:
         return {},400
     res = set()
@@ -990,7 +994,7 @@ def get_player_stats(player_id):
     tournament_ids = eval(str(query.get("tournament_ids")))
     game_id = query.get("game_id")
     years = eval(str(query.get("years")))
-    player = Player.query.get(player_id)
+    player = db.session.get(Player,player_id)
     if player == None:
         return {},400
     res = {}
@@ -1019,7 +1023,7 @@ def get_team_tournaments(team_id):
     #TODO
     year_ids = eval(str(query.get("year_ids")))
     team_ids = eval(str(query.get("team_ids")))
-    team = Team.query.get(team_id)
+    team = db.session.get(Team, team_id)
     if team == None:
         return {},400
     res = []
@@ -1040,7 +1044,7 @@ def get_team_years(team_id):
     #TODO
     tournament_ids = eval(str(query.get("tournament_ids")))
     team_ids = eval(str(query.get("tournament_ids")))
-    team = Team.query.get(team_id)
+    team = db.session.get(Team,team_id)
     if team == None:
         return {},400
     res = set()
@@ -1056,7 +1060,7 @@ def get_team_opponents(team_id):
     #TODO
     tournament_ids = eval(str(query.get("tournament_ids")))
     year_ids = eval(str(query.get("year_ids")))
-    team = Team.query.get(team_id)
+    team = db.session.get(Team,team_id)
     if team == None:
         return {},400
     res = []
@@ -1081,7 +1085,7 @@ def get_team_stats(team_id):
     game_id = query.get("game_id")
     years = eval(str(query.get("years")))
 
-    team = Team.query.get(team_id)
+    team = db.session.get(Team,team_id)
     if team == None:
         return {},400
     res = {
@@ -1169,7 +1173,7 @@ def get_tournament_stats(tournament_id):
     query = request.args.to_dict()
     game_id = query.get("game_id")
     years = eval(str(query.get("years")))
-    tournament = Tournament.query.get(tournament_id)
+    tournament = db.session.get(Tournament,tournament_id)
     if tournament == None:
         return {},400
     res = []
@@ -1208,7 +1212,7 @@ def get_player_games_stats(player_id):
     team_ids = eval(str(query.get("team_ids")))
     tournament_ids = eval(str(query.get("tournament_ids")))
     years = eval(str(query.get("years")))
-    player = Player.query.get(player_id)
+    player = db.session.get(Player,player_id)
     if player == None:
         return {},400
     res = []
@@ -1238,7 +1242,7 @@ def get_player_games_stats(player_id):
 
 @route_bp.route("/tournament/<int:tournament_id>/ranking",methods=["GET"])
 def get_tournament_ranking(tournament_id):
-    tournament = Tournament.query.get(tournament_id)
+    tournament = db.session.get(Tournament,tournament_id)
     if tournament == None:
         return {},400
     res = []

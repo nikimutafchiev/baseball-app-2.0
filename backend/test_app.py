@@ -1,5 +1,5 @@
 from app import app
-from routes.routes import merge_dicts, get_stats
+from routes.routes import merge_dicts
 import pytest
 
 @pytest.fixture
