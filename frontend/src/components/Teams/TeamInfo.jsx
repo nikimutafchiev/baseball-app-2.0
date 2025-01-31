@@ -1396,4 +1396,3 @@ export default function TeamInfo() {
 		</>
 	);
 }
-//#TODO For H2H to fetch again with opponent teams query assigned for each

@@ -50,7 +50,6 @@ def get_stats(situations_list:list,player_id:int):
         "RC":0,
         "G":0
     }
-    #TODO Да се оптимизира TB,XBH да се смятат накрая
     for situation in situations_list:
         if situation.data["batter"]["player"]["id"] == player_id :
             
@@ -882,7 +881,7 @@ def change_hits():
 
     db.session.commit()
     return ""
-#TODO PATCH
+
 @route_bp.route("/game_team/change_errors/", methods=["POST"])
 @jwt_required()
 def change_errors():
@@ -931,7 +930,6 @@ def change_runners(game_id):
 @route_bp.route("/player/<int:player_id>/teams/",methods=["GET"])
 def get_player_teams(player_id):
     query = request.args.to_dict()
-    #TODO
     year_ids = eval(str(query.get("year_ids")))
     tournament_ids = eval(str(query.get("tournament_ids")))
     player = db.session.get(Player,player_id)
@@ -950,7 +948,6 @@ def get_player_teams(player_id):
 @route_bp.route("/player/<int:player_id>/tournaments/",methods=["GET"])
 def get_player_tournaments(player_id):
     query = request.args.to_dict()
-    #TODO
     year_ids = eval(str(query.get("year_ids")))
     team_ids = eval(str(query.get("team_ids")))
     player = db.session.get(Player,player_id)
@@ -1020,7 +1017,6 @@ def get_player_stats(player_id):
 @route_bp.route("/team/<int:team_id>/tournaments/",methods=["GET"])
 def get_team_tournaments(team_id):
     query = request.args.to_dict()
-    #TODO
     year_ids = eval(str(query.get("year_ids")))
     team_ids = eval(str(query.get("team_ids")))
     team = db.session.get(Team, team_id)
@@ -1041,7 +1037,6 @@ def get_team_tournaments(team_id):
 @route_bp.route("/team/<int:team_id>/years/",methods=["GET"])
 def get_team_years(team_id):
     query = request.args.to_dict()
-    #TODO
     tournament_ids = eval(str(query.get("tournament_ids")))
     team_ids = eval(str(query.get("tournament_ids")))
     team = db.session.get(Team,team_id)
@@ -1057,7 +1052,6 @@ def get_team_years(team_id):
 @route_bp.route("/team/<int:team_id>/teams/",methods=["GET"])
 def get_team_opponents(team_id):
     query = request.args.to_dict()
-    #TODO
     tournament_ids = eval(str(query.get("tournament_ids")))
     year_ids = eval(str(query.get("year_ids")))
     team = db.session.get(Team,team_id)
@@ -1203,9 +1197,6 @@ def get_tournament_stats(tournament_id):
 
     return res
 
-
-
-#TODO Може да го вкараш player/player_id/stats
 @route_bp.route("/player/<int:player_id>/games_stats/",methods=["GET"])
 def get_player_games_stats(player_id):
     query = request.args.to_dict()

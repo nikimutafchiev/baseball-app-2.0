@@ -83,6 +83,7 @@ export default function GameScorer() {
     const [currentSituation, setCurrentSituation] = useState({});
     const [isSituationReady, setIsSituationReady] = useState(null);
     const { token, logout } = useAuth();
+    //function to set the next batter
     const nextBatter = () => {
         const newBatterTurn = battingTurn >= 9 ? 1 : battingTurn + 1;
         if (inningHalf == "UP")
@@ -137,19 +138,20 @@ export default function GameScorer() {
         "8": "CF",
         "9": "RF"
     }
-    //TODO fix roster fetch
     const [inning, setInning] = useState(null);
     const [inningHalf, setInningHalf] = useState(null);
     const [offense, setOffense] = useState({
         firstBaseRunner: null, secondBaseRunner: null, thirdBaseRunner: null
     });
     const [batter, setBatter] = useState(null)
+    //При всяка промяна на ростерите, те се ъпдейтват
     useEffect(() => {
         if (homeRosterData.data)
             setHomeRoster(homeRosterData.data);
         if (awayRosterData.data)
             setAwayRoster(awayRosterData.data);
     }, [homeRosterData.data, awayRosterData.data]);
+    //При всяка промяна на списъка със ситуациите, той се ъпдейтва
     useEffect(() => {
         if (situationsData.data) {
             let newSituations = situationsData.data;
@@ -157,6 +159,7 @@ export default function GameScorer() {
             setSituations(newSituations);
         }
     }, [situationsData.data]);
+    //При всякаква промяна в играта, се ъпдейтват всички променливи
     useEffect(() => {
         if (game.data) {
             setInning(game.data.inning);
@@ -223,6 +226,7 @@ export default function GameScorer() {
         setStrikeCount(0);
         setBallCount(0);
     }
+    //Функция за увеличаване на броя на аутовете
     const incrementOuts = async () => {
         if (outs + 1 == 3) {
             setOuts(3);
@@ -314,6 +318,7 @@ export default function GameScorer() {
 
         }
     }
+
     const situationAdder = () => {
         const newOuts = outs;
         setSituations([{ id: Infinity, data: { batter: currentSituation.batter, inning: currentSituation.inning, inningHalf: currentSituation.inningHalf, outs: newOuts, situation: currentSituation.situation, situationCategory: currentSituation.situationCategory, defense: currentSituation.defense, runners: runnersSituations, runs: runnersSituations.filter((runner) => runner.finalBase == "Home").length } }, ...situations]);
@@ -335,18 +340,21 @@ export default function GameScorer() {
         setCurrentSituation({});
 
     }
+    //Добавя ситуация, ако има ситуация и няма ситуации, които чакат да бъдат обработени  
     useEffect((() => {
         if (isSituationReady == true && Object.keys(currentSituation).length != 0) {
             setRunnerWindowCount(0);
             situationAdder();
         }
     }), [isSituationReady, currentSituation]);
+    //Задава ситуация, която в последствие да бъде добавена
     const addSituation = (currentBatter, situationCategory, situation, isOut = false, outs = [], assists = [], errors = []) => {
         setCurrentSituation({ batter: currentBatter, inning: inning, inningHalf: inningHalf, isOut: isOut, situation: situation, situationCategory: situationCategory, runners: runnersSituations, defense: { assists: assists, outs: outs, errors: errors } });
 
     }
     const [runnerWindowCount, setRunnerWindowCount] = useState(0);
     const [runnersToMove, setRunnersToMove] = useState([]);
+    //Движи рънерите по базите
     const moveRunners = (bases, isBatterMoving = true) => {
         const movedRunnerFirst = getMovedRunner("1B", bases), movedRunnerSecond = getMovedRunner("2B", bases), movedRunnerThird = getMovedRunner("3B", bases);
         let runnersMove = [{ newBasePosition: "1B", player: movedRunnerFirst.player, oldBasePosition: movedRunnerFirst.basePosition },
@@ -390,6 +398,7 @@ export default function GameScorer() {
         "8": "centerFielder",
         "9": "rightFielder"
     }
+    //Връща всички рънери, които ще отбележат задължително при даден брой бази
     const getScoringRunners = (bases) => {
         const isFirstOccupied = !!offense.firstBaseRunner, isSecondOccupied = !!offense.secondBaseRunner, isThirdOccupied = !!offense.thirdBaseRunner;
         switch (bases) {
@@ -434,6 +443,7 @@ export default function GameScorer() {
                 return [];
         }
     }
+    //Връща рънера, който ще се окаже на дадена база при определен брой бази за минаване
     const getMovedRunner = (position, bases) => {
         switch (position) {
             case "1B":
@@ -468,7 +478,7 @@ export default function GameScorer() {
             setBattingTurn(homeBattingTurn)
         }
     }
-    //No update on fetched rosters
+    //Зарежда защитаващия и нападащия отбор
     const loadDefenseOffense = () => {
         let attackRoster, defenseRoster
 
@@ -497,7 +507,7 @@ export default function GameScorer() {
     }
     useEffect(() => loadDefenseOffense(), [homeRoster, awayRoster, battingTurn])
     useEffect((() => { switchTeams(); loadDefenseOffense() }), [inningHalf]);
-    //TODO Fix the bug, when runner window is no opened, to delete all the runners, when changing batting turns 424-433
+    //Списъл с всички компоненти, които се отварят според дадена ситуация
     const situationComponents = {
         "Hit": <GameScorerHitOptions close={clearOption} situationFunction={(bases, hitType) => {
             setRunnersSituations([...runnersSituations, { player: batter, situationCategory: "hit", situation: hitType, finalBase: null }])
@@ -881,7 +891,6 @@ export default function GameScorer() {
             moveRunners={moveRunners}
             clearCount={() => clearCount()}
             nextBatter={() => nextBatter()}
-            //TODO
             addSituation={(situationCategory, situation) => { setRunnersSituations([...runnersSituations, { player: batter, situationCategory: situationCategory, situation: situation, finalBase: null }]); addSituation(batter, situationCategory, situation) }}
             occupiedBases={
                 Object.entries(offense).map(([key, value]) => {
