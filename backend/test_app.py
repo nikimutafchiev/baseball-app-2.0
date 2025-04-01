@@ -15,7 +15,7 @@ def test_merge_dicts():
     dict1 = {"a":1, "b":1,"c":0,"e":12}
     dict2 = {"a":3,"b":-1,"c":2,"d":11}
     merge_dicts(dict1,dict2)
-    assert dict2 == {"a":4,"b":0,"c":2,"d":11,"e":13}
+    assert dict2 == {"a":4,"b":0,"c":2,"d":11,"e":12}
 
 def test_get_players_status(client):
     response = client.get('/players')
