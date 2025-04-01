@@ -27,10 +27,6 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
 
-      - name: Run Flask server
-        run: |
-          cd backend
-          python app.py
       - name: Run Tests
         run: |
           cd backend
