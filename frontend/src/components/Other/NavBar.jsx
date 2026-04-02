@@ -44,7 +44,7 @@ export default function NavBar() {
 					<Link class="flex flex-row gap-2 items-center" to="/">
 						<BiBaseball size={32} color="white" />
 						<div className="text-base lg:text-xl text-white font-semibold">
-							Baseball App
+							MyBaseball
 						</div>
 					</Link>
 					<div className="flex flex-row gap-5 text-white ">

@@ -14,11 +14,11 @@ module.exports = {
       },
       colors:
       {
-        "primary_1": "#386641",
-        "primary_2": "#6A994E",
-        "primary_2_hover": "#84b867",
-        "primary_3": "#A7C957",
-        "dark_1": "#6c584c",
+        "primary_1": "#0d47a1",
+        "primary_2": "#1976d2",
+        "primary_2_hover": "#1565c0",
+        "primary_3": "#1e88e5",
+        "dark_1": "#454655",
         "dark_2": "#a98467",
         "background": "#F2E8CF",
         "accent_1": "#BC4749",

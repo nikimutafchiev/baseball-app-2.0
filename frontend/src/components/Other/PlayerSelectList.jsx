@@ -6,7 +6,7 @@ import { useState } from "react";
 import PlayerSelect from "./PlayerSelect";
 export default function PlayerSelectList(props) {
     const [searchInput, setSearchInput] = useState("");
-    return (<><div className="flex flex-col bg-white h-4/5 overflow-y-auto py-2 px-4 fixed self-center z-20 rounded w-2/3">
+    return (<><div className="flex flex-col top-6 bg-white h-4/5 overflow-y-auto py-2 px-4 fixed self-center z-20 rounded w-2/3">
         <div className="flex flex-row justify-between items-start">
             <TextField value={searchInput} onChange={(e) => setSearchInput(e.target.value)} label={<div className="flex flex-row gap-1 items-center"><FiSearch /><div>Search</div></div>} className="bg-white w-1/4 rounded" />
             <button className="" onClick={() => props.close()}><RiCloseCircleLine size={30} color="gray" /></button>
