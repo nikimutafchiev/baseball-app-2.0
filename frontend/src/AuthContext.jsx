@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 import useSWR from 'swr';
+import { API } from './global/API';
 
 const AuthContext = createContext();
 
@@ -11,11 +12,11 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(token != "" ? jwtDecode(token).user : null);
     const navigate = useNavigate();
     const location = useLocation();
-    // const logged = useSWR(`http://localhost:6363/is_logged/?username=${user ? user.username : "''"}&password=${user ? user.password : "''"}`, (url) => fetch(url).then((res) => res.json()));
+    // const logged = useSWR(`${API}/is_logged/?username=${user ? user.username : "''"}&password=${user ? user.password : "''"}`, (url) => fetch(url).then((res) => res.json()));
     const login = async (userData) => {
 
         try {
-            const response = await fetch("http://localhost:6363/login", {
+            const response = await fetch(`${API}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -49,7 +50,7 @@ export const AuthProvider = ({ children }) => {
 
     const signup = async (userData) => {
         try {
-            const response = await fetch("http://localhost:6363/signup", {
+            const response = await fetch(`${API}/signup`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

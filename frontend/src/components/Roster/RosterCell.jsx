@@ -4,6 +4,7 @@ import RosterPlayerPicker from "./RosterPlayerPicker";
 import { IoClose } from "react-icons/io5";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
+import { API } from "../../global/API";
 
 export default function RosterCell(props) {
     const { id } = useParams();
@@ -43,7 +44,7 @@ export default function RosterCell(props) {
     const { token, logout } = useAuth();
     useEffect(() => {
         if (submitted && clicked == 0 && player.id !== -1) {
-            fetch("http://localhost:6363/game/team/roster/player", {
+            fetch(`${API}/game/team/roster/player`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

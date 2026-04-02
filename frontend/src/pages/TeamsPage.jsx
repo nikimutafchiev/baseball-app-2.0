@@ -6,11 +6,12 @@ import { useEffect, useState } from "react";
 import InputFormTeam from "../components/InputForms/InputFormTeam";
 import useSWR from "swr";
 import { useAuth } from "../AuthContext";
+import { API } from "../global/API";
 
 export default function TeamsPage() {
     const [addClicked, setAddClicked] = useState(false);
     const [searchInput, setSearchInput] = useState("");
-    const teams = useSWR("http://localhost:6363/teams", (url) => fetch(url).then((res) => res.json()));
+    const teams = useSWR(`${API}/teams`, (url) => fetch(url).then((res) => res.json()));
     useEffect(
         () => { teams.mutate() }
         , [addClicked]);

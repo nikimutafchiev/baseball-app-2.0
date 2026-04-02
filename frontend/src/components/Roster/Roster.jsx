@@ -3,9 +3,10 @@ import RosterCell from "./RosterCell";
 import RosterPitcherCell from "./RosterPitcherCell";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
+import { API } from "../../global/API";
 export default function Roster(props) {
     const { id } = useParams();
-    const roster = useSWR(`http://localhost:6363/game/team/roster/?home_away=${props.homeAway}&game_id=${id}`, (url) => fetch(url).then((res) => res.json()));
+    const roster = useSWR(`${API}/game/team/roster/?home_away=${props.homeAway}&game_id=${id}`, (url) => fetch(url).then((res) => res.json()));
     const [takenPositions, setTakenPositions] = useState([]);
     const [takenPlayers, setTakenPlayers] = useState([]);
     const [pitcher, setPitcher] = useState({

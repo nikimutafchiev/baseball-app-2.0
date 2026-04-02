@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { RiCloseCircleLine } from "react-icons/ri";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
+import { API } from "../../global/API";
 export default function TeamSelectList(props) {
   const { token, logout } = useAuth();
   const [teamSelected, setTeamSelected] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const addTeam = async () => {
     await fetch(
-      `http://localhost:6363/tournament_teams/?tournament_id=${props.tournament_id}&team_id=${selectedTeam.id}`,
+      `${API}/tournament_teams/?tournament_id=${props.tournament_id}&team_id=${selectedTeam.id}`,
       {
         method: "POST",
         headers: {
