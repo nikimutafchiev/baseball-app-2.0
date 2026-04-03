@@ -7,11 +7,12 @@ import InputFormTeam from "../components/InputForms/InputFormTeam";
 import useSWR from "swr";
 import { useAuth } from "../AuthContext";
 import { API } from "../global/API";
+import { swrFetcher } from "../global/swrFetcher";
 
 export default function TeamsPage() {
     const [addClicked, setAddClicked] = useState(false);
     const [searchInput, setSearchInput] = useState("");
-    const teams = useSWR(`${API}/teams`, (url) => fetch(url).then((res) => res.json()));
+    const teams = useSWR(`${API}/teams`, swrFetcher);
     useEffect(
         () => { teams.mutate() }
         , [addClicked]);

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import useSWR from 'swr';
 import { useAuth } from '../../AuthContext';
 import { API } from '../../global/API';
+import { swrFetcher } from '../../global/swrFetcher';
 export default function Game(props) {
     const { user, token, logout } = useAuth();
     const statusIcons = {
@@ -12,7 +13,7 @@ export default function Game(props) {
         ended: <RiCheckDoubleLine size={props.size == "small" ? 20 : 25} />
     };
 
-    const favorite = useSWR(`${API} / game / liked /? user_id = ${user ? user.id : - 1}& game_id=${props.id} `, (url) => fetch(url).then((res) => res.json()));
+    const favorite = useSWR(`${API} / game / liked /? user_id = ${user ? user.id : - 1}& game_id=${props.id} `, swrFetcher);
     const [isLiked, setIsLiked] = useState(false);
     useEffect(() => {
         if (favorite.data)

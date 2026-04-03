@@ -25,6 +25,7 @@ import {
 } from "@mui/material";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa"
 import { API } from "../../global/API";
+import { swrFetcher } from "../../global/swrFetcher";
 export default function TeamInfo() {
 	const { id } = useParams();
 	const icons = {
@@ -63,11 +64,11 @@ export default function TeamInfo() {
 	const [overviewOption, setOverviewOption] = useState("Batting");
 	const years = useSWR(
 		`${API}/team/${id}/years/${get_query(true, true, false)}`,
-		(url) => fetch(url).then((res) => res.json())
+		swrFetcher
 	);
 	const teams = useSWR(
 		`${API}/team/${id}/teams/${get_query(true, false, true)}`,
-		(url) => fetch(url).then((res) => res.json())
+		swrFetcher
 	);
 	const tournaments = useSWR(
 		`${API}/team/${id}/tournaments/${get_query(
@@ -75,11 +76,11 @@ export default function TeamInfo() {
 			true,
 			true
 		)}`,
-		(url) => fetch(url).then((res) => res.json())
+		swrFetcher
 	);
 	const stats = useSWR(
 		`${API}/team/${id}/stats/${get_query(true, true, true)}`,
-		(url) => fetch(url).then((res) => res.json())
+		swrFetcher
 	);
 	const teamsToSelect = useSWR(`${API}/teams`, (url) =>
 		fetch(url).then((res) => res.json())
@@ -95,7 +96,7 @@ export default function TeamInfo() {
 			true,
 			selectedTeam ? selectedTeam.id : null
 		)}`,
-		(url) => fetch(url).then((res) => res.json())
+		swrFetcher
 	);
 	const [sortColumn, setSortColumn] = useState("startTime");
 	const [sortOrder, setSortOrder] = useState("DESC");

@@ -1,8 +1,9 @@
 import { RiCloseCircleLine } from "react-icons/ri";
 import { API } from "../../global/API";
 import useSWR from "swr";
+import { swrFetcher } from "../../global/swrFetcher";
 export default function RosterPlayerPicker(props) {
-    const roster = useSWR(`${API}/team_tournament/roster/?team_id=${props.team.id}&tournament_id=${props.tournament.id}`, (url) => fetch(url).then((res) => res.json()));
+    const roster = useSWR(`${API}/team_tournament/roster/?team_id=${props.team.id}&tournament_id=${props.tournament.id}`, swrFetcher);
 
     return (<div className="fixed inset-0 z-10 bg-black bg-opacity-50">
         <div className="fixed z-20 inset-0 px-6 flex flex-col text-white font-semibold cursor-default bg-white w-1/2 h-4/5  self-center justify-self-center rounded">

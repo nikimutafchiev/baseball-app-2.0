@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(token != "" ? jwtDecode(token).user : null);
     const navigate = useNavigate();
     const location = useLocation();
-    // const logged = useSWR(`${API}/is_logged/?username=${user ? user.username : "''"}&password=${user ? user.password : "''"}`, (url) => fetch(url).then((res) => res.json()));
+    // const logged = useSWR(`${API}/is_logged/?username=${user ? user.username : "''"}&password=${user ? user.password : "''"}`, swrFetcher);
     const login = async (userData) => {
 
         try {

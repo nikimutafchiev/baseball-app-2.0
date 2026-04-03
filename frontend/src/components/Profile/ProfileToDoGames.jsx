@@ -1,9 +1,10 @@
 import { useAuth } from "../../AuthContext"
 import useSWR from "swr";
 import { API } from "../../global/API";
+import { swrFetcher } from "../../global/swrFetcher";
 export default function ProfileToDoGames() {
     const { user } = useAuth();
-    const toDoGames = useSWR(`${API}/to_do_games/?user_id=${user.id}`, (url) => fetch(url).then((res) => res.json()));
+    const toDoGames = useSWR(`${API}/to_do_games/?user_id=${user.id}`, swrFetcher);
     return (<div className="w-full flex flex-col ">
         <h2 className="text-2xl font-semibold">To do list</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 py-5 ">

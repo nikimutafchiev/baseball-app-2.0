@@ -3,9 +3,10 @@ import { Link, useParams } from "react-router-dom";
 import { useState } from "react";
 import { API } from "../../global/API";
 import useSWR from "swr";
+import { swrFetcher } from "../../global/swrFetcher";
 export default function TournamentInfoPlayerLeaderboard() {
     const { id } = useParams();
-    const stats = useSWR(`${API}/tournament/${id}/stats`, (url) => fetch(url).then((res) => res.json()));
+    const stats = useSWR(`${API}/tournament/${id}/stats`, swrFetcher);
     const [overviewOption, setOverviewOption] = useState("Batting");
     return (<>
         {

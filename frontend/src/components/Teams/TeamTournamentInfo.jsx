@@ -19,6 +19,7 @@ import { BiEdit } from "react-icons/bi";
 import { RiSaveLine, RiTeamLine } from "react-icons/ri";
 import { LineChart } from "@mui/x-charts";
 import { API } from "../../global/API";
+import { swrFetcher } from "../../global/swrFetcher";
 export default function TeamTournamentInfo(props) {
     const { team_id, id } = useParams();
     const icons = {
@@ -42,17 +43,17 @@ export default function TeamTournamentInfo(props) {
         return res;
     };
     const [isEdit, setIsEdit] = useState(false);
-    const team = useSWR(`${API}/team/${team_id}`, (url) => fetch(url).then((res) => res.json()));
+    const team = useSWR(`${API}/team/${team_id}`, swrFetcher);
     const [isShrinked, setIsShrinked] = useState(false);
     const teams = useSWR(
         `${API}/team/${team_id}/teams/${get_query()}`,
-        (url) => fetch(url).then((res) => res.json())
+        swrFetcher
     );
     const [tableOption, setTableOption] = useState("Games");
 
     const stats = useSWR(
         `${API}/team/${team_id}/stats/${get_query(true)}`,
-        (url) => fetch(url).then((res) => res.json())
+        swrFetcher
     );
     const [sortColumn, setSortColumn] = useState("startTime");
     const [sortOrder, setSortOrder] = useState("DESC");

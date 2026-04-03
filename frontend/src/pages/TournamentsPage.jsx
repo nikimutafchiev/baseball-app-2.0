@@ -8,10 +8,11 @@ import useSWR from "swr";
 import { useEffect } from "react";
 import { useAuth } from "../AuthContext";
 import { API } from "../global/API";
+import { swrFetcher } from "../global/swrFetcher";
 export default function TournamentsPage() {
     const [addClicked, setAddClicked] = useState(false);
     const [searchInput, setSearchInput] = useState("");
-    const tournaments = useSWR(`${API}/tournaments`, (url) => fetch(url).then((res) => res.json()));
+    const tournaments = useSWR(`${API}/tournaments`, swrFetcher);
     useEffect(
         () => { tournaments.mutate() }
         , [addClicked]);

@@ -2,9 +2,10 @@ import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from
 import { useParams } from "react-router-dom";
 import useSWR from "swr";
 import { API } from "../../global/API";
+import { swrFetcher } from "../../global/swrFetcher";
 export default function TournamentInfoRanking() {
     const { id } = useParams()
-    const teams = useSWR(`${API}/tournament/${id}/ranking`, (url) => fetch(url).then((res) => res.json()));
+    const teams = useSWR(`${API}/tournament/${id}/ranking`, swrFetcher);
     return (<>{teams.data && <div className="w-full bg-white rounded p-4">
         <h2 className="text-3xl font-semibold mb-4">Rankings</h2>
         <TableContainer >

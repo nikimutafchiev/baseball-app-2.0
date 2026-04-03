@@ -9,9 +9,10 @@ import {
 import dayjs from "dayjs";
 import useSWR from "swr";
 import { API } from "../../global/API";
+import { swrFetcher } from "../../global/swrFetcher";
 export default function Schedule() {
     const [date, setDate] = useState(dayjs());
-    const games = useSWR(`${API}/schedule/?year=${new Date(date).getFullYear()}&month=${new Date(date).getMonth() + 1}&day=${new Date(date).getDate()}`, (url) => fetch(url).then((res) => res.json()));
+    const games = useSWR(`${API}/schedule/?year=${new Date(date).getFullYear()}&month=${new Date(date).getMonth() + 1}&day=${new Date(date).getDate()}`, swrFetcher);
     const tournaments = games.data ? new Map(games.data.map((game) => [game.tournament.id, game.tournament.name])) : new Map();
     return (
         <div className="flex flex-col">

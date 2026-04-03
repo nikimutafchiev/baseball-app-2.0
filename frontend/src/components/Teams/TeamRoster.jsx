@@ -4,12 +4,13 @@ import { RiAddCircleLine } from "react-icons/ri";
 import PlayerSelectList from "../Other/PlayerSelectList";
 import useSWR from "swr";
 import { API } from "../../global/API";
+import { swrFetcher } from "../../global/swrFetcher";
 export default function TeamRoster() {
     const [addClicked, setAddClicked] = useState(false);
     const { team_id, id } = useParams();
-    const roster = useSWR(`${API}/team_tournament/roster/?team_id=${team_id}&tournament_id=${id}`, (url) => fetch(url).then((res) => res.json()));
-    const players = useSWR(`${API}/players`, (url) => fetch(url).then((res) => res.json()));
-    const taken_players = useSWR(`${API}/tournament/taken_players/?tournament_id=${id}`, (url) => fetch(url).then((res) => res.json()));
+    const roster = useSWR(`${API}/team_tournament/roster/?team_id=${team_id}&tournament_id=${id}`, swrFetcher);
+    const players = useSWR(`${API}/players`, swrFetcher);
+    const taken_players = useSWR(`${API}/tournament/taken_players/?tournament_id=${id}`, swrFetcher);
     const [selectList, setSelectList] = useState([]);
     useEffect(
         () => {

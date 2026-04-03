@@ -7,10 +7,11 @@ import { FiSearch } from "react-icons/fi";
 import useSWR from "swr";
 import { useAuth } from "../AuthContext";
 import { API } from "../global/API";
+import { swrFetcher } from "../global/swrFetcher";
 export default function PlayersPage() {
     const [addClicked, setAddClicked] = useState(false);
     const [searchInput, setSearchInput] = useState("");
-    const players = useSWR(`${API}/players`, (url) => fetch(url).then((res) => res.json()));
+    const players = useSWR(`${API}/players`, swrFetcher);
     useEffect(
         () => { players.mutate() }, [addClicked]
     )

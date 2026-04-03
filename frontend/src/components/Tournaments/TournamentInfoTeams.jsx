@@ -7,11 +7,12 @@ import useSWR from "swr";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
 import { API } from "../../global/API";
+import { swrFetcher } from "../../global/swrFetcher";
 export default function TournamentInfoTeams() {
     const [addClicked, setAddClicked] = useState(false);
     const { id } = useParams();
-    const selectTeams = useSWR(`${API}/teams`, (url) => fetch(url).then((res) => res.json()));
-    const teams = useSWR(`${API}/tournament_teams/?tournament_id=${id}`, (url) => fetch(url).then((res) => res.json()));
+    const selectTeams = useSWR(`${API}/teams`, swrFetcher);
+    const teams = useSWR(`${API}/tournament_teams/?tournament_id=${id}`, swrFetcher);
     const teams_ids = teams.data ? teams.data.map((team) => team.id) : []
     const selectData = selectTeams.data ? selectTeams.data.filter((team) => !teams_ids.includes(team.id)) : [];
     const { user } = useAuth();

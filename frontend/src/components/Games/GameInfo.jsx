@@ -17,6 +17,7 @@ import validator from "validator"
 import GameScorerPlayByPlay from "../GameScorer/GameScorerPlayByPlay";
 import { CircularProgress, Alert } from "@mui/material";
 import { API } from "../../global/API";
+import { swrFetcher } from "../../global/swrFetcher";
 export default function GameInfo() {
     const { user, token } = useAuth();
     const statusIcons = {
@@ -25,11 +26,11 @@ export default function GameInfo() {
         ended: <RiCheckDoubleLine size={25} />
     };
     const { id } = useParams();
-    const game = useSWR(`${API}/game/${id}`, (url) => fetch(url).then((res) => res.json()));
+    const game = useSWR(`${API}/game/${id}`, swrFetcher);
     const [homeAway, setHomeAway] = useState("Home");
-    const homeRoster = useSWR(`${API}/game/team/roster/?game_id=${id}&home_away=HOME`, (url) => fetch(url).then((res) => res.json()));
-    const awayRoster = useSWR(`${API}/game/team/roster/?game_id=${id}&home_away=AWAY`, (url) => fetch(url).then((res) => res.json()));
-    const situations = useSWR(`${API}/game/${id}/situations`, (url) => fetch(url).then((res) => res.json()));
+    const homeRoster = useSWR(`${API}/game/team/roster/?game_id=${id}&home_away=HOME`, swrFetcher);
+    const awayRoster = useSWR(`${API}/game/team/roster/?game_id=${id}&home_away=AWAY`, swrFetcher);
+    const situations = useSWR(`${API}/game/${id}/situations`, swrFetcher);
     const [roster, setRoster] = useState([]);
     useEffect(() => {
         if (homeAway == "Home" && homeRoster.data)

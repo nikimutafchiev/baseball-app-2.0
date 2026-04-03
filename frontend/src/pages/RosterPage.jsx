@@ -4,10 +4,11 @@ import useSWR from "swr";
 import { useState } from "react";
 import { useAuth } from "../AuthContext";
 import { API } from "../global/API";
+import { swrFetcher } from "../global/swrFetcher";
 export default function RosterPage() {
     const { id } = useParams();
     const navigate = useNavigate()
-    const game = useSWR(`${API}/game/${id}`, (url) => fetch(url).then((res) => res.json()));
+    const game = useSWR(`${API}/game/${id}`, swrFetcher);
     const [rostersReady, setRostersReady] = useState([false, false]);
     const { token, logout } = useAuth();
     return (<>{

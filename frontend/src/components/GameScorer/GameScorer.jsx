@@ -21,6 +21,7 @@ import GameScorerOutByRuleOptions from "./GameScorerOutByRuleOptions";
 import useSWR from "swr";
 import { useAuth } from "../../AuthContext";
 import { API } from "../../global/API";
+import { swrFetcher } from "../../global/swrFetcher";
 export default function GameScorer() {
     const { id } = useParams();
     const [situationOption, setSituationOption] = useState("");
@@ -40,10 +41,10 @@ export default function GameScorer() {
     const [homeBattingTurn, setHomeBattingTurn] = useState(1);
     const [awayBattingTurn, setAwayBattingTurn] = useState(1);
     const [roster, setRoster] = useState([]);
-    const game = useSWR(`${API}/game/${id}`, (url) => fetch(url).then((res) => res.json()));
-    const homeRosterData = useSWR(`${API}/game/team/roster/?game_id=${id}&home_away=HOME`, (url) => fetch(url).then((res) => res.json()));
-    const awayRosterData = useSWR(`${API}/game/team/roster/?game_id=${id}&home_away=AWAY`, (url) => fetch(url).then((res) => res.json()));
-    const situationsData = useSWR(`${API}/game/${id}/situations`, (url) => fetch(url).then((res) => res.json()));
+    const game = useSWR(`${API}/game/${id}`, swrFetcher);
+    const homeRosterData = useSWR(`${API}/game/team/roster/?game_id=${id}&home_away=HOME`, swrFetcher);
+    const awayRosterData = useSWR(`${API}/game/team/roster/?game_id=${id}&home_away=AWAY`, swrFetcher);
+    const situationsData = useSWR(`${API}/game/${id}/situations`, swrFetcher);
     const [homeRoster, setHomeRoster] = useState([
         // { id: 121, battingOrder: 5, uniformNumber: 55, firstName: "Nikolay", lastName: "Mutafchiev", position: "CF" },
         // { id: 122, battingOrder: 2, uniformNumber: 12, firstName: "Ivan", lastName: "Petrov", position: "1B" },

@@ -26,6 +26,7 @@ import { FaArrowDown, FaArrowUp } from "react-icons/fa"
 import useSWR from "swr";
 import PlayerSelectList from "../Other/PlayerSelectList";
 import { API } from "../../global/API";
+import { swrFetcher } from "../../global/swrFetcher";
 export default function PlayerInfo() {
 	const [isEdit, setIsEdit] = useState(false);
 	const { id } = useParams();
@@ -59,7 +60,7 @@ export default function PlayerInfo() {
 	const [selectedPlayer, setSelectedPlayer] = useState(null);
 	const stats = useSWR(
 		`${API}/player/${id}/stats/${get_query(true, true, true)}`,
-		(url) => fetch(url).then((res) => res.json())
+		swrFetcher
 	);
 	const [selectedPlayerStats, setSelectedPlayerStats] = useState([]);
 	const games_stats = useSWR(
@@ -68,15 +69,15 @@ export default function PlayerInfo() {
 			true,
 			true
 		)}`,
-		(url) => fetch(url).then((res) => res.json())
+		swrFetcher
 	);
 	const years = useSWR(
 		`${API}/player/${id}/years/${get_query(true, true, false)}`,
-		(url) => fetch(url).then((res) => res.json())
+		swrFetcher
 	);
 	const teams = useSWR(
 		`${API}/player/${id}/teams/${get_query(true, false, true)}`,
-		(url) => fetch(url).then((res) => res.json())
+		swrFetcher
 	);
 	const tournaments = useSWR(
 		`${API}/player/${id}/tournaments/${get_query(
@@ -84,7 +85,7 @@ export default function PlayerInfo() {
 			true,
 			true
 		)}`,
-		(url) => fetch(url).then((res) => res.json())
+		swrFetcher
 	);
 
 	const [isShrinked, setIsShrinked] = useState(false);
