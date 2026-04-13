@@ -16,7 +16,7 @@ export default function TeamRoster() {
         () => {
             players.mutate(); roster.mutate();
             taken_players.mutate();
-            setSelectList(players.data && taken_players.data ? players.data.filter((player) => !taken_players.data.includes(player.id)) : [])
+            setSelectList(players.data && taken_players.data ? players.datalter((player) => !taken_players.data.includes(player.id)) : [])
         }
         , [addClicked]
     )

@@ -59,7 +59,7 @@ export default function Login() {
                             sx={{
                                 '& .MuiOutlinedInput-root.Mui-focused': {
                                     '& fieldset': {
-                                        borderColor: 'green',
+                                        borderColor: 'primary_2',
                                     },
                                 },
                                 '& .MuiInputBase-input': {
