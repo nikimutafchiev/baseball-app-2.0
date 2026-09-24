@@ -3,29 +3,27 @@ import { API } from "../../global/API";
 import useSWR from "swr";
 import TeamSelectList from "../Other/TeamSelectList";
 import { swrFetcher } from "../../global/swrFetcher";
-export default function TeamH2HStats({ id }) {
+import { get_query } from "../../global/get_stat_query";
+import { useParams } from "react-router-dom";
+import { Autocomplete, TextField } from "@mui/material";
+export default function TeamH2HStats() {
 
-    const [teamIDs, setTeamIDs] = useState([]);
     const [tournamentIDs, setTournamentIDs] = useState([]);
     const [yearsSelect, setYearsSelect] = useState([]);
-    const query_params = {
-        tournament_query:
-            tournamentIDs.length != 0 ? `tournament_ids=[${tournamentIDs}]` : "",
-        team_query: teamIDs.length != 0 ? `team_ids=[${teamIDs}]` : "",
-        year_query: yearsSelect.length != 0 ? `years=[${yearsSelect}]` : "",
-    };
-    const get_query = (tournament, team, year, h2h = null) => {
-        var res = "";
-        if (tournament == true && query_params.tournament_query.length != 0)
-            res += `?${query_params.tournament_query}`;
-        if (team == true && query_params.team_query.length != 0)
-            res += `${res.length == 0 ? "?" : "&"}${query_params.team_query}`;
-        if (year == true && query_params.year_query.length != 0)
-            res += `${res.length == 0 ? "?" : "&"}${query_params.year_query}`;
-        if (h2h) res += `${res.length == 0 ? "?" : "&"}team_ids=[${h2h}]`;
-        return res;
-    };
-
+    const { id } = useParams();
+    const years = useSWR(
+        `${API}/team/${id}/years/${get_query(tournamentIDs, [], yearsSelect, true, true, false)}`,
+        swrFetcher
+    );
+    const tournaments = useSWR(
+        `${API}/team/${id}/tournaments/${get_query(
+            tournamentIDs, [], yearsSelect,
+            false,
+            true,
+            true
+        )}`,
+        swrFetcher
+    );
 
     const teamsToSelect = useSWR(`${API}/teams`, (url) =>
         fetch(url).then((res) => res.json())
@@ -38,6 +36,7 @@ export default function TeamH2HStats({ id }) {
     const [selectClicked, setSelectClicked] = useState(false);
     const teamH2Hstats = useSWR(
         `${API}/team/${id}/stats/${get_query(
+            tournamentIDs, [], yearsSelect,
             true,
             false,
             true,
@@ -51,6 +50,7 @@ export default function TeamH2HStats({ id }) {
         if (selectedTeam)
             fetch(
                 `${API}/team/${selectedTeam.id}/stats/${get_query(
+                    tournamentIDs, [], yearsSelect,
                     true,
                     false,
                     true,
@@ -66,6 +66,49 @@ export default function TeamH2HStats({ id }) {
     }, [selectedTeam, tournamentIDs, yearsSelect]);
     return <>
         <h3 className="text-3xl font-semibold">Team H2H</h3>
+        <div className="grid grid-cols-2 gap-6 justify-around h-40 mb-4 md:h-12">
+            <div className=" rounded drop-shadow-lg">
+                <Autocomplete
+                    multiple
+                    limitTags={1}
+                    className="absolute inset-0"
+                    size="small"
+                    options={years.data ? years.data : []}
+                    disableCloseOnSelect
+                    getOptionLabel={(option) => option}
+                    onChange={(e, newValues) => setYearsSelect(newValues)}
+                    renderInput={(params) => (
+                        <TextField
+                            label="Year"
+                            className="bg-white rounded"
+                            {...params}
+                        />
+                    )}
+                />
+            </div>
+
+            <div className=" rounded  drop-shadow-lg">
+                <Autocomplete
+                    multiple
+                    limitTags={1}
+                    className="absolute inset-0"
+                    size="small"
+                    options={tournaments.data ? tournaments.data : []}
+                    disableCloseOnSelect
+                    getOptionLabel={(option) => option.name}
+                    onChange={(e, newValues) =>
+                        setTournamentIDs(newValues.map((value) => value.id))
+                    }
+                    renderInput={(params) => (
+                        <TextField
+                            label="Tournament"
+                            className="bg-white rounded"
+                            {...params}
+                        />
+                    )}
+                />
+            </div>
+        </div>
         <div className="flex flex-col">
             <div className="flex flex-row justify-between">
                 <button
@@ -158,26 +201,35 @@ export default function TeamH2HStats({ id }) {
                         }
                     ].map((stat) => (
                         <>
+                            {/* Team 1 Stat Block */}
                             <div
-                                className={`text-left border-r-2 p-1.5 ${stat.team1 > stat.team2
-                                    ? "bg-green-100"
-                                    : stat.team1 == stat.team2
-                                        ? "bg-blue-100"
-                                        : ""
+                                className={`flex items-center justify-start pl-6 pr-4 py-3 rounded-l-2xl border-y border-l transition-all duration-300 ${stat.team1 > stat.team2
+                                    ? "bg-emerald-50/40 border-emerald-100 text-emerald-700 font-black"
+                                    : stat.team1 === stat.team2
+                                        ? "bg-blue-50/40 border-blue-100 text-primary_2 font-black"
+                                        : "bg-white border-slate-100 text-slate-300 font-medium"
                                     }`}
                             >
-                                {stat.team1}
+                                <span className="text-xl tracking-tighter">{stat.team1}</span>
                             </div>
-                            <div className="text-center p-1.5">{stat.type}</div>
+
+                            {/* Center Label Block */}
+                            <div className="flex items-center justify-center bg-white border-y border-slate-100 px-4 py-3">
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-center leading-none">
+                                    {stat.type}
+                                </span>
+                            </div>
+
+                            {/* Team 2 Stat Block */}
                             <div
-                                className={`text-right border-l-2  p-1.5 ${stat.team1 < stat.team2
-                                    ? "bg-green-100"
-                                    : stat.team2 == stat.team1
-                                        ? "bg-blue-100"
-                                        : ""
+                                className={`flex items-center justify-end pr-6 pl-4 py-3 rounded-r-2xl border-y border-r transition-all duration-300 ${stat.team2 > stat.team1
+                                    ? "bg-emerald-50/40 border-emerald-100 text-emerald-700 font-black"
+                                    : stat.team2 === stat.team1
+                                        ? "bg-blue-50/40 border-blue-100 text-primary_2 font-black"
+                                        : "bg-white border-slate-100 text-slate-300 font-medium"
                                     }`}
                             >
-                                {stat.team2}
+                                <span className="text-xl tracking-tighter">{stat.team2}</span>
                             </div>
                         </>
                     ))}

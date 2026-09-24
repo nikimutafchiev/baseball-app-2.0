@@ -31,6 +31,9 @@ import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './ProtectedRoute';
 import SignUpPage from './pages/SigupPage';
 import StatsGuidePage from './pages/StatsGuidePage';
+import TeamStats from './components/Stats/TeamStats';
+import TeamDetailedStats from './components/Stats/TeamDetailedStats';
+import TeamH2HStats from './components/Stats/TeamH2HStats';
 const rooter = createBrowserRouter([
   {
     path: "/",
@@ -60,7 +63,13 @@ const rooter = createBrowserRouter([
       },
       {
         path: "teams/:id",
-        element: <TeamInfoPage />
+        element: <TeamInfoPage />,
+        children: [
+          { path: "stats", element: <TeamStats /> },
+          { path: "detailed_stats", element: <TeamDetailedStats /> },
+          { path: "h2h", element: <TeamH2HStats /> },
+
+        ]
       },
       {
         path: "tournaments",
@@ -141,7 +150,7 @@ const rooter = createBrowserRouter([
       },
       {
         path: "guide",
-        element: <StatsGuidePage/>
+        element: <StatsGuidePage />
       }
     ]
   }

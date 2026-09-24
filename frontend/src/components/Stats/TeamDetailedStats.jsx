@@ -6,33 +6,16 @@ import { get_stat_array } from "../../global/StatArray";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { LineChart } from "@mui/x-charts";
 import useSWR from "swr";
-export default function TeamDetailedStats({ id }) {
-    const [teamIDs, setTeamIDs] = useState([]);
-    const [tournamentIDs, setTournamentIDs] = useState([]);
-    const [yearsSelect, setYearsSelect] = useState([]);
+import { get_query } from "../../global/get_stat_query";
+import { useParams } from "react-router-dom";
+export default function TeamDetailedStats() {
     const [tableOption, setTableOption] = useState("Games");
     const [sortColumn, setSortColumn] = useState("startTime");
     const [sortOrder, setSortOrder] = useState("DESC");
     const [graphStat, setGraphStat] = useState("AVG");
-    const query_params = {
-        tournament_query:
-            tournamentIDs.length != 0 ? `tournament_ids=[${tournamentIDs}]` : "",
-        team_query: teamIDs.length != 0 ? `team_ids=[${teamIDs}]` : "",
-        year_query: yearsSelect.length != 0 ? `years=[${yearsSelect}]` : "",
-    };
-    const get_query = (tournament, team, year, h2h = null) => {
-        var res = "";
-        if (tournament == true && query_params.tournament_query.length != 0)
-            res += `?${query_params.tournament_query}`;
-        if (team == true && query_params.team_query.length != 0)
-            res += `${res.length == 0 ? "?" : "&"}${query_params.team_query}`;
-        if (year == true && query_params.year_query.length != 0)
-            res += `${res.length == 0 ? "?" : "&"}${query_params.year_query}`;
-        if (h2h) res += `${res.length == 0 ? "?" : "&"}team_ids=[${h2h}]`;
-        return res;
-    };
+    const { id } = useParams();
     const stats = useSWR(
-        `${API}/team/${id}/stats/${get_query(true, true, true)}`,
+        `${API}/team/${id}/stats/${get_query([], [], [], true, true, true)}`,
         swrFetcher
     );
 

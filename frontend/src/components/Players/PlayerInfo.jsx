@@ -27,6 +27,7 @@ import useSWR from "swr";
 import PlayerSelectList from "../Other/PlayerSelectList";
 import { API } from "../../global/API";
 import { swrFetcher } from "../../global/swrFetcher";
+import StatsCell from "../Stats/StatCell";
 export default function PlayerInfo() {
 	const [isEdit, setIsEdit] = useState(false);
 	const { id } = useParams();
@@ -753,21 +754,7 @@ export default function PlayerInfo() {
 									),
 									coefficient: false
 								},]).sort((a, b) => b.label === "G" ? 1 : a.coefficient == b.coefficient ? a.label.localeCompare(b.label) : b.coefficient - a.coefficient).map((stat, index) => (
-									<div
-										key={index}
-										className="bg-white p-4 h-28 rounded-2xl shadow-lg flex flex-col justify-between"
-									>
-										<div className="flex flex-col w-fit justify-between items-center">
-											<a className="font-semibold text-gray-800 pr-6" href="/guide">
-												{stat.label}
-											</a>
-											<hr className="border-t-2 border-gray-200 w-full">
-											</hr>
-										</div>
-										<div className="text-4xl font-semibold text-gray-700">
-											{stat.value}
-										</div>
-									</div>
+									<StatsCell value={stat.value} label={stat.label} key={index} />
 								))}
 							</div>
 							<hr className="border-t-2 border-line"></hr>

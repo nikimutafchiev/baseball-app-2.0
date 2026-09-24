@@ -4,39 +4,25 @@ import { useState } from "react";
 import useSWR from "swr";
 import StatsCell from "./StatCell";
 import { TextField, Autocomplete, CircularProgress, ToggleButtonGroup, ToggleButton } from "@mui/material";
+import { get_query } from "../../global/get_stat_query";
+import { useParams } from "react-router-dom";
 
-export default function TeamStats({ id }) {
+export default function TeamStats() {
     const [teamIDs, setTeamIDs] = useState([]);
     const [tournamentIDs, setTournamentIDs] = useState([]);
     const [yearsSelect, setYearsSelect] = useState([]);
-    const query_params = {
-        tournament_query:
-            tournamentIDs.length != 0 ? `tournament_ids=[${tournamentIDs}]` : "",
-        team_query: teamIDs.length != 0 ? `team_ids=[${teamIDs}]` : "",
-        year_query: yearsSelect.length != 0 ? `years=[${yearsSelect}]` : "",
-    };
-    const get_query = (tournament, team, year, h2h = null) => {
-        var res = "";
-        if (tournament == true && query_params.tournament_query.length != 0)
-            res += `?${query_params.tournament_query}`;
-        if (team == true && query_params.team_query.length != 0)
-            res += `${res.length == 0 ? "?" : "&"}${query_params.team_query}`;
-        if (year == true && query_params.year_query.length != 0)
-            res += `${res.length == 0 ? "?" : "&"}${query_params.year_query}`;
-        if (h2h) res += `${res.length == 0 ? "?" : "&"}team_ids=[${h2h}]`;
-        return res;
-    };
+    const { id } = useParams();
     const [overviewOption, setOverviewOption] = useState("Batting");
     const years = useSWR(
-        `${API}/team/${id}/years/${get_query(true, true, false)}`,
+        `${API}/team/${id}/years/${get_query(tournamentIDs, teamIDs, yearsSelect, true, true, false)}`,
         swrFetcher
     );
     const teams = useSWR(
-        `${API}/team/${id}/teams/${get_query(true, false, true)}`,
+        `${API}/team/${id}/teams/${get_query(tournamentIDs, teamIDs, yearsSelect, true, false, true)}`,
         swrFetcher
     );
     const tournaments = useSWR(
-        `${API}/team/${id}/tournaments/${get_query(
+        `${API}/team/${id}/tournaments/${get_query(tournamentIDs, [], yearsSelect,
             false,
             true,
             true
@@ -44,7 +30,7 @@ export default function TeamStats({ id }) {
         swrFetcher
     );
     const stats = useSWR(
-        `${API}/team/${id}/stats/${get_query(true, true, true)}`,
+        `${API}/team/${id}/stats/${get_query(tournamentIDs, teamIDs, yearsSelect, true, true, true)}`,
         swrFetcher
     );
     return <><div className="flex flex-1 flex-row gap-8">
