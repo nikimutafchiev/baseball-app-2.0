@@ -5,13 +5,13 @@ export default function Player(props) {
   const stats = props.stats
     ? props.stats
     : {
-        AVG: "0.0",
-        BB: "0",
-        ERA: "0.0",
-        SO: "0.0",
-        H: "0",
-        OBP: "0.0",
-      };
+      AVG: "0.0",
+      BB: "0",
+      ERA: "0.0",
+      SO: "0.0",
+      H: "0",
+      OBP: "0.0",
+    };
   return (
     <div className="h-[270px] min-w-[200px]">
       <div className="group h-full w-full ease-in-out duration-1000 [transform-style:preserve-3d] hover:[transform:rotateY(180deg)]">

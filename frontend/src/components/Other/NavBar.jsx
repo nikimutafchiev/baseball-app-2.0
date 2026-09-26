@@ -28,7 +28,9 @@ export default function NavBar() {
 			path: "/tournaments",
 			logo: <RiMedalLine size={27} />,
 		},
-		{ name: "Guide", path: "/guide", logo: <TbNotebook size={27} /> },
+
+		{ name: "Stats guide", path: "/guide", logo: <TbNotebook size={27} /> },
+		{ name: "Fantasy", path: "/fantasy", logo: <BiBaseball size={27} /> },
 		{ name: "Profile", path: "/profile/info", logo: <RiUserLine size={27} /> },
 	];
 	const location = useLocation();

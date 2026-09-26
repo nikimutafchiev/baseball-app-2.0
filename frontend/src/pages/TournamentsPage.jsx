@@ -18,7 +18,9 @@ export default function TournamentsPage() {
     const { user } = useAuth();
     return (<div className="flex flex-col gap-10 px-10 py-4">
         <div className="flex flex-row  justify-between">
-            {user && user.role == "admin" && <button onClick={() => setAddClicked(true)} className="w-fit flex flex-row items-center gap-2 px-4 py-2 rounded-lg text-white bg-primary_2 hover:bg-primary_3 font-semibold text-base sm:text-lg md:text-2xl">
+            {user && user.role == "admin" && <button
+                onClick={() => setAddClicked(true)}
+                className="w-fit inline-flex items-center justify-center gap-3 px-6 py-3 rounded-xl text-white bg-primary_2 hover:bg-primary_3 font-bold text-base sm:text-lg md:text-xl shadow-lg active:scale-95 transition-all duration-200 ease-in-out cursor-pointer">
                 {addIcon} CREATE TOURNAMENT
             </button>}
             <TextField value={searchInput} onChange={(e) => setSearchInput(e.target.value)} label={<div className="flex flex-row gap-1 items-center">{searchIcon}<div>Search</div></div>} className="bg-white w-1/3 md:w-1/4 rounded" />

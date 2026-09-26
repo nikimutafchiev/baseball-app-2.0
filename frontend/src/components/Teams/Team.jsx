@@ -26,7 +26,7 @@ export default function Team(props) {
                     }
                 </div>
             </div>
-            <Link className="p-2 bg-accent_2 hover:bg-accent_3 rounded text-white font-semibold text-xs" to={`${props.id}`}>More Info</Link>
+            <Link className="p-2 bg-accent_2 hover:bg-accent_3 rounded text-white font-semibold text-xs" to={`${props.id}/stats`}>More Info</Link>
 
         </div>)
 }
