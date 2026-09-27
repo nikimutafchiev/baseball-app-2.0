@@ -11,12 +11,13 @@ import { get_query } from "../../global/get_stat_query";
 import { swrFetcher } from "../../global/swrFetcher";
 import { useState } from "react";
 import useSWR from "swr";
+import { useParams } from "react-router-dom";
 
-
-export default function PlayerStats({ id }) {
+export default function PlayerStats() {
     const [teamIDs, setTeamIDs] = useState([]);
     const [tournamentIDs, setTournamentIDs] = useState([]);
     const [yearsSelect, setYearsSelect] = useState([]);
+    const { id } = useParams();
     const [overviewOption, setOverviewOption] = useState("Batting");
     const stats = useSWR(
         `${API}/player/${id}/stats/${get_query(tournamentIDs, teamIDs, yearsSelect, true, true, true)}`,

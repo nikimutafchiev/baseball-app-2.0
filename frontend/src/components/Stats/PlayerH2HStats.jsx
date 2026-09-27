@@ -8,12 +8,15 @@ import {
     ToggleButtonGroup,
 } from "@mui/material";
 import PlayerSelectList from "../Other/PlayerSelectList";
-
-export default function PlayerH2HStats({ id, player }) {
+import { useParams } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
+export default function PlayerH2HStats() {
+    const [player] = useOutletContext();
     const [teamIDs, setTeamIDs] = useState([]);
     const [tournamentIDs, setTournamentIDs] = useState([]);
     const [yearsSelect, setYearsSelect] = useState([]);
     const [selectClicked, setSelectClicked] = useState(false);
+    const { id } = useParams();
     const players = useSWR(`${API}/players`, (url) =>
         fetch(url).then((res) => res.json())
     );

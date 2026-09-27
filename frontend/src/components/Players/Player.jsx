@@ -59,7 +59,7 @@ export default function Player(props) {
                     </div> */}
           <Link
             className="px-3 py-2 bg-primary_2 hover:bg-white hover:text-primary_2 rounded  font-semibold text-sm"
-            to={`${props.id}`}
+            to={`${props.id}/stats`}
           >
             View more
           </Link>

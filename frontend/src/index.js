@@ -34,6 +34,9 @@ import StatsGuidePage from './pages/StatsGuidePage';
 import TeamStats from './components/Stats/TeamStats';
 import TeamDetailedStats from './components/Stats/TeamDetailedStats';
 import TeamH2HStats from './components/Stats/TeamH2HStats';
+import PlayerStats from './components/Stats/PlayerStats';
+import PlayerDetailedStats from './components/Stats/PlayerDetailedStats';
+import PlayerH2HStats from './components/Stats/PlayerH2HStats';
 const rooter = createBrowserRouter([
   {
     path: "/",
@@ -55,7 +58,12 @@ const rooter = createBrowserRouter([
       },
       {
         path: "players/:id",
-        element: <PlayerInfoPage />
+        element: <PlayerInfoPage />,
+        children: [
+          { path: "stats", element: <PlayerStats /> },
+          { path: "detailed_stats", element: <PlayerDetailedStats /> },
+          { path: "comparison", element: <PlayerH2HStats /> }
+        ]
       },
       {
         path: "games/:id",

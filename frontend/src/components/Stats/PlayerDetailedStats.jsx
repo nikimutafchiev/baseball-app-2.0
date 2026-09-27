@@ -21,15 +21,15 @@ import { swrFetcher } from "../../global/swrFetcher";
 import { get_query } from "../../global/get_stat_query";
 import { get_stat_array } from "../../global/StatArray";
 import useSWR from "swr";
-
-export default function PlayerDetailedStats({ id }) {
+import { useParams } from "react-router-dom";
+export default function PlayerDetailedStats() {
     const [graphStat, setGraphStat] = useState("AVG");
     const [sortColumn, setSortColumn] = useState("startTime");
     const [sortOrder, setSortOrder] = useState("DESC");
     const [teamIDs, setTeamIDs] = useState([]);
     const [tournamentIDs, setTournamentIDs] = useState([]);
     const [yearsSelect, setYearsSelect] = useState([]);
-
+    const { id } = useParams();
     const games_stats = useSWR(
         `${API}/player/${id}/games_stats/${get_query(tournamentIDs, teamIDs, yearsSelect, true, true, true)}`,
         swrFetcher

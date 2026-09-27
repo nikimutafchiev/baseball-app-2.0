@@ -1,8 +1,8 @@
 
 
-import { useParams } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import { useState } from "react";
-
+import { Link } from "react-router-dom";
 
 import useSWR from "swr";
 import PlayerSelectList from "../Other/PlayerSelectList";
@@ -21,9 +21,9 @@ export default function PlayerInfo() {
 	return (
 		<div>
 			{player.data && (
-				<div className="flex flex-col md:flex-row w-full gap-8 text-white text-sm ">
-					<div className="relative md:w-1/5">
-						<div className="flex flex-col h-fit bg-gradient-to-br p-4 gap-4 justify-between items-center min-h-[80vh] from-accent_3 via-accent_2 to-accent_1 rounded ">
+				<div className="flex flex-col flex-wrap md:flex-row w-full gap-8 text-white text-sm ">
+					<div className=" w-full">
+						<div className="flex flex-row h-fit bg-gradient-to-br p-4 gap-4 justify-between items-center  from-accent_3 via-accent_2 to-accent_1 rounded ">
 
 							<h3 className="text-xl font-semibold">
 								{player.data.firstName} {player.data.lastName}
@@ -36,7 +36,7 @@ export default function PlayerInfo() {
 										: "http://placehold.co/180x200"
 								}
 							/>
-							<div className="flex flex-col gap-0.5 items-center w-full">
+							<div className="grid grid-cols-2 gap-y-1 gap-x-2 items-center w-full">
 								{player.data.height && (
 									<div className="font-semibold flex flex-row justify-between w-full bg-gray-400 px-2 py-1 rounded bg-opacity-50">
 										<div>Height:</div>{" "}
@@ -94,18 +94,43 @@ export default function PlayerInfo() {
 							</button> */}
 						</div>
 					</div>
-
-					<div className="flex flex-row flex-1 gap-8">
-						<div className="flex flex-col flex-1 text-black gap-4 h-fit">
-							<PlayerStats id={id} />
-							<hr className="border-t-2 border-line"></hr>
-							<PlayerDetailedStats id={id} />
-							<hr className="border-t-2 border-line"></hr>
-							<PlayerH2HStats id={id} player={player.data} />
+					<>
+						<div className="bg-white drop-shadow-lg rounded-sm overflow-hidden w-[15%] h-fit">
+							<div className="bg-gray-50 px-4 py-2 border-b">
+								<span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">PLayer Analytics</span>
+							</div>
+							<nav className="flex flex-col">
+								<Link
+									to={"stats"}
+									className="flex items-center px-4 py-3 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 border-l-4 border-transparent hover:border-blue-500 transition-all"
+								>
+									Stats overview
+								</Link>
+								<Link
+									to={"detailed_stats"}
+									className="flex items-center px-4 py-3 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 border-l-4 border-transparent hover:border-blue-500 transition-all"
+								>
+									Detailed stats
+								</Link>
+								<Link
+									to={"comparison"}
+									className="flex items-center px-4 py-3 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 border-l-4 border-transparent hover:border-blue-500 transition-all"
+								>
+									Player comparison
+								</Link>
+							</nav>
 						</div>
-						{/* {isEdit && <InputFormPlayer close={() => setIsEdit(false)} isEdit={true} player={player.data ? player.data : {}} />}
+
+						<div className="flex flex-row flex-1 gap-8">
+							<div className="flex flex-col flex-1 text-black gap-4 h-fit">
+								{//pass props to outlet, design changes, fix name position in comparison
+								}
+								<Outlet context={[player.data]} />
+							</div>
+							{/* {isEdit && <InputFormPlayer close={() => setIsEdit(false)} isEdit={true} player={player.data ? player.data : {}} />}
 						{isEdit && <div className="fixed inset-0 z-10 bg-black bg-opacity-50" ></div>} */}
-					</div >
+						</div >
+					</>
 				</div >
 			)
 			}
