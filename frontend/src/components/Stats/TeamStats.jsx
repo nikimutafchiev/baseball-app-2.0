@@ -22,7 +22,7 @@ export default function TeamStats() {
         swrFetcher
     );
     const tournaments = useSWR(
-        `${API}/team/${id}/tournaments/${get_query(tournamentIDs, [], yearsSelect,
+        `${API}/team/${id}/tournaments/${get_query(tournamentIDs, teamIDs, yearsSelect,
             false,
             true,
             true

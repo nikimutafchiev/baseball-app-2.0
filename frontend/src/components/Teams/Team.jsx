@@ -20,7 +20,7 @@ export default function Team(props) {
                     <div>Address: {props.address}</div>
                     <div>Contact: {props.contact}</div>
                     {props.socialMedia &&
-                        <div className="w-3/5 flex flex-row justify-around mt-2">
+                        <div className=" flex flex-row gap-3 justify-around mt-2">
                             {Object.entries(props.socialMedia).filter(([media, page]) => page !== "").map(([media, page]) => <a href={page} target="_blank">{icons[media]}</a>)}
                         </div>
                     }

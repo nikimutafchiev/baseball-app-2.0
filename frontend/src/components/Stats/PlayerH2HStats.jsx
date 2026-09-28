@@ -64,9 +64,9 @@ export default function PlayerH2HStats() {
                 </ToggleButtonGroup>
             </div>
             <div className="grid grid-cols-3 font-semibold text-xl ">
-                {player && <div className="text-center ">
-                    {player.firstName} {player.lastName}
-                </div>}
+                <div className="text-center ">
+                    {player && <div>{player.firstName}  {player.lastName}</div>}
+                </div>
                 <div></div>
                 {selectedPlayer && (
                     <div className="text-center">

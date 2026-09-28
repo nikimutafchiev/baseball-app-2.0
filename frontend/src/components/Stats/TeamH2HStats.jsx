@@ -34,13 +34,14 @@ export default function TeamH2HStats() {
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [selectedTeamStats, setSelectedTeamStats] = useState(null);
     const [selectClicked, setSelectClicked] = useState(false);
+    //test it later
     const teamH2Hstats = useSWR(
         `${API}/team/${id}/stats/${get_query(
-            tournamentIDs, [], yearsSelect,
+            tournamentIDs, [selectedTeam ? selectedTeam.id : null], yearsSelect,
             true,
-            false,
+            selectedTeam ? true : false,
             true,
-            selectedTeam ? selectedTeam.id : null
+
         )}`,
         swrFetcher
     );

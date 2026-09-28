@@ -929,9 +929,9 @@ def change_runners(game_id):
 
 @route_bp.route("/player/<int:player_id>/teams/",methods=["GET"])
 def get_player_teams(player_id):
-    query = request.args.to_dict()
-    year_ids = eval(str(query.get("year_ids")))
-    tournament_ids = eval(str(query.get("tournament_ids")))
+    #TODO remove eval 
+    years = [int(x) for x in request.args.getlist("years")]
+    tournament_ids = [int(x) for x in request.args.getlist("tournament_ids")]
     player = db.session.get(Player,player_id)
     if player == None:
         return {},400
@@ -948,8 +948,8 @@ def get_player_teams(player_id):
 @route_bp.route("/player/<int:player_id>/tournaments/",methods=["GET"])
 def get_player_tournaments(player_id):
     query = request.args.to_dict()
-    year_ids = eval(str(query.get("year_ids")))
-    team_ids = eval(str(query.get("team_ids")))
+    years = [int(x) for x in request.args.getlist("years")]
+    team_ids = [int(x) for x in request.args.getlist("team_ids")]
     player = db.session.get(Player,player_id)
     if player == None:
         return {},400
@@ -964,9 +964,8 @@ def get_player_tournaments(player_id):
 
 @route_bp.route("/player/<int:player_id>/years/",methods=["GET"])
 def get_player_years(player_id):
-    query = request.args.to_dict()
-    team_ids = eval(str(query.get("team_ids")))
-    tournament_ids = eval(str(query.get("tournament_ids")))
+    team_ids = [int(x) for x in request.args.getlist("team_ids")]
+    tournament_ids = [int(x) for x in request.args.getlist("tournament_ids")]
     player = db.session.get(Player,player_id)
     if player == None:
         return {},400
@@ -987,10 +986,11 @@ def id_in_list(id,list):
 @route_bp.route("/player/<int:player_id>/stats/",methods=["GET"])
 def get_player_stats(player_id):
     query = request.args.to_dict()
-    team_ids = eval(str(query.get("team_ids")))
-    tournament_ids = eval(str(query.get("tournament_ids")))
+    team_ids = [int(x) for x in request.args.getlist("team_ids")]
+    tournament_ids = [int(x) for x in request.args.getlist("tournament_ids")]
+    years = [int (x) for x in request.args.getlist("years")]
     game_id = query.get("game_id")
-    years = eval(str(query.get("years")))
+    
     player = db.session.get(Player,player_id)
     if player == None:
         return {},400
@@ -1016,9 +1016,9 @@ def get_player_stats(player_id):
 
 @route_bp.route("/team/<int:team_id>/tournaments/",methods=["GET"])
 def get_team_tournaments(team_id):
-    query = request.args.to_dict()
-    year_ids = eval(str(query.get("year_ids")))
-    team_ids = eval(str(query.get("team_ids")))
+    years = [int(x) for x in request.args.getlist("years")]
+    team_ids = [int(x) for x in request.args.getlist("team_ids")]
+    print(team_ids)
     team = db.session.get(Team, team_id)
     if team == None:
         return {},400
@@ -1036,9 +1036,8 @@ def get_team_tournaments(team_id):
 
 @route_bp.route("/team/<int:team_id>/years/",methods=["GET"])
 def get_team_years(team_id):
-    query = request.args.to_dict()
-    tournament_ids = eval(str(query.get("tournament_ids")))
-    team_ids = eval(str(query.get("tournament_ids")))
+    tournament_ids = [int(x) for x in request.args.getlist("tournament_ids")]
+    team_ids = [int(x) for x in request.args.getlist("team_ids")]
     team = db.session.get(Team,team_id)
     if team == None:
         return {},400
@@ -1051,9 +1050,8 @@ def get_team_years(team_id):
 
 @route_bp.route("/team/<int:team_id>/teams/",methods=["GET"])
 def get_team_opponents(team_id):
-    query = request.args.to_dict()
-    tournament_ids = eval(str(query.get("tournament_ids")))
-    year_ids = eval(str(query.get("year_ids")))
+    tournament_ids = [int(x) for x in request.args.getlist("tournament_ids")]
+    years = [int(x) for x in request.args.getlist("years")]
     team = db.session.get(Team,team_id)
     if team == None:
         return {},400
@@ -1074,11 +1072,10 @@ def get_team_opponents(team_id):
 @route_bp.route("/team/<int:team_id>/stats/",methods=["GET"])
 def get_team_stats(team_id):
     query = request.args.to_dict()
-    team_ids = eval(str(query.get("team_ids")))
-    tournament_ids = eval(str(query.get("tournament_ids")))
+    team_ids = [int(x) for x in request.args.getlist("team_ids")]
+    tournament_ids = [int(x) for x in request.args.getlist("tournament_ids")]
     game_id = query.get("game_id")
-    years = eval(str(query.get("years")))
-
+    years = [int(x) for x in request.args.getlist("years")]
     team = db.session.get(Team,team_id)
     if team == None:
         return {},400
@@ -1166,7 +1163,7 @@ def get_team_stats(team_id):
 def get_tournament_stats(tournament_id):
     query = request.args.to_dict()
     game_id = query.get("game_id")
-    years = eval(str(query.get("years")))
+    years = [int(x) for x in request.args.getlist("years")]
     tournament = db.session.get(Tournament,tournament_id)
     if tournament == None:
         return {},400
@@ -1200,9 +1197,9 @@ def get_tournament_stats(tournament_id):
 @route_bp.route("/player/<int:player_id>/games_stats/",methods=["GET"])
 def get_player_games_stats(player_id):
     query = request.args.to_dict()
-    team_ids = eval(str(query.get("team_ids")))
-    tournament_ids = eval(str(query.get("tournament_ids")))
-    years = eval(str(query.get("years")))
+    team_ids = [int(x) for x in request.args.getlist("team_ids")]
+    tournament_ids = [int(x) for x in request.args.getlist("tournament_ids")]
+    years = [int(x) for x in request.args.getlist("years")]
     player = db.session.get(Player,player_id)
     if player == None:
         return {},400

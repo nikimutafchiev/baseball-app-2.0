@@ -1,16 +1,10 @@
 
 
 import { Outlet, useParams } from "react-router-dom";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import useSWR from "swr";
-import PlayerSelectList from "../Other/PlayerSelectList";
 import { API } from "../../global/API";
-import { swrFetcher } from "../../global/swrFetcher";
-import PlayerDetailedStats from "../Stats/PlayerDetailedStats";
-import PlayerStats from "../Stats/PlayerStats";
-import PlayerH2HStats from "../Stats/PlayerH2HStats";
 export default function PlayerInfo() {
 	//const [isEdit, setIsEdit] = useState(false);
 	const { id } = useParams();
@@ -123,7 +117,7 @@ export default function PlayerInfo() {
 
 						<div className="flex flex-row flex-1 gap-8">
 							<div className="flex flex-col flex-1 text-black gap-4 h-fit">
-								{//pass props to outlet, design changes, fix name position in comparison
+								{//design changes
 								}
 								<Outlet context={[player.data]} />
 							</div>

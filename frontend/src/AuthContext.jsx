@@ -12,6 +12,26 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(token != "" ? jwtDecode(token).user : null);
     const navigate = useNavigate();
     const location = useLocation();
+    useEffect(() => {
+        const token = localStorage.getItem("access_token");
+
+        if (!token) {
+            return;
+        }
+
+        try {
+            const decoded = jwtDecode(token);
+            if (!decoded.exp || decoded.exp * 1000 <= Date.now()) {
+                logout();
+                return;
+            }
+
+            setToken(token);
+            setUser(decoded.user);
+        } catch (error) {
+            logout();
+        }
+    }, []);
     // const logged = useSWR(`${API}/is_logged/?username=${user ? user.username : "''"}&password=${user ? user.password : "''"}`, swrFetcher);
     const login = async (userData) => {
 
